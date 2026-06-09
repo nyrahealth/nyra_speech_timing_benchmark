@@ -1,0 +1,16 @@
+{
+  "model": "example_model",
+  "dataset": "timit",
+  "predictions": {
+    "audio/TEST_DR4_MGMM0_SX139.wav": [
+      {"word": "the", "start": 0.14, "end": 0.20},
+      {"word": "bungalow", "start": 0.20, "end": 0.68},
+      {"word": "was", "start": 0.68, "end": 0.86},
+      {"word": "pleasantly", "start": 0.86, "end": 1.33},
+      {"word": "situated", "start": 1.33, "end": 1.95},
+      {"word": "near", "start": 1.95, "end": 2.15},
+      {"word": "the", "start": 2.15, "end": 2.23},
+      {"word": "shore", "start": 2.23, "end": 2.76}
+    ]
+  }
+}
