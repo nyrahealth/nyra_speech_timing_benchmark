@@ -107,56 +107,83 @@ dependency only fails when that model is requested (with a clear message).
 
 ### Verified results (full test sets)
 
-The model adapters were run end-to-end over the **complete** test set of each
-corpus on this machine (`crisperwhisper` on TIMIT + Buckeye). Word counts:
-TIMIT ≈ 12.6k, Buckeye ≈ 81k, FluencyBank (stutter) ≈ 9k. Lower MAE is better;
-higher mIoU / F1 is better.
+All models — local adapters **and** hosted STT APIs — are scored in one table
+per corpus, sorted by MAE. The **type** column marks the fundamental difference
+in task:
+
+- **forced aligner** — handed the ground-truth words; only predicts *when* each
+  was said. It cannot miss or add a word, so it has a structural advantage on
+  these timing-only metrics.
+- **transcription** — a full-fledged ASR system (local model or hosted API)
+  that produces its *own* words; those are text-aligned to the ground truth and
+  only matched words are scored (timing is decoupled from transcription errors).
+
+All runs cover the **complete** test set. Word counts: TIMIT ≈ 12.6k,
+Buckeye ≈ 81k, FluencyBank ≈ 9k. Hosted APIs were run on TIMIT and Buckeye only.
+Lower MAE is better; higher mIoU / F1 is better.
 
 **TIMIT** (read speech, 1626 utterances):
 
-| model | MAE (ms) | mIoU | F1@50ms | F1@100ms | F1@200ms |
-| --- | --- | --- | --- | --- | --- |
-| `mfa` | **23.5** | **82.9%** | **77.6%** | 94.5% | 99.1% |
-| `qwen_fa` | 30.1 | 76.8% | 70.8% | **95.0%** | **99.8%** |
-| `crisperwhisper` | 33.7 | 75.8% | 60.6% | 89.8% | 98.1% |
-| `ctc_segmentation` | 49.3 | 69.1% | 38.9% | 82.6% | 96.9% |
-| `nemo_fa` | 60.0 | 55.3% | 19.3% | 66.4% | 98.4% |
-| `whisperx` | 64.8 | 56.5% | 13.3% | 59.5% | 96.4% |
-| `canary` | 85.5 | 44.0% | 12.9% | 41.1% | 86.4% |
+| model | type | MAE (ms) | mIoU | F1@50ms | F1@100ms | F1@200ms |
+| --- | --- | --- | --- | --- | --- | --- |
+| `mfa` | forced aligner | **23.5** | **82.9%** | **77.6%** | 94.5% | 99.1% |
+| `qwen_fa` | forced aligner | 30.1 | 76.8% | 70.8% | **95.0%** | **99.8%** |
+| `crisperwhisper` | transcription (local) | 33.7 | 75.8% | 60.6% | 89.8% | 98.1% |
+| `xai_grok_stt` | transcription (hosted API) | 37.1 | 71.5% | 50.2% | 91.7% | 98.6% |
+| `ctc_segmentation` | forced aligner | 49.3 | 69.1% | 38.9% | 82.6% | 96.9% |
+| `elevenlabs_scribe` | transcription (hosted API) | 51.3 | 64.3% | 29.1% | 78.2% | 98.3% |
+| `nemo_fa` | forced aligner | 60.0 | 55.3% | 19.3% | 66.4% | 98.4% |
+| `deepgram_nova3` | transcription (hosted API) | 63.3 | 62.3% | 20.1% | 59.7% | 96.6% |
+| `whisperx` | transcription (local) | 64.8 | 56.5% | 13.3% | 59.5% | 96.4% |
+| `cartesia_ink_whisper` | transcription (hosted API) | 69.4 | 63.5% | 21.4% | 60.6% | 89.6% |
+| `canary` | transcription (local) | 85.5 | 44.0% | 12.9% | 41.1% | 86.4% |
 
 **Buckeye** (conversational, 2008 chunks, chunk-relative timings):
 
-| model | MAE (ms) | mIoU | F1@50ms | F1@100ms | F1@200ms |
-| --- | --- | --- | --- | --- | --- |
-| `qwen_fa` | **43.7** | 70.8% | 74.5% | **93.9%** | **97.4%** |
-| `crisperwhisper` | 45.6 | 64.8% | 51.8% | 79.0% | 88.7% |
-| `mfa` | 51.8 | **77.9%** | **77.3%** | 90.1% | 94.8% |
-| `nemo_fa` | 74.9 | 44.3% | 20.3% | 58.6% | 94.5% |
-| `ctc_segmentation` | 83.9 | 63.3% | 48.5% | 74.7% | 85.6% |
-| `whisperx` | 93.0 | 41.8% | 7.8% | 48.5% | 84.2% |
-| `canary` | 117.7 | 29.8% | 8.9% | 30.1% | 71.2% |
+| model | type | MAE (ms) | mIoU | F1@50ms | F1@100ms | F1@200ms |
+| --- | --- | --- | --- | --- | --- | --- |
+| `qwen_fa` | forced aligner | **43.7** | 70.8% | 74.5% | **93.9%** | **97.4%** |
+| `crisperwhisper` | transcription (local) | 45.6 | 64.8% | 51.8% | 79.0% | 88.7% |
+| `xai_grok_stt` | transcription (hosted API) | 47.1 | 62.8% | 46.2% | 80.4% | 89.3% |
+| `mfa` | forced aligner | 51.8 | **77.9%** | **77.3%** | 90.1% | 94.8% |
+| `elevenlabs_scribe` | transcription (hosted API) | 59.6 | 53.9% | 21.5% | 67.1% | 87.0% |
+| `nemo_fa` | forced aligner | 74.9 | 44.3% | 20.3% | 58.6% | 94.5% |
+| `ctc_segmentation` | forced aligner | 83.9 | 63.3% | 48.5% | 74.7% | 85.6% |
+| `deepgram_nova3` | transcription (hosted API) | 88.4 | 49.5% | 13.7% | 47.0% | 82.3% |
+| `whisperx` | transcription (local) | 93.0 | 41.8% | 7.8% | 48.5% | 84.2% |
+| `canary` | transcription (local) | 117.7 | 29.8% | 8.9% | 30.1% | 71.2% |
+| `cartesia_ink_whisper` | transcription (hosted API) | 125.7 | 59.7% | 32.8% | 59.8% | 74.7% |
 
-**FluencyBank** (stuttered speech, 300 utterances — hard for all aligners):
+**FluencyBank** (stuttered speech, 300 utterances — hard for all aligners; local models only):
 
-| model | MAE (ms) | mIoU | F1@50ms | F1@100ms | F1@200ms |
-| --- | --- | --- | --- | --- | --- |
-| `qwen_fa` | **109.4** | 60.0% | 45.0% | **74.4%** | **86.4%** |
-| `nemo_fa` | 124.2 | 41.7% | 18.1% | 49.2% | 81.8% |
-| `canary` | 167.9 | 30.2% | 7.2% | 24.5% | 60.6% |
-| `whisperx` | 184.7 | 44.1% | 7.5% | 39.7% | 66.7% |
-| `ctc_segmentation` | 208.8 | 50.4% | 25.6% | 48.7% | 67.0% |
-| `mfa` | 233.0 | **61.2%** | **47.7%** | 66.1% | 78.0% |
+| model | type | MAE (ms) | mIoU | F1@50ms | F1@100ms | F1@200ms |
+| --- | --- | --- | --- | --- | --- | --- |
+| `crisperwhisper` | transcription (local) | **103.3** | 60.0% | 37.6% | 65.0% | 79.3% |
+| `qwen_fa` | forced aligner | 109.4 | 60.0% | 45.0% | **74.4%** | **86.4%** |
+| `nemo_fa` | forced aligner | 124.2 | 41.7% | 18.1% | 49.2% | 81.8% |
+| `canary` | transcription (local) | 167.9 | 30.2% | 7.2% | 24.5% | 60.6% |
+| `whisperx` | transcription (local) | 184.7 | 44.1% | 7.5% | 39.7% | 66.7% |
+| `ctc_segmentation` | forced aligner | 208.8 | 50.4% | 25.6% | 48.7% | 67.0% |
+| `mfa` | forced aligner | 233.0 | **61.2%** | **47.7%** | 66.1% | 78.0% |
 
 Notes:
 - The NeMo-FA Buckeye MAE (74.9 ms) reproduces the independent forced-alignment
   ledger's "fair comparison" figure (74.90 ms), validating the pipeline.
-- `crisperwhisper` is the only **free-decode** model competitive with the forced
-  aligners (TIMIT 33.7 ms, Buckeye 45.6 ms): it transcribes verbatim and times
-  its own words, so it is robust to ground-truth transcripts that do not conform
-  to the model's tokenization (e.g. Buckeye's filler/cut-off forms). Teacher
-  forcing those non-conforming transcripts is markedly worse (Buckeye ≈ 121 ms).
-  The mel-blank shaping (`blank_gamma`/`blank_penalty`) is what keeps it from
-  collapsing words on conversational speech (Buckeye 87 → 46 ms).
+- `crisperwhisper` is the only **transcription** (free-decode) model competitive
+  with the forced aligners across the board — TIMIT 33.7 ms, Buckeye 45.6 ms, and
+  the best MAE of any model on FluencyBank (103.3 ms). It transcribes verbatim and
+  times its own words, so it is robust to ground-truth transcripts that do not
+  conform to the model's tokenization (e.g. Buckeye's filler/cut-off forms).
+  Teacher forcing those non-conforming transcripts is markedly worse
+  (Buckeye ≈ 121 ms). The mel-blank shaping (`blank_gamma`/`blank_penalty`) is what
+  keeps it from collapsing words on conversational speech (Buckeye 87 → 46 ms).
+- `xai_grok_stt` is the strongest **hosted API**, rivalling the best local forced
+  aligners on both corpora (TIMIT 37.1 ms, Buckeye 47.1 ms) despite producing its
+  own transcript.
+- Keep the **type** column in mind when reading the tables: forced aligners are
+  given the words and only score timing, so they cannot lose points to ASR
+  errors. Transcription systems first have to get the word right (only matched
+  words are scored), making a low MAE there a stronger result.
 - On **FluencyBank**, pooled MAE is dominated by a tail of disfluency outliers, so
   it ranks differently from the boundary-centric F1/mIoU metrics. MFA has the best
   mIoU and F1@50ms there despite the worst MAE — i.e. its boundaries are tightest
@@ -233,28 +260,8 @@ only). Keys are read from the research repo `.env` (or `NYRA_ENV_FILE`). See
 [`generation/README.md`](generation/README.md) for the full list and how to add a
 provider.
 
-### Verified provider results (full test sets)
-
-**TIMIT** (1626 utterances):
-
-| provider | MAE (ms) | mIoU | F1@50ms | F1@100ms | F1@200ms |
-| --- | --- | --- | --- | --- | --- |
-| `xai_grok_stt` | **37.1** | **71.5%** | **50.2%** | **91.7%** | 98.6% |
-| `elevenlabs_scribe` | 51.3 | 64.3% | 29.1% | 78.2% | 98.3% |
-| `deepgram_nova3` | 63.3 | 62.3% | 20.1% | 59.7% | 96.6% |
-| `cartesia_ink_whisper` | 69.4 | 63.5% | 21.4% | 60.6% | 89.6% |
-
-**Buckeye** (2008 chunks):
-
-| provider | MAE (ms) | mIoU | F1@50ms | F1@100ms | F1@200ms |
-| --- | --- | --- | --- | --- | --- |
-| `xai_grok_stt` | **47.1** | **62.8%** | **46.2%** | **80.4%** | 89.3% |
-| `elevenlabs_scribe` | 59.6 | 53.9% | 21.5% | 67.1% | 87.0% |
-| `deepgram_nova3` | 88.4 | 49.5% | 13.7% | 47.0% | 82.3% |
-| `cartesia_ink_whisper` | 125.7 | 59.7% | 32.8% | 59.8% | 74.7% |
-
-xAI Grok STT is the strongest hosted API on both corpora — close to the best
-local forced aligners (`mfa`, `qwen_fa`) despite being a free-transcription ASR.
+Provider scores are folded into the unified leaderboard above (the rows marked
+`transcription (hosted API)`), so there is a single ranking per corpus.
 
 ## Comparing models
 
