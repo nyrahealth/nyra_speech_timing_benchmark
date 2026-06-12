@@ -130,6 +130,7 @@ Lower MAE is better; higher mIoU / F1 is better.
 | `qwen_fa` | forced aligner | 30.1 | 76.8% | 70.8% | **95.0%** | **99.8%** |
 | `crisperwhisper` | transcription (local) | 33.7 | 75.8% | 60.6% | 89.8% | 98.1% |
 | `crisperwhisper_pro` | transcription (local) | 36.0 | 74.9% | 58.1% | 86.3% | 97.4% |
+| `crisperwhisper_pro_ck2000` | transcription (local) | 36.0 | 74.9% | 58.2% | 86.5% | 97.4% |
 | `xai_grok_stt` | transcription (hosted API) | 37.1 | 71.5% | 50.2% | 91.7% | 98.6% |
 | `ctc_segmentation` | forced aligner | 49.3 | 69.1% | 38.9% | 82.6% | 96.9% |
 | `elevenlabs_scribe` | transcription (hosted API) | 51.3 | 64.3% | 29.1% | 78.2% | 98.3% |
@@ -146,6 +147,7 @@ Lower MAE is better; higher mIoU / F1 is better.
 | `qwen_fa` | forced aligner | **43.7** | 70.8% | 74.5% | **93.9%** | **97.4%** |
 | `crisperwhisper` | transcription (local) | 45.6 | 64.8% | 51.8% | 79.0% | 88.7% |
 | `xai_grok_stt` | transcription (hosted API) | 47.1 | 62.8% | 46.2% | 80.4% | 89.3% |
+| `crisperwhisper_pro_ck2000` | transcription (local) | 48.3 | 63.3% | 49.4% | 77.2% | 88.2% |
 | `crisperwhisper_pro` | transcription (local) | 48.4 | 63.2% | 49.4% | 77.2% | 88.2% |
 | `mfa` | forced aligner | 51.8 | **77.9%** | **77.3%** | 90.1% | 94.8% |
 | `elevenlabs_scribe` | transcription (hosted API) | 59.6 | 53.9% | 21.5% | 67.1% | 87.0% |
@@ -161,6 +163,7 @@ Lower MAE is better; higher mIoU / F1 is better.
 | model | type | MAE (ms) | mIoU | F1@50ms | F1@100ms | F1@200ms |
 | --- | --- | --- | --- | --- | --- | --- |
 | `crisperwhisper_pro` | transcription (local) | **100.3** | 60.5% | 37.1% | 64.0% | 77.7% |
+| `crisperwhisper_pro_ck2000` | transcription (local) | 101.9 | 60.4% | 37.2% | 64.1% | 77.9% |
 | `crisperwhisper` | transcription (local) | 103.3 | 60.0% | 37.6% | 65.0% | 79.3% |
 | `qwen_fa` | forced aligner | 109.4 | 60.0% | 45.0% | **74.4%** | **86.4%** |
 | `nemo_fa` | forced aligner | 124.2 | 41.7% | 18.1% | 49.2% | 81.8% |
@@ -185,7 +188,9 @@ Notes:
   config. It performs within ~3 ms of the release checkpoint — marginally behind
   on TIMIT (36.0 ms) and Buckeye (48.4 ms), marginally ahead on FluencyBank
   (100.3 ms, the best MAE of any model there) — i.e. the two are interchangeable
-  for timing.
+  for timing. `crisperwhisper_pro_ck2000` is the step-2000 checkpoint of that same
+  run; it matches the final checkpoint to within ~0.1 ms on every corpus, i.e.
+  timing accuracy had already converged well before the end of training.
 - `xai_grok_stt` is the strongest **hosted API**, rivalling the best local forced
   aligners on both corpora (TIMIT 37.1 ms, Buckeye 47.1 ms) despite producing its
   own transcript.
