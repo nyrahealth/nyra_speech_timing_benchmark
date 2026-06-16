@@ -91,7 +91,7 @@ nyra-timing run --dataset timit --model mfa --num-samples 50 --out results/
 | `ctc_segmentation` | forced aligner | `wav2vec2-base-960h` | `torchaudio`, `ctc-segmentation` |
 | `qwen_fa` | forced aligner | `Qwen/Qwen3-ForcedAligner-0.6B` | `qwen-asr` |
 | `mfa` | forced aligner | `english_mfa` | MFA binary + `english_mfa` model/dict |
-| `crisperwhisper` | free ASR w/ attention timing | `large-v2_verbatimize_longform_with_timing` | local `crisperwhisper` + `torch`, `transformers` |
+| `crisperwhisper` | free ASR w/ attention timing | `large-v2_verbatimize_longform_with_timing` | local `crisperwhisper` with `transformers` or `ct2` extras |
 
 **Forced aligners** (`nemo_fa`, `ctc_segmentation`, `qwen_fa`, `mfa`) consume the
 ground-truth words and only predict their timings; the `run` command passes the
@@ -104,6 +104,31 @@ collapse words on conversational speech.
 
 Adapters import their heavy dependencies lazily, so a missing/incompatible
 dependency only fails when that model is requested (with a clear message).
+
+Run CrisperWhisper explicitly on either backend:
+
+```bash
+nyra-timing run \
+  --dataset timit \
+  --model crisperwhisper \
+  --crisperwhisper-model /home/ubuntu/data/models/large-v2_verbatimize_longform_with_timing_release \
+  --crisperwhisper-backend transformers \
+  --num-samples 50 \
+  --out results_release/ --save-predictions predictions/
+
+nyra-timing run \
+  --dataset timit \
+  --model crisperwhisper \
+  --crisperwhisper-model /home/ubuntu/data/models/large-v2_verbatimize_longform_with_timing_release \
+  --crisperwhisper-backend ct2 \
+  --crisperwhisper-cache /ephemeral/crisperwhisper_cache \
+  --num-samples 50 \
+  --out results_release/ --save-predictions predictions/
+```
+
+Environment equivalents are `CRISPERWHISPER_MODEL`,
+`CRISPERWHISPER_BACKEND`, `CRISPERWHISPER_REPO`, and
+`CRISPERWHISPER_CACHE`.
 
 ### Verified results (full test sets)
 
@@ -127,10 +152,8 @@ Lower MAE is better; higher mIoU / F1 is better.
 | model | type | MAE (ms) | mIoU | F1@50ms | F1@100ms | F1@200ms |
 | --- | --- | --- | --- | --- | --- | --- |
 | `mfa` | forced aligner | **23.5** | **82.9%** | **77.6%** | 94.5% | 99.1% |
+| `crisperwhisper` | transcription (local) | 29.6 | 79.7% | 69.3% | 90.2% | 98.1% |
 | `qwen_fa` | forced aligner | 30.1 | 76.8% | 70.8% | **95.0%** | **99.8%** |
-| `crisperwhisper` | transcription (local) | 33.7 | 75.8% | 60.6% | 89.8% | 98.1% |
-| `crisperwhisper_pro` | transcription (local) | 36.0 | 74.9% | 58.1% | 86.3% | 97.4% |
-| `crisperwhisper_pro_ck2000` | transcription (local) | 36.0 | 74.9% | 58.2% | 86.5% | 97.4% |
 | `xai_grok_stt` | transcription (hosted API) | 37.1 | 71.5% | 50.2% | 91.7% | 98.6% |
 | `ctc_segmentation` | forced aligner | 49.3 | 69.1% | 38.9% | 82.6% | 96.9% |
 | `elevenlabs_scribe` | transcription (hosted API) | 51.3 | 64.3% | 29.1% | 78.2% | 98.3% |
@@ -144,11 +167,9 @@ Lower MAE is better; higher mIoU / F1 is better.
 
 | model | type | MAE (ms) | mIoU | F1@50ms | F1@100ms | F1@200ms |
 | --- | --- | --- | --- | --- | --- | --- |
-| `qwen_fa` | forced aligner | **43.7** | 70.8% | 74.5% | **93.9%** | **97.4%** |
-| `crisperwhisper` | transcription (local) | 45.6 | 64.8% | 51.8% | 79.0% | 88.7% |
+| `crisperwhisper` | transcription (local) | **40.6** | 71.5% | 60.6% | 80.1% | 88.8% |
+| `qwen_fa` | forced aligner | 43.7 | 70.8% | 74.5% | **93.9%** | **97.4%** |
 | `xai_grok_stt` | transcription (hosted API) | 47.1 | 62.8% | 46.2% | 80.4% | 89.3% |
-| `crisperwhisper_pro_ck2000` | transcription (local) | 48.3 | 63.3% | 49.4% | 77.2% | 88.2% |
-| `crisperwhisper_pro` | transcription (local) | 48.4 | 63.2% | 49.4% | 77.2% | 88.2% |
 | `mfa` | forced aligner | 51.8 | **77.9%** | **77.3%** | 90.1% | 94.8% |
 | `elevenlabs_scribe` | transcription (hosted API) | 59.6 | 53.9% | 21.5% | 67.1% | 87.0% |
 | `nemo_fa` | forced aligner | 74.9 | 44.3% | 20.3% | 58.6% | 94.5% |
@@ -162,35 +183,32 @@ Lower MAE is better; higher mIoU / F1 is better.
 
 | model | type | MAE (ms) | mIoU | F1@50ms | F1@100ms | F1@200ms |
 | --- | --- | --- | --- | --- | --- | --- |
-| `crisperwhisper_pro` | transcription (local) | **100.3** | 60.5% | 37.1% | 64.0% | 77.7% |
-| `crisperwhisper_pro_ck2000` | transcription (local) | 101.9 | 60.4% | 37.2% | 64.1% | 77.9% |
-| `crisperwhisper` | transcription (local) | 103.3 | 60.0% | 37.6% | 65.0% | 79.3% |
+| `crisperwhisper` | transcription (local) | **101.1** | **64.3%** | 41.8% | 65.5% | 79.4% |
 | `qwen_fa` | forced aligner | 109.4 | 60.0% | 45.0% | **74.4%** | **86.4%** |
 | `nemo_fa` | forced aligner | 124.2 | 41.7% | 18.1% | 49.2% | 81.8% |
 | `canary` | transcription (local) | 167.9 | 30.2% | 7.2% | 24.5% | 60.6% |
 | `whisperx` | transcription (local) | 184.7 | 44.1% | 7.5% | 39.7% | 66.7% |
 | `ctc_segmentation` | forced aligner | 208.8 | 50.4% | 25.6% | 48.7% | 67.0% |
-| `mfa` | forced aligner | 233.0 | **61.2%** | **47.7%** | 66.1% | 78.0% |
+| `mfa` | forced aligner | 233.0 | 61.2% | **47.7%** | 66.1% | 78.0% |
 
 Notes:
 - The NeMo-FA Buckeye MAE (74.9 ms) reproduces the independent forced-alignment
   ledger's "fair comparison" figure (74.90 ms), validating the pipeline.
-- `crisperwhisper` is the only **transcription** (free-decode) model competitive
-  with the forced aligners across the board — TIMIT 33.7 ms, Buckeye 45.6 ms, and
-  the best MAE of any model on FluencyBank. It transcribes verbatim and
-  times its own words, so it is robust to ground-truth transcripts that do not
-  conform to the model's tokenization (e.g. Buckeye's filler/cut-off forms).
-  Teacher forcing those non-conforming transcripts is markedly worse
-  (Buckeye ≈ 121 ms). The mel-blank shaping (`blank_gamma`/`blank_penalty`) is what
-  keeps it from collapsing words on conversational speech (Buckeye 87 → 46 ms).
-- `crisperwhisper_pro` is a second checkpoint of the same model
-  (`large-v2_verbatimize_longform_pro_with_timing`) run with the identical timing
-  config. It performs within ~3 ms of the release checkpoint — marginally behind
-  on TIMIT (36.0 ms) and Buckeye (48.4 ms), marginally ahead on FluencyBank
-  (100.3 ms, the best MAE of any model there) — i.e. the two are interchangeable
-  for timing. `crisperwhisper_pro_ck2000` is the step-2000 checkpoint of that same
-  run; it matches the final checkpoint to within ~0.1 ms on every corpus, i.e.
-  timing accuracy had already converged well before the end of training.
+- `crisperwhisper` is the strongest **transcription** (free-decode) model and the
+  best model overall on the conversational/disfluent corpora — best MAE on both
+  Buckeye (40.6 ms) and FluencyBank (101.1 ms), and 2nd on TIMIT (29.6 ms, behind
+  only `mfa`). It transcribes verbatim and times its own words, so it is robust to
+  ground-truth transcripts that do not conform to the model's tokenization (e.g.
+  Buckeye's filler/cut-off forms). Teacher forcing those non-conforming
+  transcripts is markedly worse (Buckeye ≈ 121 ms). Two timing post-processing
+  steps make it competitive: the mel-blank shaping (`blank_gamma`/`blank_penalty`)
+  stops it collapsing words on conversational speech (Buckeye 87 → 46 ms), and the
+  100 ms inter-word gap split (`split_gap_max_s`) shares short silences evenly
+  between neighbouring words so tight boundaries become contiguous (a further
+  TIMIT 33.7 → 29.6, Buckeye 45.6 → 40.6, FluencyBank 103.3 → 101.1, with mIoU and
+  F1@50 up everywhere). The reported run uses the release checkpoint
+  (`large-v2_verbatimize_longform_with_timing_release`, transformers backend); its
+  per-word predictions are saved under `predictions/` for independent re-scoring.
 - `xai_grok_stt` is the strongest **hosted API**, rivalling the best local forced
   aligners on both corpora (TIMIT 37.1 ms, Buckeye 47.1 ms) despite producing its
   own transcript.

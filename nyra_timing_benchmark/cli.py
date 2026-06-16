@@ -87,6 +87,30 @@ def _save_result(result: BenchmarkResult, out_dir: str) -> str:
     return path
 
 
+def _save_predictions(
+    predictions: Dict[str, tuple],
+    model: str,
+    dataset: str,
+    out_dir: str,
+) -> str:
+    """Write predictions in the canonical schema (see ``schema.py``) so a run is
+    independently re-scorable via ``nyra-timing score --predictions ...``."""
+    os.makedirs(out_dir, exist_ok=True)
+    entries: Dict[str, list] = {}
+    for key, (words, times) in predictions.items():
+        entries[key] = [
+            {"word": w, "start": float(s), "end": float(e)}
+            for w, (s, e) in zip(words, times)
+        ]
+    safe_model = model.replace("/", "_").replace(" ", "_")
+    path = os.path.join(out_dir, f"{safe_model}_{dataset}.json")
+    with open(path, "w") as f:
+        json.dump(
+            {"model": model, "dataset": dataset, "predictions": entries}, f, indent=2
+        )
+    return path
+
+
 def cmd_list_datasets(args: argparse.Namespace) -> int:
     print(f"Data root: {args.data_root}\n")
     print(f"{'dataset':<24} {'split':<8} {'test_samples':<14} labels.json")
@@ -186,7 +210,18 @@ def cmd_run(args: argparse.Namespace) -> int:
         )
 
     print(f"Running {args.model} on {len(items)} utterances...")
-    model = build_model(args.model)
+    model_kwargs = {}
+    if args.model == "crisperwhisper":
+        model_kwargs = {
+            "model_path": args.crisperwhisper_model,
+            "repo_path": args.crisperwhisper_repo,
+            "backend": args.crisperwhisper_backend,
+            "cache_dir": args.crisperwhisper_cache,
+            "device": args.device,
+            "compute_type": args.compute_type,
+        }
+        model_kwargs = {k: v for k, v in model_kwargs.items() if v is not None}
+    model = build_model(args.model, **model_kwargs)
     predictions: Dict[str, tuple] = {}
     try:
         raw = model.predict_many(items)
@@ -209,6 +244,11 @@ def cmd_run(args: argparse.Namespace) -> int:
     if args.out:
         path = _save_result(result, args.out)
         print(f"Saved results to: {path}")
+    if getattr(args, "save_predictions", None):
+        ppath = _save_predictions(
+            predictions, model.name, args.dataset, args.save_predictions
+        )
+        print(f"Saved predictions to: {ppath}")
     return 0
 
 
@@ -270,7 +310,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     from .models.registry import list_models
 
-    p_run = sub.add_parser("run", help="Run a built-in model adapter, then score.")
+    p_run = sub.add_parser(
+        "run", help="Run a built-in model adapter, then score."
+    )
     p_run.add_argument("--dataset", required=True)
     p_run.add_argument(
         "--model",
@@ -280,11 +322,60 @@ def build_parser() -> argparse.ArgumentParser:
     p_run.add_argument("--data-root", default=DEFAULT_DATA_ROOT)
     p_run.add_argument("--split", default=None)
     p_run.add_argument("--num-samples", type=int, default=None)
-    p_run.add_argument("--collars", default=None, help="Comma-separated seconds.")
-    p_run.add_argument("--out", default=None, help="Directory to write result JSON.")
+    p_run.add_argument(
+        "--collars", default=None, help="Comma-separated seconds."
+    )
+    p_run.add_argument(
+        "--out", default=None, help="Directory to write result JSON."
+    )
+    p_run.add_argument(
+        "--save-predictions",
+        default=None,
+        metavar="DIR",
+        help=(
+            "Directory to write the canonical per-word predictions JSON "
+            "(re-scorable via 'score'), like the hosted-API providers."
+        ),
+    )
+    p_run.add_argument(
+        "--device",
+        default=None,
+        help="Device for adapters that support it (used by crisperwhisper).",
+    )
+    p_run.add_argument(
+        "--compute-type",
+        default=None,
+        help=(
+            "Compute type for adapters that support it "
+            "(used by crisperwhisper)."
+        ),
+    )
+    p_run.add_argument(
+        "--crisperwhisper-model",
+        default=None,
+        help="HF id, HF-format dir, or CT2 dir for --model crisperwhisper.",
+    )
+    p_run.add_argument(
+        "--crisperwhisper-backend",
+        choices=["transformers", "ct2"],
+        default=None,
+        help="Backend for --model crisperwhisper.",
+    )
+    p_run.add_argument(
+        "--crisperwhisper-cache",
+        default=None,
+        help="CT2 conversion cache for --model crisperwhisper.",
+    )
+    p_run.add_argument(
+        "--crisperwhisper-repo",
+        default=None,
+        help="Path containing a local crisperwhisper checkout.",
+    )
     p_run.set_defaults(func=cmd_run)
 
-    p_cmp = sub.add_parser("compare", help="Compare multiple result JSON files.")
+    p_cmp = sub.add_parser(
+        "compare", help="Compare multiple result JSON files."
+    )
     p_cmp.add_argument("results", nargs="+", help="Result JSON files.")
     p_cmp.set_defaults(func=cmd_compare)
 

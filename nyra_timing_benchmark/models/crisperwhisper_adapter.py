@@ -1,11 +1,12 @@
 """CrisperWhisper word-timing adapter (free-decode ASR).
 
-This wraps the local ``crisperwhisper`` package's transformers backend to
-*transcribe* the audio verbatim and read per-word start/end times off the
-decoder cross-attention. It is an **ASR model** (``requires_transcript =
-False``): the model predicts its own words and timings, and the benchmark then
-aligns those words to the ground-truth word list (edit-distance matching with
-filler/cut-off normalization) before scoring timing on the matched pairs.
+This wraps the local ``crisperwhisper`` package to *transcribe* the audio
+verbatim and read per-word start/end times off the decoder cross-attention.
+It can run either the ``transformers`` or ``ct2`` backend. It is an **ASR
+model** (``requires_transcript = False``): the model predicts its own words and
+timings, and the benchmark then aligns those words to the ground-truth word list
+(edit-distance matching with filler/cut-off normalization) before scoring
+timing on the matched pairs.
 
 Why free decode instead of teacher forcing the reference transcript?
 Teacher forcing is only safe when the ground-truth transcript *conforms* to
@@ -33,8 +34,10 @@ Pipeline:
    edges, collapsing Buckeye words to ~26% of their true length. The reshaped
    blank recovers ~78% (Buckeye 87->42ms MAE, TIMIT unchanged at ~34ms).
 
-Env overrides: ``CRISPERWHISPER_REPO`` (package checkout) and
-``CRISPERWHISPER_MODEL`` (model path).
+Env overrides: ``CRISPERWHISPER_REPO`` (package checkout),
+``CRISPERWHISPER_MODEL`` (model path), ``CRISPERWHISPER_BACKEND``
+(``transformers`` or ``ct2``), and ``CRISPERWHISPER_CACHE`` (CT2 conversion
+cache).
 """
 
 from __future__ import annotations
@@ -49,6 +52,7 @@ DEFAULT_REPO = "/home/ubuntu/code/research"
 DEFAULT_MODEL = (
     "/home/ubuntu/data/models/large-v2_verbatimize_longform_with_timing_release"
 )
+DEFAULT_BACKEND = "transformers"
 
 
 class CrisperWhisperModel(TimingModel):
@@ -64,13 +68,15 @@ class CrisperWhisperModel(TimingModel):
         blank_source: str = "mel",
         blank_gamma: float = 3.0,
         blank_penalty: float = 3.0,
+        split_gap_max_s: float = 0.1,
         repo_path: Optional[str] = None,
+        backend: Optional[str] = None,
+        cache_dir: Optional[str] = None,
     ):
         repo = repo_path or os.environ.get("CRISPERWHISPER_REPO", DEFAULT_REPO)
         if repo and repo not in sys.path and os.path.isdir(repo):
             sys.path.insert(0, repo)
         try:
-            from crisperwhisper.transformers_engine import TransformersEngine
             from crisperwhisper.prompt import PromptBuilder
         except Exception as e:  # pragma: no cover - optional dep
             raise ImportError(
@@ -82,17 +88,59 @@ class CrisperWhisperModel(TimingModel):
         self.model_path = model_path or os.environ.get(
             "CRISPERWHISPER_MODEL", DEFAULT_MODEL
         )
+        self.backend = (
+            backend
+            or os.environ.get("CRISPERWHISPER_BACKEND", DEFAULT_BACKEND)
+        ).lower()
+        if self.backend not in {"transformers", "ct2"}:
+            raise ValueError(
+                "CrisperWhisper timing backend must be "
+                "'transformers' or 'ct2', "
+                f"got {self.backend!r}."
+            )
         self.language = language
         self.sharpen = sharpen
         self.blank_source = blank_source
         self.blank_gamma = blank_gamma
         self.blank_penalty = blank_penalty
-        self.name = "crisperwhisper-" + os.path.basename(self.model_path.rstrip("/"))
-
-        self._engine = TransformersEngine(
-            self.model_path, device=device, compute_type=compute_type
+        self.split_gap_max_s = split_gap_max_s
+        self.name = (
+            "crisperwhisper-"
+            + self.backend
+            + "-"
+            + os.path.basename(self.model_path.rstrip("/"))
         )
-        self._engine.enable_attention()  # load generation_config.alignment_heads
+
+        if self.backend == "ct2":
+            try:
+                from crisperwhisper.converter import ensure_ct2_model
+                from crisperwhisper.engine import CT2Engine
+            except Exception as e:  # pragma: no cover - optional dep
+                raise ImportError(
+                    "The CrisperWhisper CT2 timing backend requires "
+                    "crisperwhisper[ct2]."
+                ) from e
+            ct2_path = ensure_ct2_model(
+                self.model_path,
+                quantization=compute_type,
+                cache_dir=cache_dir,
+            )
+            self._engine = CT2Engine(
+                ct2_path, device=device, compute_type=compute_type
+            )
+        else:
+            try:
+                from crisperwhisper.transformers_engine import TransformersEngine
+            except Exception as e:  # pragma: no cover - optional dep
+                raise ImportError(
+                    "The CrisperWhisper transformers timing backend requires "
+                    "crisperwhisper[transformers]."
+                ) from e
+            self._engine = TransformersEngine(
+                self.model_path, device=device, compute_type=compute_type
+            )
+        # Load generation_config.alignment_heads from the selected backend.
+        self._engine.enable_attention()
         self._prompt = PromptBuilder(self._engine, language=language).verbatim()
 
     def predict(
@@ -133,6 +181,9 @@ class CrisperWhisperModel(TimingModel):
         # / ``blank_penalty`` reshape the mel blank so it only fires on
         # genuinely silent frames, countering the word-collapse on
         # conversational speech (Buckeye 87->46ms MAE, TIMIT unchanged).
+        # ``split_gap_max_s`` then shares short inter-word silences (the gaps the
+        # Viterbi parks in blank states) evenly between neighbouring words so
+        # tight boundaries become contiguous, while real pauses are left intact.
         word_ts = extract_word_timings(
             self._engine,
             gen_ids,
@@ -142,11 +193,17 @@ class CrisperWhisperModel(TimingModel):
             blank_source=self.blank_source,
             blank_gamma=self.blank_gamma,
             blank_penalty=self.blank_penalty,
+            split_gap_max_s=self.split_gap_max_s,
         )
 
         out: List[Tuple[str, float, float]] = []
         for wt in word_ts:
-            if wt.word and wt.word.strip() and wt.start is not None and wt.end is not None:
+            if (
+                wt.word
+                and wt.word.strip()
+                and wt.start is not None
+                and wt.end is not None
+            ):
                 out.append((wt.word.strip(), float(wt.start), float(wt.end)))
         return out
 
