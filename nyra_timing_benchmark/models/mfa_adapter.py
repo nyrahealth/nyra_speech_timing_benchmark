@@ -72,13 +72,6 @@ class MfaModel(TimingModel):
                 f"MFA binary not found at {mfa_bin}. Install MFA and the "
                 f"{acoustic_model} model/dictionary."
             )
-        try:
-            import torchaudio  # noqa: F401
-        except ImportError as e:  # pragma: no cover - optional dep
-            raise ImportError(
-                "torchaudio is required by the MFA adapter for audio prep."
-            ) from e
-
         self.name = f"mfa-{acoustic_model}"
         self.mfa_bin = mfa_bin
         self.mfa_env_bin = str(Path(mfa_bin).parent)
@@ -87,7 +80,14 @@ class MfaModel(TimingModel):
         self.jobs = jobs
 
     def _prep_wav(self, src: str, dst: Path) -> None:
-        import torchaudio
+        try:
+            import torchaudio
+        except ImportError:
+            from ..noise import _resample, load_audio, write_wav
+
+            audio, sr = load_audio(src)
+            write_wav(str(dst), _resample(audio, sr, TARGET_SR), TARGET_SR)
+            return
 
         wav, sr = torchaudio.load(src)
         if sr != TARGET_SR:

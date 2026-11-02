@@ -1,87 +1,374 @@
 # Nyra Speech Timing Benchmark
 
-A small, model-agnostic benchmark for **word-level timing accuracy**. Given the
-ground-truth word timings for a dataset and a model's predicted word timings, it
-**normalizes**, **aligns** (edit distance) and **scores** the predictions with:
+How precisely do speech systems place **word boundaries**? This benchmark
+scores word-level timestamps against hand-labelled references on
+conversational speech (Buckeye), stuttered speech (FluencyBank) and read speech
+under noise (TIMIT), for open-source forced aligners, ASR models and hosted
+speech APIs, and measures how fast each system runs.
 
-- **MAE** of word start/end boundaries (milliseconds),
-- **F1 @ collar** at several tolerances (`F1@50ms` ... `F1@500ms`), in two variants,
-- **mIoU** of aligned word intervals.
+**Key results**
 
-Ground truth is read at runtime from an existing data directory; no audio is
-bundled into this repo.
+- **`nyra_fa` places 88.8% of Buckeye words within 50 ms and 63% within 25 ms**,
+  ahead of every other aligner (`mfa` 78.3% / 52.5%, `qwen_fa` 75.0% / 28.7%)
+  and every hosted API, at ~400× real time on one GPU.
+- On **stuttered speech** (FluencyBank) it keeps 72% of words within 50 ms;
+  the next-best system reaches 49%.
+- Under **noise** it is flat down to 10 dB SNR (80% within 50 ms) and still
+  leads at 0 dB; `mfa`, `qwen_fa` and Fish Audio lose more than half their
+  accuracy by 5 dB.
+- Word timestamps from **ASR APIs** are mostly right to within 200 ms but rarely
+  within 50 ms. The best is Fish Audio `transcribe-1-pro` (75.8% within 50 ms on
+  the Buckeye words it recognises).
+
+## Leaderboard
+
+Per-word timing on the full test sets. **Acc@X** = share of words whose start
+*and* end are both within X of the reference. Forced aligners are given the
+transcript; transcription systems are timed on the words they recognised, so
+read their accuracy together with **word recall**. **RTF** = processing time /
+audio duration (lower is faster, see [Speed](#speed)). Full tables, including
+TIMIT and F1, are in [`docs/RESULTS.md`](docs/RESULTS.md).
+
+### Buckeye (conversational speech, 2,008 clips, 80,507 words)
+
+*Forced aligners (given the transcript)*
+
+| System | Deployment | Word recall | MAE (ms) | mIoU | Acc@25ms | Acc@50ms | Acc@100ms | Acc@200ms | RTF |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `nyra_fa` | local | 100.0 | 20.1 | 83.0 | 63.3 | 88.8 | 97.2 | 99.3 | 0.0024 |
+| `nyra_fa_pro` | local | 100.0 | 20.5 | 82.7 | 62.4 | 88.0 | 97.0 | 99.3 | 0.0025 |
+| `mfa` | local | 98.7 | 48.9 | 78.2 | 52.5 | 78.3 | 91.2 | 95.9 | 1.12 |
+| `qwen_fa` | local | 99.9 | 39.4 | 71.1 | 28.7 | 75.0 | 94.4 | 97.9 | 0.0028 |
+| `ctc_segmentation` | local | 100.0 | 81.0 | 63.5 | 18.3 | 48.8 | 75.0 | 85.9 | 0.0017 |
+| `elevenlabs_fa` | hosted API | 100.0 | 50.8 | 58.4 | 7.5 | 32.4 | 81.4 | 98.3 | 0.0094 |
+| `nemo_fa` | local | 100.0 | 72.6 | 44.3 | 5.5 | 20.4 | 58.8 | 94.8 | 0.011 |
+
+*Transcription systems (no transcript; timed on recognised words)*
+
+| System | Deployment | Word recall | MAE (ms) | mIoU | Acc@25ms | Acc@50ms | Acc@100ms | Acc@200ms | RTF |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `fish_transcribe_1_pro` | hosted API | 93.2 | 35.5 | 71.9 | 28.9 | 75.8 | 94.9 | 98.4 | 0.048 |
+| `crisperwhisper_2.0_large` | local | 93.2 | 38.8 | 71.7 | 32.7 | 66.1 | 87.4 | 96.7 | 0.028 |
+| `xai_grok_stt` | hosted API | 92.9 | 48.8 | 62.8 | 15.3 | 50.5 | 87.8 | 97.5 | 0.028 |
+| `cartesia_ink_whisper_stream` | hosted API | 87.7 | 71.2 | 61.1 | 14.3 | 38.2 | 68.5 | 86.4 | 0.781 |
+| `mai_transcribe_2` | hosted API | 91.7 | 54.4 | 56.0 | 8.9 | 31.0 | 73.2 | 98.1 | 0.046 |
+| `assemblyai_u35_pro` | hosted API | 88.7 | 68.1 | 53.6 | 8.9 | 30.9 | 74.6 | 95.8 | 0.226 |
+| `deepgram_nova3` | hosted API | 92.7 | 87.6 | 49.5 | 3.8 | 14.8 | 50.9 | 89.5 | 0.015 |
+| `canary` | local | 88.2 | 107.2 | 30.4 | 2.7 | 10.0 | 33.6 | 79.6 | 0.056 |
+| `whisperx` | local | 88.1 | 89.8 | 42.0 | 1.0 | 8.7 | 54.0 | 93.7 | 0.033 |
+
+
+### FluencyBank (stuttered speech, 300 clips, 5,487 words)
+
+*Forced aligners (given the transcript)*
+
+| System | Deployment | Word recall | MAE (ms) | mIoU | Acc@25ms | Acc@50ms | Acc@100ms | Acc@200ms | RTF |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `nyra_fa` | local | 99.9 | 75.5 | 75.1 | 37.2 | 72.2 | 85.1 | 91.8 | 0.0024 |
+| `nyra_fa_pro` | local | 99.9 | 76.3 | 74.8 | 36.4 | 70.8 | 84.8 | 91.5 | 0.0025 |
+| `mfa` | local | 93.1 | 227.6 | 61.2 | 21.7 | 49.2 | 67.8 | 80.1 | 1.12 |
+| `qwen_fa` | local | 100.0 | 109.4 | 60.0 | 14.3 | 44.6 | 73.7 | 85.6 | 0.0028 |
+| `elevenlabs_fa` | hosted API | 100.0 | 100.1 | 57.9 | 9.7 | 33.5 | 70.2 | 89.9 | 0.0094 |
+| `ctc_segmentation` | local | 100.0 | 208.8 | 50.4 | 7.3 | 25.5 | 48.3 | 66.6 | 0.0017 |
+| `nemo_fa` | local | 100.0 | 124.2 | 41.7 | 4.9 | 18.1 | 49.0 | 81.4 | 0.011 |
+
+*Transcription systems (no transcript; timed on recognised words)*
+
+| System | Deployment | Word recall | MAE (ms) | mIoU | Acc@25ms | Acc@50ms | Acc@100ms | Acc@200ms | RTF |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `fish_transcribe_1_pro` | hosted API | 90.3 | 91.8 | 63.3 | 16.6 | 49.2 | 75.8 | 87.9 | 0.048 |
+| `crisperwhisper_2.0_large` | local | 91.1 | 95.9 | 64.5 | 19.5 | 45.8 | 71.7 | 86.6 | 0.028 |
+| `mai_transcribe_2` | hosted API | 87.4 | 79.1 | 58.5 | 9.6 | 30.5 | 66.5 | 90.9 | 0.046 |
+| `assemblyai_u35_pro` | hosted API | 81.0 | 138.2 | 51.2 | 6.9 | 24.3 | 58.8 | 83.5 | 0.226 |
+| `cartesia_ink_whisper_stream` | hosted API | 74.4 | 133.1 | 54.9 | 6.3 | 23.2 | 52.7 | 72.8 | 0.781 |
+| `whisperx` | local | 74.6 | 171.8 | 44.6 | 2.8 | 9.0 | 47.9 | 80.5 | 0.033 |
+| `canary` | local | 77.9 | 135.2 | 31.1 | 2.0 | 8.5 | 29.1 | 72.0 | 0.056 |
+| `deepgram_nova3` | hosted API | 83.6 | 158.0 | 40.9 | 1.0 | 4.6 | 22.5 | 72.2 | 0.015 |
+| `xai_grok_stt` | hosted API | 84.7 | 145.6 | 37.7 | 0.3 | 1.4 | 31.8 | 84.9 | 0.028 |
+
+
+## Noise robustness
+
+TIMIT test set (1,626 utterances) with white Gaussian noise added at 30–0 dB
+SNR. Under noise many systems stop recognising words, so this view uses
+**F1@50ms**, which counts a word only if it is both recognised and timed within
+50 ms (missed and hallucinated words count as errors).
+
+![F1@50ms under Gaussian noise](docs/noise_robustness.png)
+
+| System | clean | 30 dB | 20 dB | 10 dB | 5 dB | 0 dB |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `nyra_fa_pro` | 80.3 | 80.4 | 81.0 | 80.1 | 74.6 | 47.8 |
+| `nyra_fa` | 80.2 | 80.5 | 81.3 | 79.5 | 72.9 | 45.7 |
+| `mfa` | 77.6 | 76.7 | 63.9 | 33.8 | 14.0 | 2.2 |
+| `qwen_fa` | 70.8 | 72.3 | 70.8 | 51.5 | 29.7 | 13.2 |
+| `fish_transcribe_1_pro` | 69.5 | 71.2 | 70.3 | 53.6 | 30.7 | 12.1 |
+| `crisperwhisper_2.0_large` | 69.3 | 69.1 | 66.2 | 58.8 | 46.4 | 13.6 |
+| `xai_grok_stt` | 50.4 | 50.2 | 49.7 | 48.7 | 46.2 | 38.3 |
+| `elevenlabs_fa` | 32.5 | 31.8 | 31.7 | 32.7 | 33.8 | 35.3 |
+
+All systems, with accuracy and word recall per SNR, are in
+[`docs/RESULTS.md`](docs/RESULTS.md#noise-robustness-timit--gaussian-noise).
+
+## How to read the numbers
+
+- **Acc@25/50/100/200ms**: timing accuracy of matched words; the headline
+  metric. 25 ms is the precision ceiling (roughly the length of a phone),
+  200 ms is "roughly right".
+- **Word recall**: matched reference words / all reference words. ~100% for
+  forced aligners. For transcription systems it is the share of words their
+  timing numbers cover; low recall means the accuracy columns describe an easier
+  subset.
+- **MAE**: mean per-word error \((|\Delta_\text{start}|+|\Delta_\text{end}|)/2\).
+  It is heavy-tailed: a few failed utterances dominate it (e.g. `mfa` on
+  FluencyBank: 228 ms mean, 35 ms median). Medians are in `docs/RESULTS.md`.
+- **mIoU**: mean overlap (intersection over union) of predicted and reference
+  word intervals.
+- **F1@X** (in `docs/RESULTS.md`): recognition and timing combined. Precision =
+  hits / predicted words, recall = hits / reference words.
+
+Exact definitions are in [Metric definitions](#metric-definitions).
+
+## Notes on individual systems
+
+- **`nyra_fa` / `nyra_fa_pro`** (the nyra forced aligner, standard and Pro
+  checkpoints) are within ~1 point of each other on clean audio; Pro is ahead
+  below 10 dB SNR. Pipeline: WavLM features and GMM scoring on the GPU, Viterbi
+  alignment on the CPU (Numba), no Kaldi binaries. The package's all-GPU
+  Viterbi is 10× slower here (RTF 0.024) and gives 99.76% bit-identical
+  boundaries (Buckeye MAE 19.6 vs 20.1 ms).
+- **`crisperwhisper_2.0_large`** (CrisperWhisper 2.0 large,
+  `nyralabs/CrisperWhisper2.0_large`) is the most accurate local transcription
+  model. Accuracy is from the `transformers` backend; RTF is from the
+  CTranslate2 backend (0.028; `transformers`: 0.30).
+- **`fish_transcribe_1_pro`** (Fish Audio `transcribe-1-pro`) is the most
+  accurate hosted transcription API on Buckeye and FluencyBank. Its timestamps
+  sit on a coarse grid (multiples of ~80 ms), which limits Acc@25ms.
+- **`elevenlabs_fa`** (ElevenLabs forced-alignment API) places every word but
+  starts them systematically late (start bias +63 ms on TIMIT and Buckeye, end
+  bias ≈ 0), which caps Acc@50ms at ~33%. It is almost unaffected by noise.
+- **`mai_transcribe_2`** (Microsoft MAI-Transcribe-2 via OpenRouter, verbatim
+  style) and **`assemblyai_u35_pro`** (AssemblyAI Universal-3.5 Pro, with the
+  verbatim prompt of the verbatim speech benchmark) are mostly within 200 ms but
+  rarely within 50 ms. Universal-3.5 Pro ignores verbatim prompting and drops
+  fillers; `assemblyai_u2_disfl` (Universal-2 with `disfluencies=true`) keeps
+  them and is in `docs/RESULTS.md`. MAI produced one ~158-token `r-` loop on a
+  FluencyBank clip, scored as returned.
+- **Cartesia**: the batch `ink-whisper` API currently starts every first word at
+  0.0 s and collapses the timestamps of 26 FluencyBank clips (MAE 578 ms), so
+  the headline uses its streaming WebSocket API (`cartesia_ink_whisper_stream`).
+  Streaming RTF (0.78) reflects the service processing audio at near real time,
+  not model speed. `ink-2` has no word timestamps.
+- **`xai_grok_stt`** is the most noise-robust transcription system, but on
+  stuttered speech its timings drift (1.4% within 50 ms on FluencyBank).
+- **`deepgram_nova3`** and others stretch the final word of a Buckeye chunk past
+  the end of the audio (Deepgram: 366 of 2,008 chunks, median overrun 1.2 s).
+- **`mfa`** is timed one clip at a time like every other system, so each call
+  starts a full MFA run (RTF 1.12). Run over a whole corpus at once it is much
+  faster.
+- **`whisperx`** crashes inside its own alignment step on 5 FluencyBank clips
+  and 2 TIMIT utterances at 0 dB; those count as missed words.
+
+Hosted APIs change over time; all hosted results are from October–November
+2026 (earlier June 2026 runs are in `predictions/archive_2026-06/`).
+
+## Systems evaluated
+
+| System | Type | Model / API | Deployment |
+| --- | --- | --- | --- |
+| `nyra_fa` | forced aligner | `nyralabs/nyra_forced_aligner_en` | local |
+| `nyra_fa_pro` | forced aligner | `nyralabs/nyra_forced_aligner_en_pro` (gated) | local |
+| `mfa` | forced aligner | Montreal Forced Aligner, `english_mfa` | local |
+| `qwen_fa` | forced aligner | `Qwen/Qwen3-ForcedAligner-0.6B` | local |
+| `ctc_segmentation` | forced aligner | `wav2vec2-base-960h` + CTC segmentation | local |
+| `nemo_fa` | forced aligner | NeMo `stt_en_conformer_ctc_large` + Viterbi | local |
+| `elevenlabs_fa` | forced aligner | ElevenLabs `POST /v1/forced-alignment` | hosted API |
+| `crisperwhisper_2.0_large` | transcription | `nyralabs/CrisperWhisper2.0_large` | local |
+| `whisperx` | transcription | WhisperX, `large-v3-turbo` + wav2vec2 alignment | local |
+| `canary` | transcription | `nvidia/canary-1b-v2` | local |
+| `fish_transcribe_1_pro` | transcription | Fish Audio `transcribe-1-pro` | hosted API |
+| `xai_grok_stt` | transcription | xAI Grok STT | hosted API |
+| `mai_transcribe_2` | transcription | `microsoft/mai-transcribe-2` (OpenRouter, verbatim) | hosted API |
+| `assemblyai_u35_pro` | transcription | AssemblyAI `universal-3-5-pro` + verbatim prompt | hosted API |
+| `assemblyai_u2_disfl` | transcription | AssemblyAI `universal-2`, `disfluencies=true` | hosted API |
+| `cartesia_ink_whisper_stream` | transcription | Cartesia `ink-whisper`, streaming WebSocket | hosted API |
+| `cartesia_ink_whisper` | transcription | Cartesia `ink-whisper`, batch | hosted API |
+| `deepgram_nova3` | transcription | Deepgram `nova-3` | hosted API |
+
+## Speed
+
+**RTF** = wall-clock processing time / audio duration, measured one clip at a
+time (no batching, no concurrency) on the 100 longest Buckeye clips (20 s each,
+33 min of audio), after loading the model and two untimed warm-up clips. Local
+systems ran sequentially on one NVIDIA L40 with nothing else on the GPU. For
+hosted APIs it is the end-to-end request time from a cloud server (upload,
+queueing, processing), i.e. what a caller waits. Results are in
+`results_speed/`.
+
+```bash
+nyra-timing speed --dataset buckeye --model nyra_fa --longest 100 --out results_speed
+```
+
+## Datasets
+
+| Dataset | Split | Clips | Scored words | Content |
+| --- | --- | ---: | ---: | --- |
+| `buckeye` | test | 2,008 | 80,507 | conversational interviews, non-overlapping ≤20 s chunks of the parent recordings |
+| `fluency_bank_stutter` | test | 300 | 5,487 | speech of people who stutter (repetitions, blocks, prolongations) |
+| `timit` | test | 1,626 | 14,043 | read sentences, including the 336 `SA` dialect sentences |
+
+Ground truth is loaded from `<data-root>/<dataset>/labels.json` (default
+`--data-root /home/ubuntu/data/english_speech`). Buckeye is read from
+`eval_chunks.json`: each chunk is a sub-segment of a longer recording with
+**chunk-relative** timings, and the benchmark slices the chunk from the parent
+wav before inference. Buckeye words come from each timing's `transcript_form`
+(`[UM]`/`[UH]` become `um`/`uh`, a trailing `*` cut-off marker is stripped);
+its 600 `laughter` events are non-speech and are not scored.
+
+The corpora are licensed and **cannot be redistributed**, so this repository
+ships code, text-free manifests, every system's predictions and the scored
+results. External systems take part by
+[submitting predictions](#submitting-to-the-leaderboard).
 
 ## Install
 
 ```bash
 pip install -e .
-# optional: built-in WhisperX adapter
-pip install -e ".[whisperx]"
+pip install -e ".[noise]"      # noise rendering / robustness runs
+pip install -e ".[whisperx]"   # optional: built-in WhisperX adapter
 ```
 
-This installs the `nyra-timing` CLI. `numpy` is the only required dependency.
+This installs the `nyra-timing` CLI. `numpy` is the only dependency of the
+scorer; noise rendering additionally uses `soundfile` and `scipy`. Tests:
+`pip install -e ".[test]" && pytest tests`. Rebuild the tables and plot with
+`python scripts/build_report.py`.
 
-## Datasets
+## Noise protocol
 
-Ground truth is loaded from `<data-root>/<dataset>/labels.json` (default
-`--data-root /home/ubuntu/data/english_speech`). Registered datasets:
-
-| dataset | split | test samples | notes |
-| --- | --- | --- | --- |
-| `timit` | test | ~1626 | read speech, one wav per sample |
-| `fluency_bank_stutter` | test | ~300 | disfluent speech, one wav per sample |
-| `buckeye` | test | ~2008 | conversational; chunked sub-segments of parent recordings |
-
-Buckeye is read from `eval_chunks.json` rather than `labels.json`. Each chunk is a
-sub-segment of a longer parent recording, with **chunk-relative** word timings, so
-the benchmark slices the chunk (`chunk_start_s`..`chunk_end_s`) from the parent
-wav before inference. Words come from each timing's `transcript_form`, normalized
-to match the research baselines: `[UM]`/`[UH]`/`[laughter]` become `um`/`uh`/
-`laughter`, and a trailing `*` (cut-off/mispronunciation marker) is stripped.
+- Noise types: `gaussian` (white Gaussian noise) or any **noise category**: a
+  directory of noise files under `--noise-dir` (e.g. `noise/babble/*.wav`). For
+  a category, each sample gets a random excerpt of a random file from that
+  directory, resampled to the speech rate and looped if shorter.
+- SNR is set over the whole sample:
+  \(\mathrm{SNR} = 10\log_{10}(P_\text{speech}/P_\text{noise})\) with
+  \(P=\overline{x^2}\).
+- Noise is deterministic per sample: the RNG is seeded from
+  `(noise_seed, noise type, sample key)` and not the SNR, so all SNRs of a sweep
+  share one noise realisation and only its gain changes. A mix that would clip
+  is scaled down as a whole (SNR unchanged).
+- Clean runs pass the original audio through untouched.
 
 ```bash
-nyra-timing list-datasets
+# Sweep one model over a noise x SNR grid (model loaded once).
+nyra-timing robustness --dataset timit --model mfa \
+  --noise gaussian --snrs clean,30,20,10,5,0 \
+  --out results_robustness --save-predictions predictions_robustness
+
+# Your own noise categories: noise/<category>/*.wav
+nyra-timing robustness --dataset timit --model qwen_fa \
+  --noise-dir /path/to/noise --noise babble,music,street --snrs clean,20,10,5,0 \
+  --out results_robustness
+
+# Render noisy audio for a system outside this repo; then submit predictions
+# with the matching "condition" block.
+nyra-timing make-noisy --dataset timit --noise gaussian --snrs 20,10,5,0 --out-dir noisy/
+
+# Tables: one row per model, one column per condition.
+nyra-timing compare results_robustness/*.json --pivot word_recall
 ```
 
-## Scoring a predictions file (model-agnostic, primary workflow)
+## Submitting to the leaderboard
 
-Produce a predictions JSON with your model, then score it:
+Because the ground truth cannot be published, systems are evaluated by
+**prediction submission**:
 
-```bash
-nyra-timing score --dataset timit --predictions my_preds.json --out results/
-```
+1. **Get the inputs.** Obtain the corpus from its licensor (LDC for TIMIT, OSU
+   for Buckeye, TalkBank for FluencyBank). The public manifests in
+   [`manifests/`](manifests/) list every test sample with its `key`, the audio
+   path in this benchmark's layout (`audio`), the path in the original
+   distribution where derivable (`corpus_path`, e.g. TIMIT
+   `TEST/DR4/MGMM0/SX139.WAV`), the chunk bounds for Buckeye
+   (`chunk_start_s`/`chunk_end_s` within the parent recording) and the duration.
+   Manifests contain **no transcripts or timings**. Forced aligners take the
+   reference words from the corpus' own word annotation for that sample.
+2. **Run your system** on each sample (for Buckeye: on the chunk only, with
+   times relative to the chunk start). For noise conditions, render the inputs
+   with `nyra-timing make-noisy --manifest manifests/<dataset>.json
+   --audio-root <your corpus copy> ...`.
+3. **Write one submission file per dataset and condition** (schema below;
+   `.json` or `.json.gz`).
+4. **Validate locally** — no ground truth needed:
+   ```bash
+   nyra-timing validate --predictions my_system_timit.json --manifest manifests/timit.json
+   ```
+5. **Submit** the file to the maintainers (pull request into `submissions/` or
+   by e-mail for files that should not be public). Maintainers run
+   `nyra-timing score --predictions <file> --out results_submissions/` against
+   the private ground truth, publish the result JSON (aggregate metrics and
+   per-sample counts only, no ground truth) and add the row to the leaderboard
+   with `nyra-timing compare ... --markdown`.
 
-### Predictions file schema
+### Submission schema (v1.0)
 
 ```json
 {
-  "model": "my_model",
+  "schema_version": "1.0",
+  "model": "my_system-v2",
   "dataset": "timit",
+  "condition": {"noise": "clean"},
+  "metadata": {
+    "system_type": "forced_aligner",
+    "uses_reference_text": true,
+    "display_name": "my_system",
+    "deployment": "local",
+    "description": "Conformer CTC aligner, 16 kHz, no fine-tuning on TIMIT.",
+    "organization": "Example Lab",
+    "contact": "you@example.com",
+    "model_url": "https://huggingface.co/example/my_system",
+    "paper_url": "https://arxiv.org/abs/xxxx.xxxxx",
+    "license": "apache-2.0",
+    "open_weights": true,
+    "publish_predictions": false
+  },
   "predictions": {
     "<sample_key>": [
-      {"word": "the", "start": 0.14, "end": 0.20},
-      {"word": "bungalow", "start": 0.20, "end": 0.68}
+      {"word": "hello", "start": 0.15, "end": 0.52},
+      {"word": "world", "start": 0.55, "end": 1.02}
     ]
   }
 }
 ```
 
-- `<sample_key>` must match the dataset's ground-truth key, which is the
-  `audio` field from `labels.json` (e.g. `audio/TEST_DR4_MGMM0_SX139.wav`).
-- Times are in **seconds**. Each word entry needs `word`, `start`, `end`.
-- Samples missing from `predictions` are scored as empty and lower coverage.
+- **Required:** `model`, `dataset`, `predictions`, `metadata.system_type`
+  (`forced_aligner` or `transcription`). For noisy conditions `condition` must
+  be `{"noise": "gaussian" | "<category>", "snr_db": <float>, "seed": <int>}`
+  exactly as passed to `make-noisy`.
+- `<sample_key>` is the manifest `key`. Times are in **seconds**, relative to the
+  start of the sample audio (the chunk for Buckeye). Words should be in temporal
+  order; include every word your system outputs (fillers too) — scoring aligns
+  them to the reference and only exact (normalized) matches are timed.
+- Samples missing from `predictions` are scored as empty (lower coverage and
+  word recall). Unknown keys, malformed entries, negative/non-finite times,
+  `end < start`, and systematic overruns past the audio end (ms instead of s,
+  absolute instead of chunk-relative times) are validation errors.
+- Systems must not be trained or tuned on the test splits.
 - See [`examples/predictions_example.json`](examples/predictions_example.json).
+  Legacy files with only `{model, dataset, predictions}` still score.
 
-## Running a built-in model adapter
+## Running locally
 
-The benchmark can run a model over the dataset audio and score the result in one
-step:
+### Scoring a predictions file
 
 ```bash
-nyra-timing run --dataset timit --model mfa --num-samples 50 --out results/
+nyra-timing score --predictions my_preds.json --out results/        # dataset from the file
+nyra-timing score --predictions predictions/*.json --out results/   # several at once
 ```
 
-### Built-in models
+### Running a built-in model adapter
+
+```bash
+nyra-timing run --dataset timit --model mfa --num-samples 50 --out results/ --save-predictions predictions/
+```
 
 | model | kind | model id | optional dependency |
 | --- | --- | --- | --- |
@@ -91,9 +378,12 @@ nyra-timing run --dataset timit --model mfa --num-samples 50 --out results/
 | `ctc_segmentation` | forced aligner | `wav2vec2-base-960h` | `torchaudio`, `ctc-segmentation` |
 | `qwen_fa` | forced aligner | `Qwen/Qwen3-ForcedAligner-0.6B` | `qwen-asr` |
 | `mfa` | forced aligner | `english_mfa` | MFA binary + `english_mfa` model/dict |
-| `crisperwhisper` | free ASR w/ attention timing | `large-v2_verbatimize_longform_with_timing` | local `crisperwhisper` with `transformers` or `ct2` extras |
+| `crisperwhisper` | free ASR w/ attention timing | CrisperWhisper 2.0 large (`nyralabs/CrisperWhisper2.0_large`; local `large-v2_verbatimize_longform_with_timing_release`) | local `crisperwhisper` with `transformers` or `ct2` extras |
+| `nyra_fa` | forced aligner | `nyralabs/nyra_forced_aligner_en` | `nyra-forced-aligner`, `espeak-ng` |
+| `nyra_fa_pro` | forced aligner | `nyralabs/nyra_forced_aligner_en_pro` (gated) | `nyra-forced-aligner`, `espeak-ng`, `HF_TOKEN` with access |
 
-**Forced aligners** (`nemo_fa`, `ctc_segmentation`, `qwen_fa`, `mfa`) consume the
+**Forced aligners** (`nemo_fa`, `ctc_segmentation`, `qwen_fa`, `mfa`,
+`nyra_fa`, `nyra_fa_pro`) consume the
 ground-truth words and only predict their timings; the `run` command passes the
 reference text automatically. **Free ASR** models (`whisperx`, `canary`,
 `crisperwhisper`) emit their own words, which are then text-aligned to the
@@ -121,110 +411,23 @@ nyra-timing run \
   --model crisperwhisper \
   --crisperwhisper-model /home/ubuntu/data/models/large-v2_verbatimize_longform_with_timing_release \
   --crisperwhisper-backend ct2 \
-  --crisperwhisper-cache /ephemeral/crisperwhisper_cache \
+  --crisperwhisper-cache /path/to/crisperwhisper_ct2_cache \
   --num-samples 50 \
   --out results_release/ --save-predictions predictions/
 ```
 
 Environment equivalents are `CRISPERWHISPER_MODEL`,
 `CRISPERWHISPER_BACKEND`, `CRISPERWHISPER_REPO`, and
-`CRISPERWHISPER_CACHE`.
-
-### Verified results (full test sets)
-
-All models — local adapters **and** hosted STT APIs — are scored in one table
-per corpus, sorted by MAE. The **type** column marks the fundamental difference
-in task:
-
-- **forced aligner** — handed the ground-truth words; only predicts *when* each
-  was said. It cannot miss or add a word, so it has a structural advantage on
-  these timing-only metrics.
-- **transcription** — a full-fledged ASR system (local model or hosted API)
-  that produces its *own* words; those are text-aligned to the ground truth and
-  only matched words are scored (timing is decoupled from transcription errors).
-
-All runs cover the **complete** test set. Word counts: TIMIT ≈ 12.6k,
-Buckeye ≈ 81k, FluencyBank ≈ 9k. Hosted APIs were run on TIMIT and Buckeye only.
-Lower MAE is better; higher mIoU / F1 is better.
-
-**TIMIT** (read speech, 1626 utterances):
-
-| model | type | MAE (ms) | mIoU | F1@50ms | F1@100ms | F1@200ms |
-| --- | --- | --- | --- | --- | --- | --- |
-| `mfa` | forced aligner | **23.5** | **82.9%** | **77.6%** | 94.5% | 99.1% |
-| `crisperwhisper` | transcription (local) | 29.6 | 79.7% | 69.3% | 90.2% | 98.1% |
-| `qwen_fa` | forced aligner | 30.1 | 76.8% | 70.8% | **95.0%** | **99.8%** |
-| `xai_grok_stt` | transcription (hosted API) | 37.1 | 71.5% | 50.2% | 91.7% | 98.6% |
-| `ctc_segmentation` | forced aligner | 49.3 | 69.1% | 38.9% | 82.6% | 96.9% |
-| `elevenlabs_scribe` | transcription (hosted API) | 51.3 | 64.3% | 29.1% | 78.2% | 98.3% |
-| `nemo_fa` | forced aligner | 60.0 | 55.3% | 19.3% | 66.4% | 98.4% |
-| `deepgram_nova3` | transcription (hosted API) | 63.3 | 62.3% | 20.1% | 59.7% | 96.6% |
-| `whisperx` | transcription (local) | 64.8 | 56.5% | 13.3% | 59.5% | 96.4% |
-| `cartesia_ink_whisper` | transcription (hosted API) | 69.4 | 63.5% | 21.4% | 60.6% | 89.6% |
-| `canary` | transcription (local) | 85.5 | 44.0% | 12.9% | 41.1% | 86.4% |
-
-**Buckeye** (conversational, 2008 chunks, chunk-relative timings):
-
-| model | type | MAE (ms) | mIoU | F1@50ms | F1@100ms | F1@200ms |
-| --- | --- | --- | --- | --- | --- | --- |
-| `crisperwhisper` | transcription (local) | **40.6** | 71.5% | 60.6% | 80.1% | 88.8% |
-| `qwen_fa` | forced aligner | 43.7 | 70.8% | 74.5% | **93.9%** | **97.4%** |
-| `xai_grok_stt` | transcription (hosted API) | 47.1 | 62.8% | 46.2% | 80.4% | 89.3% |
-| `mfa` | forced aligner | 51.8 | **77.9%** | **77.3%** | 90.1% | 94.8% |
-| `elevenlabs_scribe` | transcription (hosted API) | 59.6 | 53.9% | 21.5% | 67.1% | 87.0% |
-| `nemo_fa` | forced aligner | 74.9 | 44.3% | 20.3% | 58.6% | 94.5% |
-| `ctc_segmentation` | forced aligner | 83.9 | 63.3% | 48.5% | 74.7% | 85.6% |
-| `deepgram_nova3` | transcription (hosted API) | 88.4 | 49.5% | 13.7% | 47.0% | 82.3% |
-| `whisperx` | transcription (local) | 93.0 | 41.8% | 7.8% | 48.5% | 84.2% |
-| `canary` | transcription (local) | 117.7 | 29.8% | 8.9% | 30.1% | 71.2% |
-| `cartesia_ink_whisper` | transcription (hosted API) | 125.7 | 59.7% | 32.8% | 59.8% | 74.7% |
-
-**FluencyBank** (stuttered speech, 300 utterances — hard for all aligners; local models only):
-
-| model | type | MAE (ms) | mIoU | F1@50ms | F1@100ms | F1@200ms |
-| --- | --- | --- | --- | --- | --- | --- |
-| `crisperwhisper` | transcription (local) | **101.1** | **64.3%** | 41.8% | 65.5% | 79.4% |
-| `qwen_fa` | forced aligner | 109.4 | 60.0% | 45.0% | **74.4%** | **86.4%** |
-| `nemo_fa` | forced aligner | 124.2 | 41.7% | 18.1% | 49.2% | 81.8% |
-| `canary` | transcription (local) | 167.9 | 30.2% | 7.2% | 24.5% | 60.6% |
-| `whisperx` | transcription (local) | 184.7 | 44.1% | 7.5% | 39.7% | 66.7% |
-| `ctc_segmentation` | forced aligner | 208.8 | 50.4% | 25.6% | 48.7% | 67.0% |
-| `mfa` | forced aligner | 233.0 | 61.2% | **47.7%** | 66.1% | 78.0% |
-
-Notes:
-- The NeMo-FA Buckeye MAE (74.9 ms) reproduces the independent forced-alignment
-  ledger's "fair comparison" figure (74.90 ms), validating the pipeline.
-- `crisperwhisper` is the strongest **transcription** (free-decode) model and the
-  best model overall on the conversational/disfluent corpora — best MAE on both
-  Buckeye (40.6 ms) and FluencyBank (101.1 ms), and 2nd on TIMIT (29.6 ms, behind
-  only `mfa`). It transcribes verbatim and times its own words, so it is robust to
-  ground-truth transcripts that do not conform to the model's tokenization (e.g.
-  Buckeye's filler/cut-off forms). Teacher forcing those non-conforming
-  transcripts is markedly worse (Buckeye ≈ 121 ms). Two timing post-processing
-  steps make it competitive: the mel-blank shaping (`blank_gamma`/`blank_penalty`)
-  stops it collapsing words on conversational speech (Buckeye 87 → 46 ms), and the
-  100 ms inter-word gap split (`split_gap_max_s`) shares short silences evenly
-  between neighbouring words so tight boundaries become contiguous (a further
-  TIMIT 33.7 → 29.6, Buckeye 45.6 → 40.6, FluencyBank 103.3 → 101.1, with mIoU and
-  F1@50 up everywhere). The reported run uses the release checkpoint
-  (`large-v2_verbatimize_longform_with_timing_release`, transformers backend); its
-  per-word predictions are saved under `predictions/` for independent re-scoring.
-- `xai_grok_stt` is the strongest **hosted API**, rivalling the best local forced
-  aligners on both corpora (TIMIT 37.1 ms, Buckeye 47.1 ms) despite producing its
-  own transcript.
-- Keep the **type** column in mind when reading the tables: forced aligners are
-  given the words and only score timing, so they cannot lose points to ASR
-  errors. Transcription systems first have to get the word right (only matched
-  words are scored), making a low MAE there a stronger result.
-- On **FluencyBank**, pooled MAE is dominated by a tail of disfluency outliers, so
-  it ranks differently from the boundary-centric F1/mIoU metrics. MFA has the best
-  mIoU and F1@50ms there despite the worst MAE — i.e. its boundaries are tightest
-  on the words it does place, but disfluencies blow up the mean. Read MAE and
-  F1/mIoU together on conversational/stuttered data.
+`CRISPERWHISPER_CACHE`. The `crisperwhisper` package must include
+`crisperwhisper/prompt.py` (present on the research repo's `cw_longform`
+branch). The `ct2` backend needs Nyra's CTranslate2 fork
+(`ctranslate2-crisperwhisper>=4.7.1.post3`, which adds
+`forward_batch_with_attention`); install it side by side with
+`pip install --no-deps --target <dir> ctranslate2-crisperwhisper` and put
+`<dir>` first on `PYTHONPATH`. The model is converted to CTranslate2 format
+into `--crisperwhisper-cache` on first use.
 
 #### Environment notes for `ctc_segmentation` and `qwen_fa`
-
-Both are now runnable; they needed environment fixes:
 
 - **`ctc_segmentation`**: the wheel must match the active NumPy ABI. Rebuild it in
   place against NumPy 2:
@@ -245,8 +448,26 @@ Both are now runnable; they needed environment fixes:
   rejects pyannote's VAD checkpoint. The adapter allowlists the needed
   `omegaconf` globals and forces `weights_only=False` for the (trusted, local)
   VAD checkpoint at load time, so no manual intervention is required.
+- **`mfa`** falls back to `soundfile` + `scipy` for audio prep when `torchaudio`
+  is not installed.
 
-### Large model downloads / full disk
+#### `whisperx` and `canary`
+
+In the `finetune_whisper` env, `ctranslate2` resolves to an unbuilt source
+checkout; use the wheel from a side directory and torch's bundled cuDNN 9:
+
+```bash
+pip install --no-deps --target /tmp/ct2_pkgs ctranslate2==4.6.0
+SP=$CONDA_PREFIX/lib/python3.11/site-packages/nvidia
+PYTHONPATH=/tmp/ct2_pkgs LD_LIBRARY_PATH=$SP/cudnn/lib:$SP/cublas/lib \
+  nyra-timing run --model whisperx --dataset timit
+```
+
+Canary (`nvidia/canary-1b-v2`, loaded as `EncDecMultiTaskModel`) unpacks
+more than 12 GB into `TMPDIR` on every load; point `TMPDIR` at a large disk.
+Cap `OMP_NUM_THREADS` (e.g. 4) when running several GPU models in parallel.
+
+#### Large model downloads / full disk
 
 NeMo/HF models are large. If the root disk is small, redirect caches and temp to
 a bigger volume:
@@ -261,7 +482,8 @@ HF_HOME=/ephemeral/hf_cache TMPDIR=/ephemeral/tmp \
 Subclass `nyra_timing_benchmark.models.base.TimingModel`, implement
 `predict(audio_path, transcript=None, words=None) -> [(word, start, end)]` (set
 `requires_transcript = True` for forced aligners), and register it in
-`nyra_timing_benchmark/models/registry.py`.
+`nyra_timing_benchmark/models/registry.py`. Registered models get `run`,
+`robustness` and noise support for free.
 
 For models that are much faster in bulk, override
 `predict_many(items) -> {key: [(word, start, end)]}` instead of (or in addition
@@ -272,56 +494,105 @@ utterance, and `QwenForcedAligner` batches alignment calls. The default
 
 ## Hosted API providers
 
-Local model adapters cover open models; hosted STT APIs are run separately under
-`generation/` (mirroring the verbatim speech benchmark). Each
-`generate_<provider>.py` calls a provider, parses its word timestamps, and writes
-both the canonical scoring file (`predictions/<provider>_<dataset>.json`) and the
-raw provider responses (`generation/outputs/raw/<provider>_<dataset>.json`).
+Every hosted API is a built-in adapter, so `run`, `robustness` and `speed` work
+for them like for local models; with `--save-predictions` the raw provider
+responses are also stored under `<dir>/raw/`. Requests run concurrently with
+retries (except in `speed`).
+
+| `--model` | Provider / endpoint | Key |
+| --- | --- | --- |
+| `elevenlabs_fa` | ElevenLabs `POST /v1/forced-alignment` (reference words as `text`) | `ELEVENLABS_API_KEY` |
+| `fish_transcribe_1_pro` | Fish Audio `POST /v1/asr`, header `model: transcribe-1-pro` | `FISH_API_KEY` |
+| `mai_transcribe_2` | OpenRouter `/audio/transcriptions`, `microsoft/mai-transcribe-2`, `transcribeStyle=verbatim` | `OPENROUTER_API_KEY` |
+| `assemblyai_u35_pro` | AssemblyAI async, `universal-3-5-pro` + verbatim prompt | `ASSEMBLYAI_API_KEY` |
+| `assemblyai_u2_disfl` | AssemblyAI async, `universal-2`, `disfluencies=true` | `ASSEMBLYAI_API_KEY` |
+| `cartesia_ink_whisper_stream` | Cartesia STT WebSocket, `ink-whisper` | `CARTESIA_API_KEY` |
+| `cartesia_ink_whisper` | Cartesia batch `/stt`, `ink-whisper` | `CARTESIA_API_KEY` |
+| `xai_grok_stt` | xAI Grok STT | `XAI_API_KEY` |
+| `deepgram_nova3` | Deepgram `nova-3` | `DEEPGRAM_API_KEY` |
+
+Keys are read from the environment or the research repo `.env` (`NYRA_ENV_FILE`).
+`generation/` holds the standalone per-provider scripts used for the first runs
+(see [`generation/README.md`](generation/README.md)). Providers without
+word-level timestamps are not benchmarked: Cartesia `ink-2`, Inworld STT-1
+(empty `wordTimestamps`) and Azure MAI-Transcribe-1.5 (segment-level only).
 
 ```bash
-pip install -r generation/requirements.txt
-python generation/generate_deepgram_nova3.py --dataset all   # TIMIT + Buckeye
-nyra-timing score --dataset timit --predictions predictions/deepgram_nova3_timit.json
+nyra-timing run --dataset buckeye --model fish_transcribe_1_pro \
+  --out results_api --save-predictions predictions
+# Resume after API errors: only missing samples are re-requested.
+nyra-timing run --dataset buckeye --model fish_transcribe_1_pro \
+  --out results_api --save-predictions predictions --resume
 ```
-
-Providers with word timings: **xAI Grok STT, ElevenLabs Scribe, Cartesia
-Ink-Whisper, Deepgram Nova-3**. Providers that do **not** expose word-level
-timestamps (kept for reference / raw transcripts only): **Inworld STT-1** (API
-returns empty `wordTimestamps`) and **Azure MAI-Transcribe-1.5** (segment-level
-only). Keys are read from the research repo `.env` (or `NYRA_ENV_FILE`). See
-[`generation/README.md`](generation/README.md) for the full list and how to add a
-provider.
-
-Provider scores are folded into the unified leaderboard above (the rows marked
-`transcription (hosted API)`), so there is a single ranking per corpus.
 
 ## Comparing models
 
 ```bash
-nyra-timing compare results/*.json
+nyra-timing compare results_full/*.json results_api/*.json                       # console table
+nyra-timing compare results_full/*.json results_api/*.json --markdown \
+  --collar-labels 50ms,100ms,200ms --output leaderboard.md                       # README tables
+nyra-timing compare results_robustness/*.json --pivot medae                      # models x conditions
 ```
-
-Prints a leaderboard of MAE, mIoU and F1 across collars.
 
 ## Metric definitions
 
-Words are normalized (lowercase, strip leading/trailing punctuation) before
-matching. Predictions are aligned to ground truth by minimal edit distance; only
-exact (normalized) text matches contribute to timing metrics, so timing accuracy
-is **decoupled from transcription errors**.
+**Normalization.** Words are lowercased and stripped of leading/trailing
+punctuation (so `[UH]` → `uh`, `reti-` → `reti`); a few filler spellings are
+canonicalised (`uhm` → `um`, `mm-hmm` → `hm`, ...).
 
-- **MAE**: mean absolute error of start and end boundaries over aligned word
-  pairs. `overall = (start + end) / 2`. Reported pooled over all words (micro)
-  and averaged per sample (macro). Signed biases are also reported (positive =
-  prediction is late).
-- **mIoU**: mean intersection-over-union of aligned word intervals.
-- **F1 @ collar (standard)**: transcription-coupled. A predicted word is a true
-  positive if an unmatched GT word has the same text and both boundaries are
-  within the collar. Yields precision/recall/F1.
-- **F1 @ collar (matched-word)**: timing-only. Among text-aligned pairs, the
-  fraction whose boundaries are both within the collar.
+**Scoring set.** Lexical words and fillers (`um`, `uh`, `hm`, ...) are scored.
+Non-speech events are removed from *both* the reference and the prediction
+before matching: Buckeye `laughter` (600 tokens; the other corpora have none)
+and any bracketed/parenthesised tag that is not a filler (`[laughter]`,
+`(cough)`, `<noise>`). They have no well-defined word boundaries and most systems
+neither model nor emit them, so keeping them would penalise or reward systems
+for a convention rather than for timing. The bare word `noise` is ordinary
+speech and is kept. Excluded reference tokens are reported as
+`num_gt_excluded_events`.
 
-Default collars: `0.05, 0.1, 0.2, 0.3, 0.4, 0.5` seconds. Override with
+**Matching (one alignment for every metric).** Predicted words are aligned to
+the reference by a single monotonic minimum-edit-distance alignment; only exact
+(normalized) matches are timed, which decouples timing from transcription
+errors. Ties between equally short edit paths are broken first by **keeping
+more exact matches**, then by the **smallest summed boundary distance** of the
+matches (time-mediated alignment). Without the time tie-break a repeated word
+(`i i i want` vs. a predicted `i want`) was always paired with its *first*
+reference occurrence wherever the model placed it (FluencyBank
+`crisperwhisper_2.0_large` MAE 101.1 → 95.9 ms). Every metric below — including F1 —
+is computed on this one set of matched pairs. (Earlier versions computed F1
+with a separate greedy, order-free text+time match, which could pair a word
+with a same-text reference word anywhere in the utterance.)
+
+**Unit of counting: the word.** Every scored word contributes **exactly once**,
+with one timing error \(e = (|\Delta_\text{start}| + |\Delta_\text{end}|)/2\)
+and one IoU. Nothing is counted twice — Buckeye chunks do not overlap, sample
+keys are unique, alignment is one-to-one, and (unlike pooling 2 boundaries per
+word) the interior boundary shared by two adjacent words is not weighted twice
+in the medians. The mean is the same either way; the median/P90 are not.
+
+- **MAE / MedAE / P90** = mean / median / 90th percentile of \(e\) over
+  matched words. `start` / `end` errors (mean, median, P90) and signed biases
+  (positive = late) are reported separately, plus the per-sample (macro) MAE;
+- **mIoU** / **MedIoU** = mean / median intersection-over-union of matched word
+  intervals;
+- **word recall** = matched words / reference words. ~100% for forced
+  aligners; for transcription systems it is the share of words their timing
+  numbers actually cover;
+- **F1 @ collar** — a matched word is a *hit* if both its boundaries are within
+  the collar. Precision = hits / predicted words, recall = hits / reference
+  words. Missed, substituted and inserted words all cost F1, so it is the
+  measure that is fair across forced aligners and transcription systems and
+  under noise;
+- **Collar accuracy (matched words)** — hits / matched words; timing-only.
+  Stored as `f1_matched` in result JSON for backward compatibility, but it is
+  an accuracy, not an F1.
+
+Resolution: TIMIT and FluencyBank reference times are on a 10 ms grid (Buckeye
+is finer) and most systems emit 10 or 20 ms frames (`qwen_fa`: 20 ms), so on
+TIMIT/FluencyBank per-word medians move in 5 ms steps — differences below
+10 ms are not meaningful there.
+
+Default collars: `0.025, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5` seconds. Override with
 `--collars 0.05,0.1,0.2`.
 
 ## Library use
@@ -331,6 +602,8 @@ from nyra_timing_benchmark import load_ground_truth, load_predictions, evaluate_
 
 gt = load_ground_truth("timit", data_root="/home/ubuntu/data/english_speech")
 pred = load_predictions("my_preds.json")
-result = evaluate_dataset(gt, pred.predictions, model="my_model", dataset="timit")
-print(result.overall["mae_ms"]["overall"])
+result = evaluate_dataset(gt, pred.predictions, model="my_model", dataset="timit",
+                          condition=pred.condition, metadata=pred.metadata)
+o = result.overall
+print(o["mae_ms"]["overall"], o["median_ae_ms"]["overall"], o["median_iou"], o["word_recall"])
 ```

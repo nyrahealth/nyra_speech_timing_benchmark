@@ -3,17 +3,21 @@
 All functions operate on parallel lists of words and ``(start, end)`` timings in
 seconds. Two families of metrics are provided:
 
-* MAE / mIoU on text-aligned word pairs (transcription-decoupled).
+* MAE / median AE / mIoU / median IoU on text-aligned word pairs
+  (transcription-decoupled).
 * F1 at a collar tolerance, in two variants:
     - standard segmentation F1 (word identity + boundary tolerance), and
-    - matched-word F1 (timing accuracy among already text-aligned pairs).
+    - matched-word collar accuracy (fraction of already text-aligned pairs with
+      both boundaries inside the collar; stored as ``f1_matched`` for backward
+      compatibility, but it is an accuracy, not an F1).
 """
 
 from __future__ import annotations
 
 from typing import List, Optional, Sequence, Tuple
 
-from .align import align_words
+import numpy as np
+
 from .normalize import normalize_word
 
 Timing = Tuple[Optional[float], Optional[float]]
@@ -128,6 +132,18 @@ def matched_f1_counts(
         if abs(ps - gs) <= collar and abs(pe - ge) <= collar:
             tp += 1
     return tp, count
+
+
+def summarize(values: Sequence[float], scale: float = 1.0) -> dict:
+    """Mean / median / p90 of ``values`` multiplied by ``scale`` (None if empty)."""
+    if not values:
+        return {"mean": None, "median": None, "p90": None}
+    arr = np.asarray(values, dtype=float) * scale
+    return {
+        "mean": float(arr.mean()),
+        "median": float(np.median(arr)),
+        "p90": float(np.percentile(arr, 90)),
+    }
 
 
 def prf(tp: float, fp: float, fn: float) -> Tuple[float, float, float]:

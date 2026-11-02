@@ -11,6 +11,8 @@ requires-python = ">=3.8"
 dependencies = ["numpy>=1.21"]
 
 [project.optional-dependencies]
+noise = ["soundfile", "scipy"]
+test = ["pytest", "soundfile", "scipy"]
 whisperx = ["whisperx"]
 nemo = ["nemo_toolkit[asr]"]
 ctc = ["torchaudio", "ctc-segmentation"]

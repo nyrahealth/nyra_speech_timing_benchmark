@@ -6,8 +6,9 @@ small `generate_<provider>.py` per provider, all sharing `common.py`.
 
 Each run writes two artifacts per dataset:
 
-- `predictions/<provider>_<dataset>.json` — canonical scoring format
-  (`{model, dataset, predictions}`), consumable by `nyra-timing score`.
+- `predictions/<provider>_<dataset>.json` — canonical submission format
+  (schema v1, `metadata.deployment = "hosted_api"`), consumable by
+  `nyra-timing score`.
 - `generation/outputs/raw/<provider>_<dataset>.json` — the raw provider response
   per sample plus the parsed word timings (for auditing).
 
@@ -24,11 +25,15 @@ or pass `--api-key` explicitly. Required env vars per provider:
 | script | provider | env var | word timings? |
 | --- | --- | --- | --- |
 | `generate_xai_grok_stt.py` | xAI Grok STT | `XAI_API_KEY` | yes |
-| `generate_elevenlabs_scribe.py` | ElevenLabs Scribe (`scribe_v1`) | `ELEVENLABS_API_KEY` | yes |
 | `generate_cartesia_ink_whisper.py` | Cartesia Ink-Whisper | `CARTESIA_API_KEY` | yes |
 | `generate_deepgram_nova3.py` | Deepgram Nova-3 | `DEEPGRAM_API_KEY` | yes |
 | `generate_inworld_stt1.py` | Inworld STT-1 | `INWORLD_API_KEY` | **no** (API returns empty `wordTimestamps` — "coming soon") |
 | `generate_mai_transcribe_15.py` | Azure MAI-Transcribe-1.5 | `AZURE_AI_FOUNDRY_API_KEY` | **no** (MAI enhanced mode is segment-level only; use `--no-enhanced` for word timings from the standard fast-transcription model) |
+
+The ElevenLabs **forced-alignment** API is a forced aligner, not an STT
+provider, so it is a built-in model adapter instead of a script here:
+`ELEVENLABS_API_KEY=... nyra-timing run --model elevenlabs_fa --dataset timit`
+(also works with `robustness` for noise sweeps).
 
 ## Run
 

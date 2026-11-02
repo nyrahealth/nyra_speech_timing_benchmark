@@ -22,7 +22,7 @@ class CanaryModel(TimingModel):
     ):
         try:
             import torch
-            from nemo.collections.asr.models import ASRModel
+            from nemo.collections.asr.models import EncDecMultiTaskModel
         except ImportError as e:  # pragma: no cover - optional dep
             raise ImportError(
                 "NeMo is required for Canary. Install with `pip install "
@@ -33,7 +33,9 @@ class CanaryModel(TimingModel):
         self.name = f"canary-{pretrained_name.split('/')[-1]}"
         self.source_lang = source_lang
         map_location = "cuda" if device == "cuda" and torch.cuda.is_available() else "cpu"
-        self._model = ASRModel.from_pretrained(pretrained_name, map_location=map_location)
+        self._model = EncDecMultiTaskModel.from_pretrained(
+            pretrained_name, map_location=map_location
+        )
         self._model.eval()
 
     def predict(

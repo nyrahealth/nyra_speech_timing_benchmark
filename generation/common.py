@@ -32,6 +32,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from nyra_timing_benchmark.audio_io import slice_wav  # noqa: E402
+from nyra_timing_benchmark.schema import SCHEMA_VERSION  # noqa: E402
 from nyra_timing_benchmark.datasets import (  # noqa: E402
     DEFAULT_DATA_ROOT,
     load_ground_truth,
@@ -118,7 +119,19 @@ def _write_predictions(
 ) -> None:
     _write_json(
         path,
-        {"model": provider, "dataset": dataset, "predictions": predictions},
+        {
+            "schema_version": SCHEMA_VERSION,
+            "model": provider,
+            "dataset": dataset,
+            "condition": {"noise": "clean"},
+            "metadata": {
+                "system_type": "transcription",
+                "uses_reference_text": False,
+                "deployment": "hosted_api",
+                "description": f"{provider} hosted STT API word timestamps",
+            },
+            "predictions": predictions,
+        },
     )
 
 

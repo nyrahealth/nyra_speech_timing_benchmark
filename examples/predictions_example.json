@@ -1,16 +1,25 @@
 {
+  "schema_version": "1.0",
   "model": "example_model",
   "dataset": "timit",
+  "condition": {"noise": "clean"},
+  "metadata": {
+    "system_type": "transcription",
+    "uses_reference_text": false,
+    "deployment": "local",
+    "description": "Example submission; words and times are made up.",
+    "organization": "Example Lab",
+    "contact": "you@example.com",
+    "model_url": "https://huggingface.co/example/model",
+    "paper_url": "",
+    "license": "apache-2.0",
+    "open_weights": true,
+    "publish_predictions": false
+  },
   "predictions": {
     "audio/TEST_DR4_MGMM0_SX139.wav": [
-      {"word": "the", "start": 0.14, "end": 0.20},
-      {"word": "bungalow", "start": 0.20, "end": 0.68},
-      {"word": "was", "start": 0.68, "end": 0.86},
-      {"word": "pleasantly", "start": 0.86, "end": 1.33},
-      {"word": "situated", "start": 1.33, "end": 1.95},
-      {"word": "near", "start": 1.95, "end": 2.15},
-      {"word": "the", "start": 2.15, "end": 2.23},
-      {"word": "shore", "start": 2.23, "end": 2.76}
+      {"word": "hello", "start": 0.15, "end": 0.52},
+      {"word": "world", "start": 0.55, "end": 1.02}
     ]
   }
 }

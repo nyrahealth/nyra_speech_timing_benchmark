@@ -1,0 +1,13 @@
+{
+  "model": "cartesia_ink_whisper_stream",
+  "dataset": "buckeye",
+  "num_clips": 100,
+  "num_errors": 0,
+  "audio_seconds": 1998.47,
+  "mean_clip_seconds": 19.98,
+  "rtf": 0.7808598545688444,
+  "median_latency_s": 15.605361526017077,
+  "deployment": "hosted_api",
+  "device": "x86_64",
+  "date": "2026-11-02"
+}

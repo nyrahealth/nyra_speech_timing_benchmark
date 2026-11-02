@@ -67,6 +67,8 @@ class GroundTruthSample:
     audio_path: Optional[str] = None
     chunk_start: Optional[float] = None
     chunk_end: Optional[float] = None
+    #: Duration (s) of the audio the timings refer to (the chunk, if chunked).
+    duration: Optional[float] = None
 
 
 def list_datasets() -> List[str]:
@@ -174,6 +176,7 @@ def _load_labels_json(
             timings=times,
             transcript=sample.get("transcript", "") or "",
             audio_path=audio_path,
+            duration=sample.get("duration_in_s"),
         )
     return samples
 
@@ -201,6 +204,7 @@ def _load_buckeye_chunks(
             audio_path=audio_path,
             chunk_start=chunk.get("chunk_start_s"),
             chunk_end=chunk.get("chunk_end_s"),
+            duration=chunk.get("duration_s"),
         )
     return samples
 
