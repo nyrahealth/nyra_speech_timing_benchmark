@@ -24,68 +24,53 @@ speech APIs, and measures how fast each system runs.
 
 Per-word timing on the full test sets. **Acc@X** = share of words whose start
 *and* end are both within X of the reference. Forced aligners are given the
-transcript; transcription systems are timed on the words they recognised, so
-read their accuracy together with **word recall**. **RTF** = processing time /
-audio duration (lower is faster, see [Speed](#speed)). Full tables, including
+transcript; ASR systems are timed on the words they recognised, so read their
+accuracy together with **word recall**. **Speed** = how many times faster than
+real time a system processes one clip (higher is faster, see [Speed](#speed)).
+Full tables, including
 TIMIT and F1, are in [`docs/RESULTS.md`](docs/RESULTS.md).
 
 ### Buckeye (conversational speech, 2,008 clips, 80,507 words)
 
-*Forced aligners (given the transcript)*
+| System | Type | Deployment | Word recall | MAE (ms) | mIoU | Acc@25ms | Acc@50ms | Acc@100ms | Acc@200ms | Speed (× real time) |
+| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `nyra_fa` | forced aligner | local | 100.0 | 20.1 | 83.0 | 63.3 | 88.8 | 97.2 | 99.3 | 418× |
+| `mfa` | forced aligner | local | 98.7 | 48.9 | 78.2 | 52.5 | 78.3 | 91.2 | 95.9 | 0.9× |
+| `fish_transcribe_1_pro` | ASR system | hosted API | 93.2 | 35.5 | 71.9 | 28.9 | 75.8 | 94.9 | 98.4 | 21× |
+| `qwen_fa` | forced aligner | local | 99.9 | 39.4 | 71.1 | 28.7 | 75.0 | 94.4 | 97.9 | 359× |
+| `crisperwhisper_2.0_large` | ASR system | local | 93.2 | 38.8 | 71.7 | 32.7 | 66.1 | 87.4 | 96.7 | 35× |
+| `xai_grok_stt` | ASR system | hosted API | 92.9 | 48.8 | 62.8 | 15.3 | 50.5 | 87.8 | 97.5 | 36× |
+| `ctc_segmentation` | forced aligner | local | 100.0 | 81.0 | 63.5 | 18.3 | 48.8 | 75.0 | 85.9 | 582× |
+| `cartesia_ink_whisper_stream` | ASR system | hosted API | 87.7 | 71.2 | 61.1 | 14.3 | 38.2 | 68.5 | 86.4 | 1.3× |
+| `elevenlabs_fa` | forced aligner | hosted API | 100.0 | 50.8 | 58.4 | 7.5 | 32.4 | 81.4 | 98.3 | 106× |
+| `mai_transcribe_2` | ASR system | hosted API | 91.7 | 54.4 | 56.0 | 8.9 | 31.0 | 73.2 | 98.1 | 22× |
+| `assemblyai_u35_pro` | ASR system | hosted API | 88.7 | 68.1 | 53.6 | 8.9 | 30.9 | 74.6 | 95.8 | 4.4× |
+| `nemo_fa` | forced aligner | local | 100.0 | 72.6 | 44.3 | 5.5 | 20.4 | 58.8 | 94.8 | 91× |
+| `deepgram_nova3` | ASR system | hosted API | 92.7 | 87.6 | 49.5 | 3.8 | 14.8 | 50.9 | 89.5 | 65× |
+| `canary` | ASR system | local | 88.2 | 107.2 | 30.4 | 2.7 | 10.0 | 33.6 | 79.6 | 18× |
+| `whisperx` | ASR system | local | 88.1 | 89.8 | 42.0 | 1.0 | 8.7 | 54.0 | 93.7 | 30× |
 
-| System | Deployment | Word recall | MAE (ms) | mIoU | Acc@25ms | Acc@50ms | Acc@100ms | Acc@200ms | RTF |
-| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `nyra_fa` | local | 100.0 | 20.1 | 83.0 | 63.3 | 88.8 | 97.2 | 99.3 | 0.0024 |
-| `nyra_fa_pro` | local | 100.0 | 20.5 | 82.7 | 62.4 | 88.0 | 97.0 | 99.3 | 0.0025 |
-| `mfa` | local | 98.7 | 48.9 | 78.2 | 52.5 | 78.3 | 91.2 | 95.9 | 1.12 |
-| `qwen_fa` | local | 99.9 | 39.4 | 71.1 | 28.7 | 75.0 | 94.4 | 97.9 | 0.0028 |
-| `ctc_segmentation` | local | 100.0 | 81.0 | 63.5 | 18.3 | 48.8 | 75.0 | 85.9 | 0.0017 |
-| `elevenlabs_fa` | hosted API | 100.0 | 50.8 | 58.4 | 7.5 | 32.4 | 81.4 | 98.3 | 0.0094 |
-| `nemo_fa` | local | 100.0 | 72.6 | 44.3 | 5.5 | 20.4 | 58.8 | 94.8 | 0.011 |
-
-*Transcription systems (no transcript; timed on recognised words)*
-
-| System | Deployment | Word recall | MAE (ms) | mIoU | Acc@25ms | Acc@50ms | Acc@100ms | Acc@200ms | RTF |
-| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `fish_transcribe_1_pro` | hosted API | 93.2 | 35.5 | 71.9 | 28.9 | 75.8 | 94.9 | 98.4 | 0.048 |
-| `crisperwhisper_2.0_large` | local | 93.2 | 38.8 | 71.7 | 32.7 | 66.1 | 87.4 | 96.7 | 0.028 |
-| `xai_grok_stt` | hosted API | 92.9 | 48.8 | 62.8 | 15.3 | 50.5 | 87.8 | 97.5 | 0.028 |
-| `cartesia_ink_whisper_stream` | hosted API | 87.7 | 71.2 | 61.1 | 14.3 | 38.2 | 68.5 | 86.4 | 0.781 |
-| `mai_transcribe_2` | hosted API | 91.7 | 54.4 | 56.0 | 8.9 | 31.0 | 73.2 | 98.1 | 0.046 |
-| `assemblyai_u35_pro` | hosted API | 88.7 | 68.1 | 53.6 | 8.9 | 30.9 | 74.6 | 95.8 | 0.226 |
-| `deepgram_nova3` | hosted API | 92.7 | 87.6 | 49.5 | 3.8 | 14.8 | 50.9 | 89.5 | 0.015 |
-| `canary` | local | 88.2 | 107.2 | 30.4 | 2.7 | 10.0 | 33.6 | 79.6 | 0.056 |
-| `whisperx` | local | 88.1 | 89.8 | 42.0 | 1.0 | 8.7 | 54.0 | 93.7 | 0.033 |
-
+![Buckeye: MAE vs. speed](docs/speed_vs_mae_buckeye.png)
 
 ### FluencyBank (stuttered speech, 300 clips, 5,487 words)
 
-*Forced aligners (given the transcript)*
-
-| System | Deployment | Word recall | MAE (ms) | mIoU | Acc@25ms | Acc@50ms | Acc@100ms | Acc@200ms | RTF |
-| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `nyra_fa` | local | 99.9 | 75.5 | 75.1 | 37.2 | 72.2 | 85.1 | 91.8 | 0.0024 |
-| `nyra_fa_pro` | local | 99.9 | 76.3 | 74.8 | 36.4 | 70.8 | 84.8 | 91.5 | 0.0025 |
-| `mfa` | local | 93.1 | 227.6 | 61.2 | 21.7 | 49.2 | 67.8 | 80.1 | 1.12 |
-| `qwen_fa` | local | 100.0 | 109.4 | 60.0 | 14.3 | 44.6 | 73.7 | 85.6 | 0.0028 |
-| `elevenlabs_fa` | hosted API | 100.0 | 100.1 | 57.9 | 9.7 | 33.5 | 70.2 | 89.9 | 0.0094 |
-| `ctc_segmentation` | local | 100.0 | 208.8 | 50.4 | 7.3 | 25.5 | 48.3 | 66.6 | 0.0017 |
-| `nemo_fa` | local | 100.0 | 124.2 | 41.7 | 4.9 | 18.1 | 49.0 | 81.4 | 0.011 |
-
-*Transcription systems (no transcript; timed on recognised words)*
-
-| System | Deployment | Word recall | MAE (ms) | mIoU | Acc@25ms | Acc@50ms | Acc@100ms | Acc@200ms | RTF |
-| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `fish_transcribe_1_pro` | hosted API | 90.3 | 91.8 | 63.3 | 16.6 | 49.2 | 75.8 | 87.9 | 0.048 |
-| `crisperwhisper_2.0_large` | local | 91.1 | 95.9 | 64.5 | 19.5 | 45.8 | 71.7 | 86.6 | 0.028 |
-| `mai_transcribe_2` | hosted API | 87.4 | 79.1 | 58.5 | 9.6 | 30.5 | 66.5 | 90.9 | 0.046 |
-| `assemblyai_u35_pro` | hosted API | 81.0 | 138.2 | 51.2 | 6.9 | 24.3 | 58.8 | 83.5 | 0.226 |
-| `cartesia_ink_whisper_stream` | hosted API | 74.4 | 133.1 | 54.9 | 6.3 | 23.2 | 52.7 | 72.8 | 0.781 |
-| `whisperx` | local | 74.6 | 171.8 | 44.6 | 2.8 | 9.0 | 47.9 | 80.5 | 0.033 |
-| `canary` | local | 77.9 | 135.2 | 31.1 | 2.0 | 8.5 | 29.1 | 72.0 | 0.056 |
-| `deepgram_nova3` | hosted API | 83.6 | 158.0 | 40.9 | 1.0 | 4.6 | 22.5 | 72.2 | 0.015 |
-| `xai_grok_stt` | hosted API | 84.7 | 145.6 | 37.7 | 0.3 | 1.4 | 31.8 | 84.9 | 0.028 |
-
+| System | Type | Deployment | Word recall | MAE (ms) | mIoU | Acc@25ms | Acc@50ms | Acc@100ms | Acc@200ms | Speed (× real time) |
+| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `nyra_fa` | forced aligner | local | 99.9 | 75.5 | 75.1 | 37.2 | 72.2 | 85.1 | 91.8 | 418× |
+| `mfa` | forced aligner | local | 93.1 | 227.6 | 61.2 | 21.7 | 49.2 | 67.8 | 80.1 | 0.9× |
+| `fish_transcribe_1_pro` | ASR system | hosted API | 90.3 | 91.8 | 63.3 | 16.6 | 49.2 | 75.8 | 87.9 | 21× |
+| `crisperwhisper_2.0_large` | ASR system | local | 91.1 | 95.9 | 64.5 | 19.5 | 45.8 | 71.7 | 86.6 | 35× |
+| `qwen_fa` | forced aligner | local | 100.0 | 109.4 | 60.0 | 14.3 | 44.6 | 73.7 | 85.6 | 359× |
+| `elevenlabs_fa` | forced aligner | hosted API | 100.0 | 100.1 | 57.9 | 9.7 | 33.5 | 70.2 | 89.9 | 106× |
+| `mai_transcribe_2` | ASR system | hosted API | 87.4 | 79.1 | 58.5 | 9.6 | 30.5 | 66.5 | 90.9 | 22× |
+| `ctc_segmentation` | forced aligner | local | 100.0 | 208.8 | 50.4 | 7.3 | 25.5 | 48.3 | 66.6 | 582× |
+| `assemblyai_u35_pro` | ASR system | hosted API | 81.0 | 138.2 | 51.2 | 6.9 | 24.3 | 58.8 | 83.5 | 4.4× |
+| `cartesia_ink_whisper_stream` | ASR system | hosted API | 74.4 | 133.1 | 54.9 | 6.3 | 23.2 | 52.7 | 72.8 | 1.3× |
+| `nemo_fa` | forced aligner | local | 100.0 | 124.2 | 41.7 | 4.9 | 18.1 | 49.0 | 81.4 | 91× |
+| `whisperx` | ASR system | local | 74.6 | 171.8 | 44.6 | 2.8 | 9.0 | 47.9 | 80.5 | 30× |
+| `canary` | ASR system | local | 77.9 | 135.2 | 31.1 | 2.0 | 8.5 | 29.1 | 72.0 | 18× |
+| `deepgram_nova3` | ASR system | hosted API | 83.6 | 158.0 | 40.9 | 1.0 | 4.6 | 22.5 | 72.2 | 65× |
+| `xai_grok_stt` | ASR system | hosted API | 84.7 | 145.6 | 37.7 | 0.3 | 1.4 | 31.8 | 84.9 | 36× |
 
 ## Noise robustness
 
@@ -94,20 +79,27 @@ SNR. Under noise many systems stop recognising words, so this view uses
 **F1@50ms**, which counts a word only if it is both recognised and timed within
 50 ms (missed and hallucinated words count as errors).
 
-![F1@50ms under Gaussian noise](docs/noise_robustness.png)
-
 | System | clean | 30 dB | 20 dB | 10 dB | 5 dB | 0 dB |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| `nyra_fa_pro` | 80.3 | 80.4 | 81.0 | 80.1 | 74.6 | 47.8 |
 | `nyra_fa` | 80.2 | 80.5 | 81.3 | 79.5 | 72.9 | 45.7 |
 | `mfa` | 77.6 | 76.7 | 63.9 | 33.8 | 14.0 | 2.2 |
 | `qwen_fa` | 70.8 | 72.3 | 70.8 | 51.5 | 29.7 | 13.2 |
 | `fish_transcribe_1_pro` | 69.5 | 71.2 | 70.3 | 53.6 | 30.7 | 12.1 |
 | `crisperwhisper_2.0_large` | 69.3 | 69.1 | 66.2 | 58.8 | 46.4 | 13.6 |
 | `xai_grok_stt` | 50.4 | 50.2 | 49.7 | 48.7 | 46.2 | 38.3 |
+| `ctc_segmentation` | 38.9 | 38.5 | 38.3 | 36.3 | 31.8 | 19.9 |
+| `assemblyai_u35_pro` | 33.0 | 32.9 | 31.2 | 25.2 | 15.6 | 4.1 |
 | `elevenlabs_fa` | 32.5 | 31.8 | 31.7 | 32.7 | 33.8 | 35.3 |
+| `cartesia_ink_whisper_stream` | 27.5 | 27.4 | 27.2 | 26.3 | 25.7 | 22.6 |
+| `mai_transcribe_2` | 27.4 | 27.4 | 27.3 | 27.4 | 27.4 | 27.3 |
+| `assemblyai_u2_disfl` | 26.8 | 26.4 | 26.1 | 25.2 | 25.4 | 24.9 |
+| `cartesia_ink_whisper` | 20.3 | 20.7 | 20.8 | 21.0 | 21.0 | 19.2 |
+| `deepgram_nova3` | 20.2 | 20.4 | 20.1 | 19.8 | 18.9 | 14.9 |
+| `nemo_fa` | 19.3 | 19.3 | 20.1 | 22.2 | 23.9 | 25.7 |
+| `whisperx` | 13.3 | 12.2 | 11.1 | 8.9 | 6.1 | 1.6 |
+| `canary` | 12.9 | 12.7 | 12.5 | 12.4 | 12.3 | 11.5 |
 
-All systems, with accuracy and word recall per SNR, are in
+Acc@50ms and word recall per SNR are in
 [`docs/RESULTS.md`](docs/RESULTS.md#noise-robustness-timit--gaussian-noise).
 
 ## How to read the numbers
@@ -116,7 +108,7 @@ All systems, with accuracy and word recall per SNR, are in
   metric. 25 ms is the precision ceiling (roughly the length of a phone),
   200 ms is "roughly right".
 - **Word recall**: matched reference words / all reference words. ~100% for
-  forced aligners. For transcription systems it is the share of words their
+  forced aligners. For ASR systems it is the share of words their
   timing numbers cover; low recall means the accuracy columns describe an easier
   subset.
 - **MAE**: mean per-word error \((|\Delta_\text{start}|+|\Delta_\text{end}|)/2\).
@@ -129,46 +121,6 @@ All systems, with accuracy and word recall per SNR, are in
 
 Exact definitions are in [Metric definitions](#metric-definitions).
 
-## Notes on individual systems
-
-- **`nyra_fa` / `nyra_fa_pro`** (the nyra forced aligner, standard and Pro
-  checkpoints) are within ~1 point of each other on clean audio; Pro is ahead
-  below 10 dB SNR. Pipeline: WavLM features and GMM scoring on the GPU, Viterbi
-  alignment on the CPU (Numba), no Kaldi binaries. The package's all-GPU
-  Viterbi is 10× slower here (RTF 0.024) and gives 99.76% bit-identical
-  boundaries (Buckeye MAE 19.6 vs 20.1 ms).
-- **`crisperwhisper_2.0_large`** (CrisperWhisper 2.0 large,
-  `nyralabs/CrisperWhisper2.0_large`) is the most accurate local transcription
-  model. Accuracy is from the `transformers` backend; RTF is from the
-  CTranslate2 backend (0.028; `transformers`: 0.30).
-- **`fish_transcribe_1_pro`** (Fish Audio `transcribe-1-pro`) is the most
-  accurate hosted transcription API on Buckeye and FluencyBank. Its timestamps
-  sit on a coarse grid (multiples of ~80 ms), which limits Acc@25ms.
-- **`elevenlabs_fa`** (ElevenLabs forced-alignment API) places every word but
-  starts them systematically late (start bias +63 ms on TIMIT and Buckeye, end
-  bias ≈ 0), which caps Acc@50ms at ~33%. It is almost unaffected by noise.
-- **`mai_transcribe_2`** (Microsoft MAI-Transcribe-2 via OpenRouter, verbatim
-  style) and **`assemblyai_u35_pro`** (AssemblyAI Universal-3.5 Pro, with the
-  verbatim prompt of the verbatim speech benchmark) are mostly within 200 ms but
-  rarely within 50 ms. Universal-3.5 Pro ignores verbatim prompting and drops
-  fillers; `assemblyai_u2_disfl` (Universal-2 with `disfluencies=true`) keeps
-  them and is in `docs/RESULTS.md`. MAI produced one ~158-token `r-` loop on a
-  FluencyBank clip, scored as returned.
-- **Cartesia**: the batch `ink-whisper` API currently starts every first word at
-  0.0 s and collapses the timestamps of 26 FluencyBank clips (MAE 578 ms), so
-  the headline uses its streaming WebSocket API (`cartesia_ink_whisper_stream`).
-  Streaming RTF (0.78) reflects the service processing audio at near real time,
-  not model speed. `ink-2` has no word timestamps.
-- **`xai_grok_stt`** is the most noise-robust transcription system, but on
-  stuttered speech its timings drift (1.4% within 50 ms on FluencyBank).
-- **`deepgram_nova3`** and others stretch the final word of a Buckeye chunk past
-  the end of the audio (Deepgram: 366 of 2,008 chunks, median overrun 1.2 s).
-- **`mfa`** is timed one clip at a time like every other system, so each call
-  starts a full MFA run (RTF 1.12). Run over a whole corpus at once it is much
-  faster.
-- **`whisperx`** crashes inside its own alignment step on 5 FluencyBank clips
-  and 2 TIMIT utterances at 0 dB; those count as missed words.
-
 Hosted APIs change over time; all hosted results are from October–November
 2026 (earlier June 2026 runs are in `predictions/archive_2026-06/`).
 
@@ -177,32 +129,33 @@ Hosted APIs change over time; all hosted results are from October–November
 | System | Type | Model / API | Deployment |
 | --- | --- | --- | --- |
 | `nyra_fa` | forced aligner | `nyralabs/nyra_forced_aligner_en` | local |
-| `nyra_fa_pro` | forced aligner | `nyralabs/nyra_forced_aligner_en_pro` (gated) | local |
 | `mfa` | forced aligner | Montreal Forced Aligner, `english_mfa` | local |
 | `qwen_fa` | forced aligner | `Qwen/Qwen3-ForcedAligner-0.6B` | local |
 | `ctc_segmentation` | forced aligner | `wav2vec2-base-960h` + CTC segmentation | local |
 | `nemo_fa` | forced aligner | NeMo `stt_en_conformer_ctc_large` + Viterbi | local |
 | `elevenlabs_fa` | forced aligner | ElevenLabs `POST /v1/forced-alignment` | hosted API |
-| `crisperwhisper_2.0_large` | transcription | `nyralabs/CrisperWhisper2.0_large` | local |
-| `whisperx` | transcription | WhisperX, `large-v3-turbo` + wav2vec2 alignment | local |
-| `canary` | transcription | `nvidia/canary-1b-v2` | local |
-| `fish_transcribe_1_pro` | transcription | Fish Audio `transcribe-1-pro` | hosted API |
-| `xai_grok_stt` | transcription | xAI Grok STT | hosted API |
-| `mai_transcribe_2` | transcription | `microsoft/mai-transcribe-2` (OpenRouter, verbatim) | hosted API |
-| `assemblyai_u35_pro` | transcription | AssemblyAI `universal-3-5-pro` + verbatim prompt | hosted API |
-| `assemblyai_u2_disfl` | transcription | AssemblyAI `universal-2`, `disfluencies=true` | hosted API |
-| `cartesia_ink_whisper_stream` | transcription | Cartesia `ink-whisper`, streaming WebSocket | hosted API |
-| `cartesia_ink_whisper` | transcription | Cartesia `ink-whisper`, batch | hosted API |
-| `deepgram_nova3` | transcription | Deepgram `nova-3` | hosted API |
+| `crisperwhisper_2.0_large` | ASR system | `nyralabs/CrisperWhisper2.0_large` | local |
+| `whisperx` | ASR system | WhisperX, `large-v3-turbo` + wav2vec2 alignment | local |
+| `canary` | ASR system | `nvidia/canary-1b-v2` | local |
+| `fish_transcribe_1_pro` | ASR system | Fish Audio `transcribe-1-pro` | hosted API |
+| `xai_grok_stt` | ASR system | xAI Grok STT | hosted API |
+| `mai_transcribe_2` | ASR system | `microsoft/mai-transcribe-2` (OpenRouter, verbatim) | hosted API |
+| `assemblyai_u35_pro` | ASR system | AssemblyAI `universal-3-5-pro` + verbatim prompt | hosted API |
+| `assemblyai_u2_disfl` | ASR system | AssemblyAI `universal-2`, `disfluencies=true` | hosted API |
+| `cartesia_ink_whisper_stream` | ASR system | Cartesia `ink-whisper`, streaming WebSocket | hosted API |
+| `cartesia_ink_whisper` | ASR system | Cartesia `ink-whisper`, batch | hosted API |
+| `deepgram_nova3` | ASR system | Deepgram `nova-3` | hosted API |
 
 ## Speed
 
-**RTF** = wall-clock processing time / audio duration, measured one clip at a
-time (no batching, no concurrency) on the 100 longest Buckeye clips (20 s each,
-33 min of audio), after loading the model and two untimed warm-up clips. Local
-systems ran sequentially on one NVIDIA L40 with nothing else on the GPU. For
-hosted APIs it is the end-to-end request time from a cloud server (upload,
-queueing, processing), i.e. what a caller waits. Results are in
+**Speed** = audio duration / wall-clock processing time (the inverse of the
+real-time factor, so 100× means 1 s of processing per 100 s of audio), measured
+one clip at a time (no batching, no concurrency) on the 100 longest Buckeye
+clips (20 s each, 33 min of audio), after loading the model and two untimed
+warm-up clips. Local systems ran sequentially on one NVIDIA L40 with nothing
+else on the GPU; `crisperwhisper_2.0_large` is timed with its CTranslate2
+backend. For hosted APIs it is the end-to-end request time from a cloud server
+(upload, queueing, processing), i.e. what a caller waits. Results are in
 `results_speed/`.
 
 ```bash
@@ -380,10 +333,9 @@ nyra-timing run --dataset timit --model mfa --num-samples 50 --out results/ --sa
 | `mfa` | forced aligner | `english_mfa` | MFA binary + `english_mfa` model/dict |
 | `crisperwhisper` | free ASR w/ attention timing | CrisperWhisper 2.0 large (`nyralabs/CrisperWhisper2.0_large`; local `large-v2_verbatimize_longform_with_timing_release`) | local `crisperwhisper` with `transformers` or `ct2` extras |
 | `nyra_fa` | forced aligner | `nyralabs/nyra_forced_aligner_en` | `nyra-forced-aligner`, `espeak-ng` |
-| `nyra_fa_pro` | forced aligner | `nyralabs/nyra_forced_aligner_en_pro` (gated) | `nyra-forced-aligner`, `espeak-ng`, `HF_TOKEN` with access |
 
 **Forced aligners** (`nemo_fa`, `ctc_segmentation`, `qwen_fa`, `mfa`,
-`nyra_fa`, `nyra_fa_pro`) consume the
+`nyra_fa`) consume the
 ground-truth words and only predict their timings; the `run` command passes the
 reference text automatically. **Free ASR** models (`whisperx`, `canary`,
 `crisperwhisper`) emit their own words, which are then text-aligned to the

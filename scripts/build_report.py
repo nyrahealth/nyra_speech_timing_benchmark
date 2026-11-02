@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build the leaderboard tables and the noise-robustness plot from stored results.
 
-    python scripts/build_report.py            # writes docs/RESULTS.md + docs/noise_robustness.png
+    python scripts/build_report.py            # writes docs/RESULTS.md + docs/speed_vs_mae_buckeye.png
     python scripts/build_report.py --headline # also prints the README headline tables
 
 Inputs: ``results_full/`` (local systems), ``results_api/`` (hosted APIs),
@@ -38,8 +38,8 @@ SPEED_FILE_OVERRIDE = {
 }
 # Rows left out of the README headline (kept in docs/RESULTS.md).
 NOT_IN_HEADLINE = {"cartesia_ink_whisper", "assemblyai_u2_disfl"}
-NOISE_PLOT = ["nyra_fa_pro", "nyra_fa", "qwen_fa", "mfa", "elevenlabs_fa",
-              "fish_transcribe_1_pro", "crisperwhisper_2.0_large", "xai_grok_stt"]
+# Rows left out of every report.
+EXCLUDED = {"nyra_fa_pro"}
 
 
 def display(model: str) -> str:
@@ -63,6 +63,8 @@ def clean_rows(dataset: str) -> List[Dict]:
                 continue
             o, md = r["overall"], r.get("metadata") or {}
             name = display(r["model"])
+            if name in EXCLUDED:
+                continue
             rows.append({
                 "name": name,
                 "aligner": md.get("system_type") == "forced_aligner",
@@ -88,42 +90,42 @@ def pct(x: float) -> str:
     return f"{100 * x:.1f}"
 
 
-def fmt_rtf(x: Optional[float]) -> str:
-    if x is None:
+def fmt_speed(rtf: Optional[float]) -> str:
+    if rtf is None:
         return "–"
-    return f"{x:.4f}" if x < 0.01 else f"{x:.3f}" if x < 1 else f"{x:.2f}"
+    x = 1 / rtf
+    return f"{x:.0f}×" if x >= 10 else f"{x:.1f}×"
 
 
 def kind(r: Dict) -> str:
     return "hosted API" if r["hosted"] else "local"
 
 
+def system_type(r: Dict) -> str:
+    return "forced aligner" if r["aligner"] else "ASR system"
+
+
 def acc_table(rows: List[Dict], headline: bool) -> str:
     rows = [r for r in rows if not (headline and r["name"] in NOT_IN_HEADLINE)]
-    out = []
-    for aligner, title in ((True, "Forced aligners (given the transcript)"),
-                           (False, "Transcription systems (no transcript; timed on recognised words)")):
-        group = sorted((r for r in rows if r["aligner"] == aligner),
-                       key=lambda r: -r["acc"]["50ms"])
-        out.append(f"*{title}*\n")
-        out.append("| System | Deployment | Word recall | MAE (ms) | mIoU | Acc@25ms | Acc@50ms "
-                   "| Acc@100ms | Acc@200ms | RTF |")
-        out.append("| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |")
-        for r in group:
-            accs = " | ".join(pct(r["acc"][c]) for c in COLLARS)
-            out.append(f"| `{r['name']}` | {kind(r)} | {pct(r['recall'])} | {r['mae']:.1f} "
-                       f"| {pct(r['miou'])} | {accs} | {fmt_rtf(r['rtf'])} |")
-        out.append("")
+    out = ["| System | Type | Deployment | Word recall | MAE (ms) | mIoU | Acc@25ms | Acc@50ms "
+           "| Acc@100ms | Acc@200ms | Speed (× real time) |",
+           "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |"]
+    for r in sorted(rows, key=lambda r: -r["acc"]["50ms"]):
+        accs = " | ".join(pct(r["acc"][c]) for c in COLLARS)
+        out.append(f"| `{r['name']}` | {system_type(r)} | {kind(r)} | {pct(r['recall'])} "
+                   f"| {r['mae']:.1f} | {pct(r['miou'])} | {accs} | {fmt_speed(r['rtf'])} |")
+    out.append("")
     return "\n".join(out)
 
 
 def f1_table(rows: List[Dict]) -> str:
-    out = ["| System | Type | Word recall | MedAE (ms) | F1@25ms | F1@50ms | F1@100ms | F1@200ms |",
-           "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |"]
+    out = ["| System | Type | Deployment | Word recall | MedAE (ms) | F1@25ms | F1@50ms | F1@100ms "
+           "| F1@200ms |",
+           "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |"]
     for r in sorted(rows, key=lambda r: -r["f1"]["50ms"]):
-        t = "forced aligner" if r["aligner"] else "transcription"
         f1s = " | ".join(pct(r["f1"][c]) for c in COLLARS)
-        out.append(f"| `{r['name']}` | {t}, {kind(r)} | {pct(r['recall'])} | {r['medae']:.1f} | {f1s} |")
+        out.append(f"| `{r['name']}` | {system_type(r)} | {kind(r)} | {pct(r['recall'])} "
+                   f"| {r['medae']:.1f} | {f1s} |")
     return "\n".join(out)
 
 
@@ -135,6 +137,8 @@ def noise_rows() -> Dict[str, Dict]:
             continue
         snr = (r.get("condition") or {}).get("snr_db")
         o = r["overall"]
+        if display(r["model"]) in EXCLUDED:
+            continue
         data.setdefault(display(r["model"]), {})[snr] = {
             "f1": o["f1_standard"]["50ms"]["f1"],
             "acc": o["f1_matched"]["50ms"]["f1"],
@@ -152,30 +156,88 @@ def noise_table(data: Dict[str, Dict], key: str) -> str:
     return "\n".join(out)
 
 
-def noise_plot(data: Dict[str, Dict], path: str) -> None:
+# Label offsets (points) that keep neighbouring annotations apart.
+SPEED_LABEL_OFFSET = {
+    "nyra_fa": (-8, 0, "right"), "qwen_fa": (7, 0, "left"),
+    "ctc_segmentation": (0, -11, "center"), "nemo_fa": (7, 0, "left"),
+    "elevenlabs_fa": (7, -6, "left"), "mfa": (7, 0, "left"),
+    "fish_transcribe_1_pro": (-6, 6, "right"), "crisperwhisper_2.0_large": (7, -7, "left"),
+    "xai_grok_stt": (6, 5, "left"), "mai_transcribe_2": (-7, 0, "right"),
+    "assemblyai_u35_pro": (7, 0, "left"), "cartesia_ink_whisper_stream": (7, 0, "left"),
+    "deepgram_nova3": (7, 0, "left"), "whisperx": (-7, 0, "right"),
+    "canary": (7, 0, "left"),
+}
+
+
+def speed_plot(rows: List[Dict], path: str) -> None:
     import matplotlib
 
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+    from matplotlib.lines import Line2D
+    from matplotlib.ticker import FixedLocator, FuncFormatter, NullFormatter
 
-    xs = list(range(len(SNRS)))
-    fig, ax = plt.subplots(figsize=(7.5, 4.5), dpi=150)
-    for name in NOISE_PLOT:
-        if name not in data:
-            continue
-        ys = [100 * data[name][s]["f1"] for s in SNRS]
-        style = "-" if name.startswith("nyra") else "--"
-        ax.plot(xs, ys, style, marker="o", linewidth=2 if name.startswith("nyra") else 1.4,
-                label=name)
-    ax.set_xticks(xs, ["clean"] + [f"{s:.0f} dB" for s in SNRS[1:]])
-    ax.set_xlabel("Gaussian noise (SNR)")
-    ax.set_ylabel("F1@50ms (%)")
-    ax.set_title("TIMIT under noise: words recognised and timed within 50 ms")
-    ax.set_ylim(0, 100)
-    ax.grid(alpha=0.3)
-    ax.legend(fontsize=8, ncol=2, loc="lower left")
-    fig.tight_layout()
-    fig.savefig(path)
+    style = {
+        "font.family": "serif", "font.serif": ["STIXGeneral", "DejaVu Serif"],
+        "mathtext.fontset": "stix", "font.size": 9, "axes.labelsize": 10,
+        "axes.titlesize": 10.5, "axes.linewidth": 0.8, "xtick.direction": "out",
+        "ytick.direction": "out", "xtick.major.width": 0.8, "ytick.major.width": 0.8,
+        "legend.frameon": False,
+    }
+    colors = {True: "#0072B2", False: "#D55E00"}
+    markers = {True: "o", False: "s"}
+    with plt.rc_context(style):
+        fig, ax = plt.subplots(figsize=(6.8, 4.4), dpi=200)
+        ax.axvline(1, color="0.55", lw=0.8, ls=(0, (4, 3)), zorder=1)
+        ax.text(1.06, 0.985, "real time", transform=ax.get_xaxis_transform(), rotation=90,
+                va="top", ha="left", fontsize=7.5, color="0.45")
+        for r in rows:
+            if not r["rtf"]:
+                continue
+            x, y, c = 1 / r["rtf"], r["mae"], colors[r["aligner"]]
+            ax.scatter(x, y, s=42, marker=markers[r["aligner"]], zorder=3, linewidths=1.1,
+                       edgecolors=c, facecolors="white" if r["hosted"] else c)
+            dx, dy, ha = SPEED_LABEL_OFFSET.get(r["name"], (8, -3, "left"))
+            weight = "bold" if r["name"] == "nyra_fa" else "normal"
+            ax.annotate(r["name"], (x, y),
+                        xytext=(dx, dy), textcoords="offset points", ha=ha, va="center",
+                        fontsize=6.8, fontfamily="monospace", color="0.15", weight=weight)
+
+        ax.set_xscale("log")
+        ax.set_xlim(0.5, 1500)
+        ax.xaxis.set_major_locator(FixedLocator([1, 10, 100, 1000]))
+        ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _: f"{v:g}" + r"$\times$"))
+        ax.xaxis.set_minor_formatter(NullFormatter())
+        ax.set_ylim(115, 10)
+        ax.spines[["top", "right"]].set_visible(False)
+        ax.grid(which="major", color="0.88", lw=0.6)
+        ax.grid(which="minor", axis="x", color="0.94", lw=0.4)
+        ax.set_axisbelow(True)
+        ax.set_xlabel(r"Processing speed ($\times$ real time, single clip, log scale)")
+        ax.set_ylabel("Mean absolute boundary error (ms)")
+        ax.set_title("Word-boundary error vs. speed on Buckeye (upper right is better)",
+                     loc="left")
+        ax.annotate("", xy=(0.975, 0.07), xytext=(0.86, 0.07), xycoords="axes fraction",
+                    arrowprops=dict(arrowstyle="-|>", color="0.5", lw=0.8))
+        ax.annotate("", xy=(0.975, 0.2), xytext=(0.975, 0.07), xycoords="axes fraction",
+                    arrowprops=dict(arrowstyle="-|>", color="0.5", lw=0.8))
+        ax.text(0.955, 0.1, "better", transform=ax.transAxes, ha="right", va="bottom",
+                fontsize=7.5, style="italic", color="0.4")
+
+        handles = [
+            Line2D([], [], ls="", marker="o", ms=6, mfc=colors[True], mec=colors[True],
+                   label="Forced aligner"),
+            Line2D([], [], ls="", marker="s", ms=6, mfc=colors[False], mec=colors[False],
+                   label="ASR system"),
+            Line2D([], [], ls="", marker="o", ms=6, mfc="0.35", mec="0.35", label="Local (GPU)"),
+            Line2D([], [], ls="", marker="o", ms=6, mfc="white", mec="0.35", label="Hosted API"),
+        ]
+        ax.legend(handles=handles, loc="lower left", fontsize=7.5, ncol=2,
+                  handletextpad=0.3, columnspacing=1.0)
+        fig.tight_layout()
+        fig.savefig(path, bbox_inches="tight")
+        fig.savefig(os.path.splitext(path)[0] + ".pdf", bbox_inches="tight")
+        plt.close(fig)
 
 
 def main() -> None:
@@ -185,7 +247,8 @@ def main() -> None:
     os.makedirs(os.path.join(ROOT, "docs"), exist_ok=True)
 
     noise = noise_rows()
-    noise_plot(noise, os.path.join(ROOT, "docs", "noise_robustness.png"))
+    speed_plot([r for r in clean_rows("buckeye") if r["name"] not in NOT_IN_HEADLINE],
+               os.path.join(ROOT, "docs", "speed_vs_mae_buckeye.png"))
 
     parts = ["# Full results\n",
              "Generated by `scripts/build_report.py`. See the README for metric definitions.\n"]
@@ -204,7 +267,7 @@ def main() -> None:
         for ds, title in DATASETS[:2]:
             print(f"### {title}\n")
             print(acc_table(clean_rows(ds), True))
-        print(noise_table({k: v for k, v in noise.items() if k in NOISE_PLOT}, "f1"))
+        print(noise_table(noise, "f1"))
 
 
 if __name__ == "__main__":
