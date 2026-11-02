@@ -16,8 +16,7 @@ speech APIs, and measures how fast each system runs.
   <a href="#-how-to-read-the-numbers">📖 Reading the numbers</a> ·
   <a href="#-metric-definitions">📐 Metrics</a> ·
   <a href="#-systems-evaluated">🧪 Systems</a> ·
-  <a href="#-datasets">📚 Datasets</a> ·
-  <a href="#-speed">🚀 Speed protocol</a>
+  <a href="#-datasets">📚 Datasets</a>
   <br>
   <a href="#-install">📦 Install</a> ·
   <a href="#-running-locally">💻 Run locally</a> ·
@@ -31,7 +30,7 @@ Per-word timing on the full test sets. **Acc@X** = share of words whose start
 *and* end are both within X of the reference. Forced aligners are given the
 transcript; ASR systems are timed on the words they recognised, so read their
 accuracy together with **word recall**. **Speed** = how many times faster than
-real time a system processes one clip (higher is faster, see [Speed](#-speed)).
+real time a system processes one clip (higher is faster, see [How to read the numbers](#-how-to-read-the-numbers)).
 Exact definitions of all metrics are in [Metric definitions](#-metric-definitions).
 All local systems ran on a single NVIDIA L40 GPU. Full tables, including TIMIT
 and F1, are in [`docs/RESULTS.md`](docs/RESULTS.md).
@@ -129,6 +128,16 @@ Acc@50ms and word recall per SNR are in
   FluencyBank: 228 ms mean, 35 ms median). Medians are in `docs/RESULTS.md`.
 - **mIoU**: mean overlap (intersection over union) of predicted and reference
   word intervals.
+- **Speed**: audio duration / wall-clock processing time (the inverse of the
+  real-time factor; 100× means 1 s of processing per 100 s of audio). Measured
+  one clip at a time (no batching, no concurrency) on the 100 longest Buckeye
+  clips (20 s each, 33 min of audio), after loading the model and two untimed
+  warm-up clips. Local systems ran sequentially on one NVIDIA L40 GPU with
+  nothing else on it; `crisperwhisper_2.0_large` is timed with its CTranslate2
+  backend. For hosted APIs it is the end-to-end request time from a cloud server
+  (upload, queueing, processing), i.e. what a caller waits. Raw timings are in
+  `results_speed/`; reproduce with
+  `nyra-timing speed --dataset buckeye --model <name> --longest 100 --out results_speed`.
 - **F1@X** (in `docs/RESULTS.md`): recognition and timing combined. Precision =
   hits / predicted words, recall = hits / reference words.
 
@@ -159,22 +168,6 @@ Hosted APIs change over time; all hosted results are from October–November
 | `cartesia_ink_whisper` (Cartesia) | ASR system | Cartesia `ink-whisper`, batch | hosted API |
 | `deepgram_nova3` (Deepgram) | ASR system | Deepgram `nova-3` | hosted API |
 
-## 🚀 Speed
-
-**Speed** = audio duration / wall-clock processing time (the inverse of the
-real-time factor, so 100× means 1 s of processing per 100 s of audio), measured
-one clip at a time (no batching, no concurrency) on the 100 longest Buckeye
-clips (20 s each, 33 min of audio), after loading the model and two untimed
-warm-up clips. Local systems ran sequentially on one NVIDIA L40 with nothing
-else on the GPU; `crisperwhisper_2.0_large` is timed with its CTranslate2
-backend. For hosted APIs it is the end-to-end request time from a cloud server
-(upload, queueing, processing), i.e. what a caller waits. Results are in
-`results_speed/`.
-
-```bash
-nyra-timing speed --dataset buckeye --model nyra_fa --longest 100 --out results_speed
-```
-
 ## 📚 Datasets
 
 | Dataset | Split | Clips | Scored words | Content |
@@ -194,7 +187,7 @@ its 600 `laughter` events are non-speech and are not scored.
 The corpora are licensed and **cannot be redistributed**, so this repository
 ships code, text-free manifests, every system's predictions and the scored
 results. External systems take part by
-[submitting predictions](#-submitting-to-the-leaderboard).
+[contributing an adapter](#-submitting-to-the-leaderboard).
 
 ## 📦 Install
 
@@ -235,8 +228,7 @@ nyra-timing robustness --dataset timit --model qwen_fa \
   --noise-dir /path/to/noise --noise babble,music,street --snrs clean,20,10,5,0 \
   --out results_robustness
 
-# Render noisy audio for a system outside this repo; then submit predictions
-# with the matching "condition" block.
+# Write the noisy audio to disk, e.g. to listen to it or test outside the CLI.
 nyra-timing make-noisy --dataset timit --noise gaussian --snrs 20,10,5,0 --out-dir noisy/
 
 # Tables: one row per model, one column per condition.
@@ -245,57 +237,64 @@ nyra-timing compare results_robustness/*.json --pivot word_recall
 
 ## 📤 Submitting to the leaderboard
 
-Because the ground truth cannot be published, systems are evaluated by
-**prediction submission**:
+The corpora cannot be redistributed, so we run every system ourselves on the
+private ground truth. To get your system on the leaderboard, **contribute an
+adapter**: a small Python class that turns one audio clip into word timings.
+We then run it on all datasets, the noise sweep and the speed test, score it
+and add the row.
 
-1. **Get the inputs.** Obtain the corpus from its licensor (LDC for TIMIT, OSU
-   for Buckeye, TalkBank for FluencyBank). The public manifests in
-   [`manifests/`](manifests/) list every test sample with its `key`, the audio
-   path in this benchmark's layout (`audio`), the path in the original
-   distribution where derivable (`corpus_path`, e.g. TIMIT
-   `TEST/DR4/MGMM0/SX139.WAV`), the chunk bounds for Buckeye
-   (`chunk_start_s`/`chunk_end_s` within the parent recording) and the duration.
-   Manifests contain **no transcripts or timings**. Forced aligners take the
-   reference words from the corpus' own word annotation for that sample.
-2. **Run your system** on each sample (for Buckeye: on the chunk only, with
-   times relative to the chunk start). For noise conditions, render the inputs
-   with `nyra-timing make-noisy --manifest manifests/<dataset>.json
-   --audio-root <your corpus copy> ...`.
-3. **Write one submission file per dataset and condition** (schema below;
-   `.json` or `.json.gz`).
-4. **Validate locally** — no ground truth needed:
-   ```bash
-   nyra-timing validate --predictions my_system_timit.json --manifest manifests/timit.json
+1. **Write the adapter.** Subclass
+   `nyra_timing_benchmark.models.base.TimingModel` and implement
+
+   ```python
+   def predict(self, audio_path, transcript=None, words=None) -> list[tuple[str, float, float]]:
+       ...  # [(word, start_s, end_s), ...]
    ```
-5. **Submit** the file to the maintainers (pull request into `submissions/` or
-   by e-mail for files that should not be public). Maintainers run
-   `nyra-timing score --predictions <file> --out results_submissions/` against
-   the private ground truth, publish the result JSON (aggregate metrics and
-   per-sample counts only, no ground truth) and add the row to the leaderboard
-   with `nyra-timing compare ... --markdown`.
 
-### Submission schema (v1.0)
+   - Return every word your system outputs (fillers too), in temporal order,
+     with times in **seconds** relative to the start of `audio_path` (16 kHz
+     mono wav; Buckeye clips are already cut to the chunk).
+   - **Forced aligners** set `requires_transcript = True` and align the
+     reference `words` they are given. **ASR systems** ignore `words` and
+     return their own recognised words; scoring text-aligns them to the
+     reference and only times exact (normalized) matches.
+   - Import heavy dependencies inside the adapter so other models keep working
+     without them. If your system is much faster in bulk, also override
+     `predict_many(items) -> {key: [(word, start, end)]}` (the default loops
+     `predict`); the speed test always calls `predict` one clip at a time.
+   - **Hosted APIs** read their key from an environment variable and should
+     retry transient errors; see the adapters in `nyra_timing_benchmark/models/`.
+
+2. **Register it** in `nyra_timing_benchmark/models/registry.py`: add a factory
+   to `MODEL_FACTORIES`, its type to `MODEL_IS_FORCED_ALIGNER` and, for hosted
+   APIs, its name to `HOSTED_MODELS`. It then works with `run`, `robustness`
+   and `speed` like every built-in system.
+
+3. **Check it** on any audio you have, e.g.
+   `python -c "from nyra_timing_benchmark.models.registry import build_model; print(build_model('my_system').predict('clip.wav'))"`.
+   If you have a copy of a corpus:
+   `nyra-timing run --dataset timit --model my_system --num-samples 20 --out results/ --save-predictions predictions/`.
+
+4. **Open a pull request** with the adapter, its dependencies (an optional
+   extra in `pyproject.toml`), the model or API it uses, and a contact. For
+   hosted APIs, tell us how to obtain a key; we do not need yours.
+
+We then run `nyra-timing run`, `robustness` and `speed` with your adapter,
+which writes predictions in the format below and scores them with
+`nyra-timing score`. Published results contain aggregate metrics only, no
+ground truth. Systems must not be trained or tuned on the test splits.
+
+### Predictions format (v1.0)
+
+This is what `--save-predictions` writes and `nyra-timing score` reads:
 
 ```json
 {
   "schema_version": "1.0",
-  "model": "my_system-v2",
+  "model": "my_system",
   "dataset": "timit",
   "condition": {"noise": "clean"},
-  "metadata": {
-    "system_type": "forced_aligner",
-    "uses_reference_text": true,
-    "display_name": "my_system",
-    "deployment": "local",
-    "description": "Conformer CTC aligner, 16 kHz, no fine-tuning on TIMIT.",
-    "organization": "Example Lab",
-    "contact": "you@example.com",
-    "model_url": "https://huggingface.co/example/my_system",
-    "paper_url": "https://arxiv.org/abs/xxxx.xxxxx",
-    "license": "apache-2.0",
-    "open_weights": true,
-    "publish_predictions": false
-  },
+  "metadata": {"system_type": "forced_aligner", "deployment": "local"},
   "predictions": {
     "<sample_key>": [
       {"word": "hello", "start": 0.15, "end": 0.52},
@@ -305,21 +304,11 @@ Because the ground truth cannot be published, systems are evaluated by
 }
 ```
 
-- **Required:** `model`, `dataset`, `predictions`, `metadata.system_type`
-  (`forced_aligner` or `transcription`). For noisy conditions `condition` must
-  be `{"noise": "gaussian" | "<category>", "snr_db": <float>, "seed": <int>}`
-  exactly as passed to `make-noisy`.
-- `<sample_key>` is the manifest `key`. Times are in **seconds**, relative to the
-  start of the sample audio (the chunk for Buckeye). Words should be in temporal
-  order; include every word your system outputs (fillers too) — scoring aligns
-  them to the reference and only exact (normalized) matches are timed.
-- Samples missing from `predictions` are scored as empty (lower coverage and
-  word recall). Unknown keys, malformed entries, negative/non-finite times,
-  `end < start`, and systematic overruns past the audio end (ms instead of s,
-  absolute instead of chunk-relative times) are validation errors.
-- Systems must not be trained or tuned on the test splits.
-- See [`examples/predictions_example.json`](examples/predictions_example.json).
-  Legacy files with only `{model, dataset, predictions}` still score.
+Samples missing from `predictions` are scored as empty (lower word recall).
+`nyra-timing validate --predictions <file> --manifest manifests/<dataset>.json`
+checks a file without ground truth (unknown keys, negative or non-finite times,
+`end < start`, times past the end of the audio). See
+[`examples/predictions_example.json`](examples/predictions_example.json).
 
 ## 💻 Running locally
 
@@ -360,30 +349,10 @@ collapse words on conversational speech.
 Adapters import their heavy dependencies lazily, so a missing/incompatible
 dependency only fails when that model is requested (with a clear message).
 
-Run CrisperWhisper explicitly on either backend:
-
-```bash
-nyra-timing run \
-  --dataset timit \
-  --model crisperwhisper \
-  --crisperwhisper-model /home/ubuntu/data/models/large-v2_verbatimize_longform_with_timing_release \
-  --crisperwhisper-backend transformers \
-  --num-samples 50 \
-  --out results_release/ --save-predictions predictions/
-
-nyra-timing run \
-  --dataset timit \
-  --model crisperwhisper \
-  --crisperwhisper-model /home/ubuntu/data/models/large-v2_verbatimize_longform_with_timing_release \
-  --crisperwhisper-backend ct2 \
-  --crisperwhisper-cache /path/to/crisperwhisper_ct2_cache \
-  --num-samples 50 \
-  --out results_release/ --save-predictions predictions/
-```
-
-Environment equivalents are `CRISPERWHISPER_MODEL`,
-`CRISPERWHISPER_BACKEND`, `CRISPERWHISPER_REPO`, and
-`CRISPERWHISPER_CACHE`. The `crisperwhisper` package must include
+CrisperWhisper takes `--crisperwhisper-model`, `--crisperwhisper-backend`
+(`transformers` or `ct2`), `--crisperwhisper-repo` and `--crisperwhisper-cache`
+(or `CRISPERWHISPER_MODEL`, `CRISPERWHISPER_BACKEND`, `CRISPERWHISPER_REPO`,
+`CRISPERWHISPER_CACHE`). The `crisperwhisper` package must include
 `crisperwhisper/prompt.py` (present on the research repo's `cw_longform`
 branch). The `ct2` backend needs Nyra's CTranslate2 fork
 (`ctranslate2-crisperwhisper>=4.7.1.post3`, which adds
@@ -431,31 +400,6 @@ PYTHONPATH=/tmp/ct2_pkgs LD_LIBRARY_PATH=$SP/cudnn/lib:$SP/cublas/lib \
 Canary (`nvidia/canary-1b-v2`, loaded as `EncDecMultiTaskModel`) unpacks
 more than 12 GB into `TMPDIR` on every load; point `TMPDIR` at a large disk.
 Cap `OMP_NUM_THREADS` (e.g. 4) when running several GPU models in parallel.
-
-#### Large model downloads / full disk
-
-NeMo/HF models are large. If the root disk is small, redirect caches and temp to
-a bigger volume:
-
-```bash
-HF_HOME=/ephemeral/hf_cache TMPDIR=/ephemeral/tmp \
-  nyra-timing run --dataset timit --model canary --num-samples 8 --out results/
-```
-
-### Adding your own model
-
-Subclass `nyra_timing_benchmark.models.base.TimingModel`, implement
-`predict(audio_path, transcript=None, words=None) -> [(word, start, end)]` (set
-`requires_transcript = True` for forced aligners), and register it in
-`nyra_timing_benchmark/models/registry.py`. Registered models get `run`,
-`robustness` and noise support for free.
-
-For models that are much faster in bulk, override
-`predict_many(items) -> {key: [(word, start, end)]}` instead of (or in addition
-to) `predict`. `MfaModel` does this: it prepares one corpus and runs a single
-`mfa align` over the whole dataset (one model load) rather than one subprocess per
-utterance, and `QwenForcedAligner` batches alignment calls. The default
-`predict_many` simply loops `predict`.
 
 ## 🌐 Hosted API providers
 
