@@ -1,4 +1,4 @@
-# Nyra Speech Timing Benchmark
+# 🎙️ Nyra Speech Timing Benchmark
 
 How precisely do speech systems place **word boundaries**? This benchmark
 scores word-level timestamps against hand-labelled references on
@@ -6,18 +6,37 @@ conversational speech (Buckeye), stuttered speech (FluencyBank) and read speech
 under noise (TIMIT), for open-source forced aligners, ASR models and hosted
 speech APIs, and measures how fast each system runs.
 
-## Leaderboard
+<p align="center">
+  <a href="#-leaderboard">🏆 Leaderboard</a> ·
+  <a href="#-accuracy-vs-speed">⚡ Accuracy vs. speed</a> ·
+  <a href="#-buckeye-conversational-speech-2008-clips-80507-words">💬 Buckeye</a> ·
+  <a href="#-fluencybank-stuttered-speech-300-clips-5487-words">🗣️ FluencyBank</a> ·
+  <a href="#-noise-robustness">🔊 Noise</a>
+  <br>
+  <a href="#-how-to-read-the-numbers">📖 Reading the numbers</a> ·
+  <a href="#-metric-definitions">📐 Metrics</a> ·
+  <a href="#-systems-evaluated">🧪 Systems</a> ·
+  <a href="#-datasets">📚 Datasets</a> ·
+  <a href="#-speed">⏱️ Speed protocol</a>
+  <br>
+  <a href="#-install">📦 Install</a> ·
+  <a href="#-running-locally">💻 Run locally</a> ·
+  <a href="#-hosted-api-providers">☁️ Hosted APIs</a> ·
+  <a href="#-submitting-to-the-leaderboard">📤 Submit your system</a>
+</p>
+
+## 🏆 Leaderboard
 
 Per-word timing on the full test sets. **Acc@X** = share of words whose start
 *and* end are both within X of the reference. Forced aligners are given the
 transcript; ASR systems are timed on the words they recognised, so read their
 accuracy together with **word recall**. **Speed** = how many times faster than
-real time a system processes one clip (higher is faster, see [Speed](#speed)).
-Exact definitions of all metrics are in [Metric definitions](#metric-definitions).
+real time a system processes one clip (higher is faster, see [Speed](#-speed)).
+Exact definitions of all metrics are in [Metric definitions](#-metric-definitions).
 All local systems ran on a single NVIDIA L40 GPU. Full tables, including TIMIT
 and F1, are in [`docs/RESULTS.md`](docs/RESULTS.md).
 
-### Accuracy vs. speed
+### ⚡ Accuracy vs. speed
 
 ![Buckeye: word-boundary error vs. speed](docs/speed_vs_mae_buckeye.png)
 
@@ -26,7 +45,7 @@ accurate) against processing speed (right = faster, log scale). Blue circles
 are forced aligners, orange squares ASR systems; hollow markers are hosted APIs.
 The best systems sit in the upper right.
 
-### Buckeye (conversational speech, 2,008 clips, 80,507 words)
+### 💬 Buckeye (conversational speech, 2,008 clips, 80,507 words)
 
 | System | Type | Deployment | Word recall | MAE (ms) | mIoU | Acc@25ms | Acc@50ms | Acc@100ms | Acc@200ms | Speed (× real time) |
 | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -46,7 +65,7 @@ The best systems sit in the upper right.
 | `canary` (NVIDIA) | ASR system | local | 88.2 | 107.2 | 30.4 | 2.7 | 10.0 | 33.6 | 79.6 | 18× |
 | `whisperx` | ASR system | local | 88.1 | 89.8 | 42.0 | 1.0 | 8.7 | 54.0 | 93.7 | 30× |
 
-### FluencyBank (stuttered speech, 300 clips, 5,487 words)
+### 🗣️ FluencyBank (stuttered speech, 300 clips, 5,487 words)
 
 | System | Type | Deployment | Word recall | MAE (ms) | mIoU | Acc@25ms | Acc@50ms | Acc@100ms | Acc@200ms | Speed (× real time) |
 | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -66,7 +85,7 @@ The best systems sit in the upper right.
 | `deepgram_nova3` (Deepgram) | ASR system | hosted API | 83.6 | 158.0 | 40.9 | 1.0 | 4.6 | 22.5 | 72.2 | 65× |
 | `xai_grok_stt` (xAI) | ASR system | hosted API | 84.7 | 145.6 | 37.7 | 0.3 | 1.4 | 31.8 | 84.9 | 36× |
 
-## Noise robustness
+## 🔊 Noise robustness
 
 TIMIT test set (1,626 utterances) with white Gaussian noise added at 30–0 dB
 SNR. Under noise many systems stop recognising words, so this view uses
@@ -96,7 +115,7 @@ SNR. Under noise many systems stop recognising words, so this view uses
 Acc@50ms and word recall per SNR are in
 [`docs/RESULTS.md`](docs/RESULTS.md#noise-robustness-timit--gaussian-noise).
 
-## How to read the numbers
+## 📖 How to read the numbers
 
 - **Acc@25/50/100/200ms**: timing accuracy of matched words; the headline
   metric. 25 ms is the precision ceiling (roughly the length of a phone),
@@ -113,12 +132,12 @@ Acc@50ms and word recall per SNR are in
 - **F1@X** (in `docs/RESULTS.md`): recognition and timing combined. Precision =
   hits / predicted words, recall = hits / reference words.
 
-Exact definitions are in [Metric definitions](#metric-definitions).
+Exact definitions are in [Metric definitions](#-metric-definitions).
 
 Hosted APIs change over time; all hosted results are from October–November
 2026 (earlier June 2026 runs are in `predictions/archive_2026-06/`).
 
-## Systems evaluated
+## 🧪 Systems evaluated
 
 | System | Type | Model / API | Deployment |
 | --- | --- | --- | --- |
@@ -140,7 +159,7 @@ Hosted APIs change over time; all hosted results are from October–November
 | `cartesia_ink_whisper` (Cartesia) | ASR system | Cartesia `ink-whisper`, batch | hosted API |
 | `deepgram_nova3` (Deepgram) | ASR system | Deepgram `nova-3` | hosted API |
 
-## Speed
+## ⏱️ Speed
 
 **Speed** = audio duration / wall-clock processing time (the inverse of the
 real-time factor, so 100× means 1 s of processing per 100 s of audio), measured
@@ -156,7 +175,7 @@ backend. For hosted APIs it is the end-to-end request time from a cloud server
 nyra-timing speed --dataset buckeye --model nyra_fa --longest 100 --out results_speed
 ```
 
-## Datasets
+## 📚 Datasets
 
 | Dataset | Split | Clips | Scored words | Content |
 | --- | --- | ---: | ---: | --- |
@@ -175,9 +194,9 @@ its 600 `laughter` events are non-speech and are not scored.
 The corpora are licensed and **cannot be redistributed**, so this repository
 ships code, text-free manifests, every system's predictions and the scored
 results. External systems take part by
-[submitting predictions](#submitting-to-the-leaderboard).
+[submitting predictions](#-submitting-to-the-leaderboard).
 
-## Install
+## 📦 Install
 
 ```bash
 pip install -e .
@@ -190,7 +209,7 @@ scorer; noise rendering additionally uses `soundfile` and `scipy`. Tests:
 `pip install -e ".[test]" && pytest tests`. Rebuild the tables and plot with
 `python scripts/build_report.py`.
 
-## Noise protocol
+## 🎛️ Noise protocol
 
 - Noise types: `gaussian` (white Gaussian noise) or any **noise category**: a
   directory of noise files under `--noise-dir` (e.g. `noise/babble/*.wav`). For
@@ -224,7 +243,7 @@ nyra-timing make-noisy --dataset timit --noise gaussian --snrs 20,10,5,0 --out-d
 nyra-timing compare results_robustness/*.json --pivot word_recall
 ```
 
-## Submitting to the leaderboard
+## 📤 Submitting to the leaderboard
 
 Because the ground truth cannot be published, systems are evaluated by
 **prediction submission**:
@@ -302,7 +321,7 @@ Because the ground truth cannot be published, systems are evaluated by
 - See [`examples/predictions_example.json`](examples/predictions_example.json).
   Legacy files with only `{model, dataset, predictions}` still score.
 
-## Running locally
+## 💻 Running locally
 
 ### Scoring a predictions file
 
@@ -438,7 +457,7 @@ to) `predict`. `MfaModel` does this: it prepares one corpus and runs a single
 utterance, and `QwenForcedAligner` batches alignment calls. The default
 `predict_many` simply loops `predict`.
 
-## Hosted API providers
+## ☁️ Hosted API providers
 
 Every hosted API is a built-in adapter, so `run`, `robustness` and `speed` work
 for them like for local models; with `--save-predictions` the raw provider
@@ -471,7 +490,7 @@ nyra-timing run --dataset buckeye --model fish_transcribe_1_pro \
   --out results_api --save-predictions predictions --resume
 ```
 
-## Comparing models
+## ⚖️ Comparing models
 
 ```bash
 nyra-timing compare results_full/*.json results_api/*.json                       # console table
@@ -480,7 +499,7 @@ nyra-timing compare results_full/*.json results_api/*.json --markdown \
 nyra-timing compare results_robustness/*.json --pivot medae                      # models x conditions
 ```
 
-## Metric definitions
+## 📐 Metric definitions
 
 **Normalization.** Words are lowercased and stripped of leading/trailing
 punctuation (so `[UH]` → `uh`, `reti-` → `reti`); a few filler spellings are
@@ -541,7 +560,7 @@ TIMIT/FluencyBank per-word medians move in 5 ms steps — differences below
 Default collars: `0.025, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5` seconds. Override with
 `--collars 0.05,0.1,0.2`.
 
-## Library use
+## 🐍 Library use
 
 ```python
 from nyra_timing_benchmark import load_ground_truth, load_predictions, evaluate_dataset
