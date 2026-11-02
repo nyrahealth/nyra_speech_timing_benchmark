@@ -176,14 +176,6 @@ Hosted APIs change over time; all hosted results are from October–November
 | `fluency_bank_stutter` | test | 300 | 5,487 | speech of people who stutter (repetitions, blocks, prolongations) |
 | `timit` | test | 1,626 | 14,043 | read sentences, including the 336 `SA` dialect sentences |
 
-Ground truth is loaded from `<data-root>/<dataset>/labels.json` (default
-`--data-root /home/ubuntu/data/english_speech`). Buckeye is read from
-`eval_chunks.json`: each chunk is a sub-segment of a longer recording with
-**chunk-relative** timings, and the benchmark slices the chunk from the parent
-wav before inference. Buckeye words come from each timing's `transcript_form`
-(`[UM]`/`[UH]` become `um`/`uh`, a trailing `*` cut-off marker is stripped);
-its 600 `laughter` events are non-speech and are not scored.
-
 The corpora are licensed and **cannot be redistributed**, so this repository
 ships code, text-free manifests, every system's predictions and the scored
 results. External systems take part by
