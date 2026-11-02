@@ -36,6 +36,23 @@ SPEED_FILE_OVERRIDE = {
     "crisperwhisper_2.0_large":
         "speed_crisperwhisper-ct2-large-v2_verbatimize_longform_with_timing_release_buckeye.json",
 }
+# Public label: system name plus the company behind it.
+LABELS = {
+    "elevenlabs_fa": "Cue (ElevenLabs)",
+    "nyra_fa": "`nyra_fa` (nyra labs)",
+    "crisperwhisper_2.0_large": "`crisperwhisper_2.0_large` (nyra labs)",
+    "qwen_fa": "`qwen_fa` (Qwen)",
+    "nemo_fa": "`nemo_fa` (NVIDIA)",
+    "canary": "`canary` (NVIDIA)",
+    "fish_transcribe_1_pro": "`fish_transcribe_1_pro` (Fish Audio)",
+    "xai_grok_stt": "`xai_grok_stt` (xAI)",
+    "mai_transcribe_2": "`mai_transcribe_2` (Microsoft)",
+    "assemblyai_u35_pro": "`assemblyai_u35_pro` (AssemblyAI)",
+    "assemblyai_u2_disfl": "`assemblyai_u2_disfl` (AssemblyAI)",
+    "cartesia_ink_whisper_stream": "`cartesia_ink_whisper_stream` (Cartesia)",
+    "cartesia_ink_whisper": "`cartesia_ink_whisper` (Cartesia)",
+    "deepgram_nova3": "`deepgram_nova3` (Deepgram)",
+}
 # Rows left out of the README headline (kept in docs/RESULTS.md).
 NOT_IN_HEADLINE = {"cartesia_ink_whisper", "assemblyai_u2_disfl"}
 # Rows left out of every report.
@@ -47,6 +64,11 @@ def display(model: str) -> str:
         if model == prefix or model.startswith(prefix):
             return name
     return model
+
+
+def label(name: str, markdown: bool = True) -> str:
+    text = LABELS.get(name, f"`{name}`")
+    return text if markdown else text.replace("`", "")
 
 
 def load(path: str) -> Dict:
@@ -112,7 +134,7 @@ def acc_table(rows: List[Dict], headline: bool) -> str:
            "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |"]
     for r in sorted(rows, key=lambda r: -r["acc"]["50ms"]):
         accs = " | ".join(pct(r["acc"][c]) for c in COLLARS)
-        out.append(f"| `{r['name']}` | {system_type(r)} | {kind(r)} | {pct(r['recall'])} "
+        out.append(f"| {label(r['name'])} | {system_type(r)} | {kind(r)} | {pct(r['recall'])} "
                    f"| {r['mae']:.1f} | {pct(r['miou'])} | {accs} | {fmt_speed(r['rtf'])} |")
     out.append("")
     return "\n".join(out)
@@ -124,7 +146,7 @@ def f1_table(rows: List[Dict]) -> str:
            "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |"]
     for r in sorted(rows, key=lambda r: -r["f1"]["50ms"]):
         f1s = " | ".join(pct(r["f1"][c]) for c in COLLARS)
-        out.append(f"| `{r['name']}` | {system_type(r)} | {kind(r)} | {pct(r['recall'])} "
+        out.append(f"| {label(r['name'])} | {system_type(r)} | {kind(r)} | {pct(r['recall'])} "
                    f"| {r['medae']:.1f} | {f1s} |")
     return "\n".join(out)
 
@@ -152,7 +174,7 @@ def noise_table(data: Dict[str, Dict], key: str) -> str:
     out = [f"| System | {head} |", "| --- |" + " ---: |" * len(SNRS)]
     for name in sorted(data, key=lambda n: -data[n].get(None, {}).get("f1", 0)):
         vals = [pct(data[name][s][key]) if s in data[name] else "–" for s in SNRS]
-        out.append(f"| `{name}` | " + " | ".join(vals) + " |")
+        out.append(f"| {label(name)} | " + " | ".join(vals) + " |")
     return "\n".join(out)
 
 
@@ -199,9 +221,9 @@ def speed_plot(rows: List[Dict], path: str) -> None:
                        edgecolors=c, facecolors="white" if r["hosted"] else c)
             dx, dy, ha = SPEED_LABEL_OFFSET.get(r["name"], (8, -3, "left"))
             weight = "bold" if r["name"] == "nyra_fa" else "normal"
-            ax.annotate(r["name"], (x, y),
+            ax.annotate(label(r["name"], markdown=False), (x, y),
                         xytext=(dx, dy), textcoords="offset points", ha=ha, va="center",
-                        fontsize=6.8, fontfamily="monospace", color="0.15", weight=weight)
+                        fontsize=7, color="0.15", weight=weight)
 
         ax.set_xscale("log")
         ax.set_xlim(0.5, 1500)
@@ -229,7 +251,7 @@ def speed_plot(rows: List[Dict], path: str) -> None:
                    label="Forced aligner"),
             Line2D([], [], ls="", marker="s", ms=6, mfc=colors[False], mec=colors[False],
                    label="ASR system"),
-            Line2D([], [], ls="", marker="o", ms=6, mfc="0.35", mec="0.35", label="Local (GPU)"),
+            Line2D([], [], ls="", marker="o", ms=6, mfc="0.35", mec="0.35", label="Local (NVIDIA L40)"),
             Line2D([], [], ls="", marker="o", ms=6, mfc="white", mec="0.35", label="Hosted API"),
         ]
         ax.legend(handles=handles, loc="lower left", fontsize=7.5, ncol=2,
