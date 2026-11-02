@@ -10,18 +10,18 @@ speech APIs, and measures how fast each system runs.
   <a href="#-leaderboard">🏆 Leaderboard</a> ·
   <a href="#-accuracy-vs-speed">⚡ Accuracy vs. speed</a> ·
   <a href="#-buckeye-conversational-speech-2008-clips-80507-words">💬 Buckeye</a> ·
-  <a href="#-fluencybank-stuttered-speech-300-clips-5487-words">🗣️ FluencyBank</a> ·
+  <a href="#-fluencybank-stuttered-speech-300-clips-5487-words">🔁 FluencyBank</a> ·
   <a href="#-noise-robustness">🔊 Noise</a>
   <br>
   <a href="#-how-to-read-the-numbers">📖 Reading the numbers</a> ·
   <a href="#-metric-definitions">📐 Metrics</a> ·
   <a href="#-systems-evaluated">🧪 Systems</a> ·
   <a href="#-datasets">📚 Datasets</a> ·
-  <a href="#-speed">⏱️ Speed protocol</a>
+  <a href="#-speed">🚀 Speed protocol</a>
   <br>
   <a href="#-install">📦 Install</a> ·
   <a href="#-running-locally">💻 Run locally</a> ·
-  <a href="#-hosted-api-providers">☁️ Hosted APIs</a> ·
+  <a href="#-hosted-api-providers">🌐 Hosted APIs</a> ·
   <a href="#-submitting-to-the-leaderboard">📤 Submit your system</a>
 </p>
 
@@ -65,7 +65,7 @@ The best systems sit in the upper right.
 | `canary` (NVIDIA) | ASR system | local | 88.2 | 107.2 | 30.4 | 2.7 | 10.0 | 33.6 | 79.6 | 18× |
 | `whisperx` | ASR system | local | 88.1 | 89.8 | 42.0 | 1.0 | 8.7 | 54.0 | 93.7 | 30× |
 
-### 🗣️ FluencyBank (stuttered speech, 300 clips, 5,487 words)
+### 🔁 FluencyBank (stuttered speech, 300 clips, 5,487 words)
 
 | System | Type | Deployment | Word recall | MAE (ms) | mIoU | Acc@25ms | Acc@50ms | Acc@100ms | Acc@200ms | Speed (× real time) |
 | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -159,7 +159,7 @@ Hosted APIs change over time; all hosted results are from October–November
 | `cartesia_ink_whisper` (Cartesia) | ASR system | Cartesia `ink-whisper`, batch | hosted API |
 | `deepgram_nova3` (Deepgram) | ASR system | Deepgram `nova-3` | hosted API |
 
-## ⏱️ Speed
+## 🚀 Speed
 
 **Speed** = audio duration / wall-clock processing time (the inverse of the
 real-time factor, so 100× means 1 s of processing per 100 s of audio), measured
@@ -209,7 +209,7 @@ scorer; noise rendering additionally uses `soundfile` and `scipy`. Tests:
 `pip install -e ".[test]" && pytest tests`. Rebuild the tables and plot with
 `python scripts/build_report.py`.
 
-## 🎛️ Noise protocol
+## 🔧 Noise protocol
 
 - Noise types: `gaussian` (white Gaussian noise) or any **noise category**: a
   directory of noise files under `--noise-dir` (e.g. `noise/babble/*.wav`). For
@@ -457,7 +457,7 @@ to) `predict`. `MfaModel` does this: it prepares one corpus and runs a single
 utterance, and `QwenForcedAligner` batches alignment calls. The default
 `predict_many` simply loops `predict`.
 
-## ☁️ Hosted API providers
+## 🌐 Hosted API providers
 
 Every hosted API is a built-in adapter, so `run`, `robustness` and `speed` work
 for them like for local models; with `--save-predictions` the raw provider
@@ -490,7 +490,7 @@ nyra-timing run --dataset buckeye --model fish_transcribe_1_pro \
   --out results_api --save-predictions predictions --resume
 ```
 
-## ⚖️ Comparing models
+## 📊 Comparing models
 
 ```bash
 nyra-timing compare results_full/*.json results_api/*.json                       # console table
