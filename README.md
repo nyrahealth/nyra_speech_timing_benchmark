@@ -486,7 +486,7 @@ retries (except in `speed`).
 | `--model` | Provider / endpoint | Key |
 | --- | --- | --- |
 | `elevenlabs_fa` | ElevenLabs `POST /v1/forced-alignment` (reference words as `text`) | `ELEVENLABS_API_KEY` |
-| `olign_v1` | Olewave `POST /olign/v1` (reference words as `transcript`), job polled every second | `OLIGN_KEY` |
+| `olign_v1` | Olewave `POST /olign/v1` (reference words as `transcript`), job polled every second, and words it reports as not spoken (`"spoken": false`, zero duration) count as missed | `OLIGN_KEY` |
 | `fish_transcribe_1_pro` | Fish Audio `POST /v1/asr`, header `model: transcribe-1-pro` | `FISH_API_KEY` |
 | `mai_transcribe_2` | OpenRouter `/audio/transcriptions`, `microsoft/mai-transcribe-2`, `transcribeStyle=verbatim` | `OPENROUTER_API_KEY` |
 | `assemblyai_u35_pro` | AssemblyAI async, `universal-3-5-pro` + verbatim prompt | `ASSEMBLYAI_API_KEY` |
