@@ -7,8 +7,10 @@ polled until ``state`` is ``done``, when ``result.words[]`` holds ``word``,
 from the environment. See https://github.com/olewave/olign-client.
 
 The reference is sent as space-joined words without non-speech event tokens
-(Buckeye ``laughter``), which are excluded from scoring. Words Olign marks as
-not spoken come back with zero duration and are kept as returned; ``[tag]``
+(Buckeye ``laughter``), which are excluded from scoring. A transcript word Olign
+judges was not said comes back with ``"spoken": false`` and zero duration at the
+end of the previous word; it is not a timing prediction, so it is dropped and
+counts as a missed word, the same as a word a system does not return. ``[tag]``
 annotations are dropped. Jobs run concurrently (``max_workers``) with retries
 on rate limits, server errors and lost jobs.
 """
@@ -99,7 +101,7 @@ class OlignModel(TimingModel):
         words = [
             (w["word"], float(w["begin"]), float(w["end"]))
             for w in (data.get("result") or {}).get("words") or []
-            if w.get("word") and not w.get("annotation")
+            if w.get("word") and not w.get("annotation") and w.get("spoken", True)
         ]
         return words, data
 

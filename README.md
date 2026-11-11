@@ -173,6 +173,17 @@ Hosted APIs change over time; all hosted results are from October–November
 2026 (earlier June 2026 runs are in `predictions/archive_2026-06/`). Olign
 jobs failed on one Buckeye and one FluencyBank clip, and `nemotron_transcribe`'s
 timestamp alignment on one FluencyBank clip, also on retry; their words count as missed.
+The Olign results were produced by Olign v1.0.11 (the stored raw responses carry
+`X-Olign-Version`). Olign v1.1.0 (2026-11-07) gives words outside its dictionary
+their pronunciation from a pronunciation model, and v1.1.1 (2026-11-09) and
+v1.1.2 (2026-11-10) change how recordings longer than 15 s, and recordings of
+any length sent without a transcript, are handled at their start and end. A
+recording of 15 s or less sent with a transcript is aligned in one pass and is
+unchanged by those two releases. v1.1.3 (2026-11-11) changes where a word next
+to a pause ends or begins, so the word before a pause no longer runs into the
+pause and pauses come back closer to their full length. The API and the response
+format are unchanged. Results from the current service may therefore differ from
+the rows above.
 
 ## 🧪 Systems evaluated
 
@@ -475,7 +486,7 @@ retries (except in `speed`).
 | `--model` | Provider / endpoint | Key |
 | --- | --- | --- |
 | `elevenlabs_fa` | ElevenLabs `POST /v1/forced-alignment` (reference words as `text`) | `ELEVENLABS_API_KEY` |
-| `olign_v1` | Olewave `POST /olign/v1` (reference words as `transcript`), job polled every second | `OLIGN_KEY` |
+| `olign_v1` | Olewave `POST /olign/v1` (reference words as `transcript`), job polled every second, and words it reports as not spoken (`"spoken": false`, zero duration) count as missed | `OLIGN_KEY` |
 | `fish_transcribe_1_pro` | Fish Audio `POST /v1/asr`, header `model: transcribe-1-pro` | `FISH_API_KEY` |
 | `mai_transcribe_2` | OpenRouter `/audio/transcriptions`, `microsoft/mai-transcribe-2`, `transcribeStyle=verbatim` | `OPENROUTER_API_KEY` |
 | `assemblyai_u35_pro` | AssemblyAI async, `universal-3-5-pro` + verbatim prompt | `ASSEMBLYAI_API_KEY` |
