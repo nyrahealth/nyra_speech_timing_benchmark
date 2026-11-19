@@ -53,6 +53,24 @@ def _make_mfa_widebeam(**kwargs) -> TimingModel:
     return MfaModel(beam=400, retry_beam=4000, **kwargs)
 
 
+def _make_mfa_arpa(**kwargs) -> TimingModel:
+    from .mfa_adapter import MfaModel
+
+    return MfaModel(acoustic_model="english_us_arpa", dictionary="english_us_arpa", **kwargs)
+
+
+def _make_mfa_arpa_widebeam(**kwargs) -> TimingModel:
+    from .mfa_adapter import MfaModel
+
+    return MfaModel(
+        acoustic_model="english_us_arpa",
+        dictionary="english_us_arpa",
+        beam=400,
+        retry_beam=4000,
+        **kwargs,
+    )
+
+
 def _make_mms_fa(**kwargs) -> TimingModel:
     from .mms_fa_adapter import MmsFaModel
 
@@ -148,6 +166,8 @@ MODEL_FACTORIES: Dict[str, Callable[..., TimingModel]] = {
     "qwen_fa": _make_qwen_fa,
     "mfa": _make_mfa,
     "mfa_widebeam": _make_mfa_widebeam,
+    "mfa_arpa": _make_mfa_arpa,
+    "mfa_arpa_widebeam": _make_mfa_arpa_widebeam,
     "mms_fa": _make_mms_fa,
     "fusealign": _make_fusealign,
     "mwa_buckeye": _mwa("buckeye"),
@@ -176,6 +196,8 @@ MODEL_IS_FORCED_ALIGNER: Dict[str, bool] = {
     "qwen_fa": True,
     "mfa": True,
     "mfa_widebeam": True,
+    "mfa_arpa": True,
+    "mfa_arpa_widebeam": True,
     "mms_fa": True,
     "fusealign": True,
     "mwa_buckeye": True,

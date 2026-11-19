@@ -187,6 +187,12 @@ class MfaModel(TimingModel):
                     out[key] = _parse_textgrid_words(tg)
                     n_found += 1
             print(f"  MFA: parsed {n_found}/{len(uid_to_key)} TextGrids")
+            if n_found < len(uid_to_key) and result.returncode != 0:
+                # MFA exits 1 both for "some utterances failed to align" and for
+                # hard failures (e.g. disk full); surface the latter.
+                print(f"  MFA exit code {result.returncode}: {result.stderr[-1500:]}")
+                if n_found == 0:
+                    raise RuntimeError("MFA produced no TextGrids; see stderr above.")
             return out
         finally:
             shutil.rmtree(work_root, ignore_errors=True)

@@ -1,0 +1,13 @@
+{
+  "model": "mfa-english_us_arpa-beam400-4000",
+  "dataset": "buckeye",
+  "num_clips": 100,
+  "num_errors": 0,
+  "audio_seconds": 1998.47,
+  "mean_clip_seconds": 19.98,
+  "rtf": 2.6738626154522023,
+  "median_latency_s": 52.82818225515075,
+  "deployment": "local",
+  "device": "x86_64",
+  "date": "2026-11-12"
+}

@@ -26,6 +26,8 @@ SNRS = [None, 30.0, 20.0, 10.0, 5.0, 0.0]
 # Result-file model name prefix -> public display name.
 NAMES = {
     "mfa-english_mfa-beam400-4000": "mfa_widebeam",
+    "mfa-english_us_arpa-beam400-4000": "mfa_arpa_widebeam",
+    "mfa-english_us_arpa": "mfa_arpa",
     "mwa-buckeye": "mwa_buckeye", "mwa-timit": "mwa_timit",
     "nyra_fa-": "nyra_fa", "nyra_fa_pro-": "nyra_fa_pro", "qwen_fa-": "qwen_fa",
     "mfa-": "mfa", "ctc_segmentation-": "ctc_segmentation", "nemo_fa-": "nemo_fa",
@@ -45,6 +47,8 @@ LABELS = {
     "elevenlabs_fa": "Cue (ElevenLabs)",
     "mfa": "`mfa` (MFA 3.3.9, `english_mfa` 3.1.0, default beam)",
     "mfa_widebeam": "`mfa` (MFA 3.3.9, `english_mfa` 3.1.0, wide beam)",
+    "mfa_arpa": "`mfa` (MFA 3.3.9, `english_us_arpa` 3.0.0, default beam)",
+    "mfa_arpa_widebeam": "`mfa` (MFA 3.3.9, `english_us_arpa` 3.0.0, wide beam)",
     "nyra_fa": "`nyra_fa` (nyra labs)",
     "crisperwhisper_2.0_large": "`crisperwhisper_2.0_large` (nyra labs)",
     "qwen_fa": "`qwen_fa` (Qwen)",
@@ -77,7 +81,12 @@ def display(model: str) -> str:
     return model
 
 
-PLOT_LABELS = {"mfa": "mfa (default beam)", "mfa_widebeam": "mfa (wide beam)"}
+PLOT_LABELS = {
+    "mfa": "mfa english_mfa (default beam)",
+    "mfa_widebeam": "mfa english_mfa (wide beam)",
+    "mfa_arpa": "mfa english_us_arpa (default beam)",
+    "mfa_arpa_widebeam": "mfa english_us_arpa (wide beam)",
+}
 
 
 def label(name: str, markdown: bool = True) -> str:
@@ -198,7 +207,8 @@ def noise_table(data: Dict[str, Dict], key: str) -> str:
 SPEED_LABEL_OFFSET = {
     "nyra_fa": (-8, 0, "right"), "qwen_fa": (7, 0, "left"),
     "ctc_segmentation": (0, -11, "center"), "nemo_fa": (7, 0, "left"),
-    "elevenlabs_fa": (7, -6, "left"), "mfa": (7, 0, "left"), "mfa_widebeam": (7, 0, "left"),
+    "elevenlabs_fa": (7, -6, "left"), "mfa": (7, 0, "left"), "mfa_widebeam": (-4, -10, "left"),
+    "mfa_arpa": (-4, -10, "left"), "mfa_arpa_widebeam": (7, 0, "left"),
     "fish_transcribe_1_pro": (-6, 6, "right"), "crisperwhisper_2.0_large": (7, 0, "left"),
     "xai_grok_stt": (-6, 4, "right"), "mai_transcribe_2": (-7, 0, "right"),
     "assemblyai_u35_pro": (7, 0, "left"), "cartesia_ink_whisper": (-7, 0, "right"),
@@ -243,7 +253,7 @@ def speed_plot(rows: List[Dict], path: str) -> None:
                         fontsize=7, color="0.15", weight=weight)
 
         ax.set_xscale("log")
-        ax.set_xlim(0.5, 1500)
+        ax.set_xlim(0.2, 1500)
         ax.xaxis.set_major_locator(FixedLocator([1, 10, 100, 1000]))
         ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _: f"{v:g}" + r"$\times$"))
         ax.xaxis.set_minor_formatter(NullFormatter())
@@ -271,7 +281,7 @@ def speed_plot(rows: List[Dict], path: str) -> None:
             Line2D([], [], ls="", marker="o", ms=6, mfc="0.35", mec="0.35", label="Local"),
             Line2D([], [], ls="", marker="o", ms=6, mfc="white", mec="0.35", label="Hosted API"),
         ]
-        ax.legend(handles=handles, loc="upper left", bbox_to_anchor=(0.11, 1.0), fontsize=7.5, ncol=2,
+        ax.legend(handles=handles, loc="lower left", bbox_to_anchor=(0.2, 0.2), fontsize=7.5, ncol=2,
                   handletextpad=0.3, columnspacing=1.0)
         fig.tight_layout()
         fig.savefig(path, bbox_inches="tight")
@@ -303,7 +313,7 @@ def main() -> None:
         f.write("\n".join(parts))
 
     if args.headline:
-        for ds, title in DATASETS[:2]:
+        for ds, title in DATASETS:
             print(f"### {title}\n")
             print(acc_table(clean_rows(ds), True))
         print(noise_table(noise, "f1"))
