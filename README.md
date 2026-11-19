@@ -11,7 +11,6 @@ speech APIs, and measures how fast each system runs.
   <a href="#-accuracy-vs-speed">⚡ Accuracy vs. speed</a> ·
   <a href="#-buckeye-conversational-speech-2008-clips-80507-words">💬 Buckeye</a> ·
   <a href="#-fluencybank-stuttered-speech-300-clips-5487-words">🔁 FluencyBank</a> ·
-  <a href="#-timit-read-speech-1626-clips-14043-words">📝 TIMIT</a> ·
   <a href="#-noise-robustness">🔊 Noise</a>
   <br>
   <a href="#-how-to-read-the-numbers">📖 Reading the numbers</a> ·
@@ -37,8 +36,8 @@ All local systems ran on a single NVIDIA L40 GPU except `fusealign`, which was t
 NVIDIA H100 80GB (on that H100 `mms_fa` runs at 432× real time against 362× on the L40;
 `results_speed_h100/`). That run used the earlier `cjkft-step2500` checkpoint, which has the
 same network as the current one (only the weights differ); for hosted APIs, speed
-includes uploading the audio and the network round trip. Full tables, including F1
-and per-SNR scores, are in [`docs/RESULTS.md`](docs/RESULTS.md).
+includes uploading the audio and the network round trip. Full tables, including TIMIT
+and F1, are in [`docs/RESULTS.md`](docs/RESULTS.md).
 
 ### ⚡ Accuracy vs. speed
 
@@ -108,37 +107,6 @@ The best systems sit in the upper right.
 | `canary` (NVIDIA) | ASR system | local | 77.9 | 135.2 | 31.1 | 2.0 | 8.5 | 29.1 | 72.0 | 18× |
 | `deepgram_nova3` (Deepgram) | ASR system | hosted API | 83.6 | 158.0 | 40.9 | 1.0 | 4.6 | 22.5 | 72.2 | 65× |
 | `xai_grok_stt` (xAI) | ASR system | hosted API | 84.7 | 145.6 | 37.7 | 0.3 | 1.4 | 31.8 | 84.9 | 36× |
-
-### 📝 TIMIT (read speech, 1,626 clips, 14,043 words)
-
-Clean TIMIT test set, including the 336 `SA` dialect sentences. `mwa_timit` was trained on TIMIT (in-domain).
-
-| System | Type | Deployment | Word recall | MAE (ms) | mIoU | Acc@25ms | Acc@50ms | Acc@100ms | Acc@200ms | Speed (× real time) |
-| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `mfa` (MFA 3.3.9, `english_us_arpa` 3.0.0, wide beam) | forced aligner | local | 100.0 | 18.6 | 86.3 | 58.3 | 84.5 | 96.9 | 99.8 | 0.4× |
-| `mfa` (MFA 3.3.9, `english_us_arpa` 3.0.0, default beam) | forced aligner | local | 100.0 | 18.6 | 86.2 | 58.0 | 84.3 | 96.9 | 99.8 | 0.3× |
-| `olign_v1` (Olewave) | forced aligner | hosted API | 100.0 | 15.9 | 88.4 | 68.0 | 83.8 | 96.5 | 99.8 | 5.0× |
-| `nyra_fa` (nyra labs) | forced aligner | local | 99.9 | 21.3 | 84.4 | 54.4 | 82.2 | 95.2 | 99.6 | 453× |
-| `fusealign` (Zyphra) | forced aligner | local | 100.0 | 26.0 | 81.2 | 34.4 | 80.6 | 96.2 | 99.9 | 752× |
-| `mfa` (MFA 3.3.9, `english_mfa` 3.1.0, wide beam) | forced aligner | local | 99.9 | 23.2 | 82.9 | 48.6 | 77.7 | 94.6 | 99.2 | 0.8× |
-| `mfa` (MFA 3.3.9, `english_mfa` 3.1.0, default beam) | forced aligner | local | 99.9 | 23.5 | 82.8 | 48.6 | 77.7 | 94.6 | 99.2 | 0.9× |
-| `qwen_fa` (Qwen) | forced aligner | local | 100.0 | 30.1 | 76.8 | 26.6 | 70.8 | 95.0 | 99.8 | 359× |
-| `fish_transcribe_1_pro` (Fish Audio) | ASR system | hosted API | 98.9 | 30.4 | 76.5 | 26.3 | 70.2 | 94.7 | 99.7 | 21× |
-| `crisperwhisper_2.0_large` (nyra labs) | ASR system | local | 98.8 | 29.6 | 79.7 | 34.4 | 70.1 | 91.3 | 99.3 | 35× |
-| `mwa_timit` (MLSpeech) | forced aligner | local | 100.0 | 47.2 | 73.8 | 35.2 | 53.5 | 75.3 | 92.4 | 0.8× |
-| `xai_grok_stt` (xAI) | ASR system | hosted API | 98.3 | 37.3 | 71.4 | 17.4 | 51.3 | 93.1 | 99.8 | 36× |
-| `mms_fa` (Meta) | forced aligner | local | 100.0 | 37.3 | 71.4 | 17.4 | 51.3 | 93.2 | 99.8 | 362× |
-| `mwa_buckeye` (MLSpeech) | forced aligner | local | 100.0 | 58.9 | 69.5 | 30.2 | 49.8 | 73.0 | 90.0 | 0.8× |
-| `ctc_segmentation` | forced aligner | local | 100.0 | 49.3 | 69.1 | 10.7 | 38.9 | 82.6 | 96.9 | 582× |
-| `assemblyai_u35_pro` (AssemblyAI) | ASR system | hosted API | 97.9 | 51.3 | 63.9 | 9.5 | 33.6 | 79.7 | 99.3 | 4.4× |
-| Cue (ElevenLabs) | forced aligner | hosted API | 100.0 | 44.6 | 66.8 | 9.2 | 32.5 | 83.3 | 99.8 | 106× |
-| `mai_transcribe_2` (Microsoft) | ASR system | hosted API | 99.3 | 54.9 | 62.7 | 8.7 | 27.6 | 66.0 | 99.1 | 22× |
-| `nemotron_transcribe` (NVIDIA) | ASR system | local | 98.9 | 60.0 | 64.1 | 6.3 | 23.4 | 68.6 | 98.3 | 20× |
-| `cartesia_ink_whisper` (Cartesia) | ASR system | hosted API | 98.2 | 88.3 | 57.9 | 5.1 | 20.7 | 58.9 | 85.7 | 73× |
-| `deepgram_nova3` (Deepgram) | ASR system | hosted API | 98.2 | 63.4 | 62.3 | 5.8 | 20.5 | 60.8 | 98.3 | 65× |
-| `nemo_fa` (NVIDIA) | forced aligner | local | 100.0 | 60.0 | 55.3 | 5.1 | 19.3 | 66.4 | 98.4 | 91× |
-| `whisperx` | ASR system | local | 98.2 | 64.8 | 56.5 | 2.8 | 13.5 | 60.6 | 98.1 | 30× |
-| `canary` (NVIDIA) | ASR system | local | 97.6 | 85.5 | 44.0 | 3.4 | 13.2 | 42.2 | 88.5 | 18× |
 
 ## 🔊 Noise robustness
 

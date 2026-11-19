@@ -313,7 +313,7 @@ def main() -> None:
         f.write("\n".join(parts))
 
     if args.headline:
-        for ds, title in DATASETS:
+        for ds, title in DATASETS[:2]:
             print(f"### {title}\n")
             print(acc_table(clean_rows(ds), True))
         print(noise_table(noise, "f1"))
