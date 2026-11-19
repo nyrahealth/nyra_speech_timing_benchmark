@@ -7,7 +7,7 @@ probability. Words under 0.1 presence take the paper's uniform fallback between
 their placed neighbours; every word is returned, as the package returns it.
 
 Uses ``fusealign_hub`` (https://github.com/Zyphra/fusealign-multilingual) with its
-default checkpoint, ``fusealign-multilingual-cjkft-step2500.safetensors`` from the
+default checkpoint, ``fusealign-multilingual-ns4-step60000.safetensors`` (the multilingual noisy student) from the
 Hugging Face repo ``Zyphra/fusealign``. Reference words are normalized and joined
 by spaces, so a reference token with an internal space is aligned as separate
 words. Clips over 30 s go through the package's long-form path, which runs

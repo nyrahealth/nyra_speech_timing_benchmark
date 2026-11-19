@@ -37,6 +37,8 @@ NAMES = {
 SPEED_FILE_OVERRIDE = {
     "crisperwhisper_2.0_large":
         "speed_crisperwhisper-ct2-large-v2_verbatimize_longform_with_timing_release_buckeye.json",
+    # Timed (H100) with the cjkft-step2500 weights; ns4-step60000 is the same network.
+    "fusealign": "speed_fusealign-multilingual-cjkft-step2500_buckeye.json",
 }
 # Public label: system name plus the company behind it.
 LABELS = {

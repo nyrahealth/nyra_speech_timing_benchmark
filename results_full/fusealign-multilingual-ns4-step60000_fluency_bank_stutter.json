@@ -1,0 +1,3151 @@
+{
+  "model": "fusealign-multilingual-ns4-step60000",
+  "dataset": "fluency_bank_stutter",
+  "condition": {
+    "noise": "clean"
+  },
+  "metadata": {
+    "system_type": "forced_aligner",
+    "uses_reference_text": true,
+    "deployment": "local",
+    "description": "built-in 'fusealign' adapter"
+  },
+  "collars": [
+    0.025,
+    0.05,
+    0.1,
+    0.2,
+    0.3,
+    0.4,
+    0.5
+  ],
+  "overall": {
+    "num_gt_samples": 300,
+    "num_samples_with_predictions": 300,
+    "coverage": 1.0,
+    "num_pred_words": 5487,
+    "num_gt_words": 5487,
+    "num_gt_excluded_events": 0,
+    "num_aligned_words": 5487,
+    "num_scored_words": 5487,
+    "word_recall": 1.0,
+    "mae_ms": {
+      "overall": 65.16101694915254,
+      "start": 59.239566247494075,
+      "end": 71.08246765081101,
+      "start_bias": -15.863039912520481,
+      "end_bias": 17.86850738108257
+    },
+    "median_ae_ms": {
+      "overall": 10.500000000000064,
+      "start": 8.000000000000007,
+      "end": 9.000000000000341
+    },
+    "p90_ae_ms": {
+      "overall": 68.99999999999994,
+      "start": 57.99999999999983,
+      "end": 62.00000000000001
+    },
+    "mae_ms_macro": 62.360061317153956,
+    "miou": 0.8277940424516244,
+    "median_iou": 0.9202453987730119,
+    "miou_macro": 0.8269193289430382,
+    "f1_standard": {
+      "25ms": {
+        "precision": 0.6819755786404228,
+        "recall": 0.6819755786404228,
+        "f1": 0.6819755786404228,
+        "tp": 3742,
+        "fp": 1745,
+        "fn": 1745
+      },
+      "50ms": {
+        "precision": 0.822489520685256,
+        "recall": 0.822489520685256,
+        "f1": 0.822489520685256,
+        "tp": 4513,
+        "fp": 974,
+        "fn": 974
+      },
+      "100ms": {
+        "precision": 0.8884636413340623,
+        "recall": 0.8884636413340623,
+        "f1": 0.8884636413340624,
+        "tp": 4875,
+        "fp": 612,
+        "fn": 612
+      },
+      "200ms": {
+        "precision": 0.9291051576453435,
+        "recall": 0.9291051576453435,
+        "f1": 0.9291051576453435,
+        "tp": 5098,
+        "fp": 389,
+        "fn": 389
+      },
+      "300ms": {
+        "precision": 0.9467833059959905,
+        "recall": 0.9467833059959905,
+        "f1": 0.9467833059959905,
+        "tp": 5195,
+        "fp": 292,
+        "fn": 292
+      },
+      "400ms": {
+        "precision": 0.9557135046473483,
+        "recall": 0.9557135046473483,
+        "f1": 0.9557135046473483,
+        "tp": 5244,
+        "fp": 243,
+        "fn": 243
+      },
+      "500ms": {
+        "precision": 0.9609987242573356,
+        "recall": 0.9609987242573356,
+        "f1": 0.9609987242573356,
+        "tp": 5273,
+        "fp": 214,
+        "fn": 214
+      }
+    },
+    "f1_matched": {
+      "25ms": {
+        "f1": 0.6819755786404228,
+        "tp": 3742,
+        "count": 5487
+      },
+      "50ms": {
+        "f1": 0.822489520685256,
+        "tp": 4513,
+        "count": 5487
+      },
+      "100ms": {
+        "f1": 0.8884636413340623,
+        "tp": 4875,
+        "count": 5487
+      },
+      "200ms": {
+        "f1": 0.9291051576453435,
+        "tp": 5098,
+        "count": 5487
+      },
+      "300ms": {
+        "f1": 0.9467833059959905,
+        "tp": 5195,
+        "count": 5487
+      },
+      "400ms": {
+        "f1": 0.9557135046473483,
+        "tp": 5244,
+        "count": 5487
+      },
+      "500ms": {
+        "f1": 0.9609987242573356,
+        "tp": 5273,
+        "count": 5487
+      }
+    }
+  },
+  "per_sample": [
+    {
+      "key": "audio/54m_009_2745.mp3",
+      "num_pred_words": 18,
+      "num_gt_words": 18,
+      "num_aligned": 18,
+      "overall_mae_ms": 7.61111111111117,
+      "median_ae_ms": 5.250000000000144,
+      "miou": 0.9215764513267319,
+      "median_iou": 0.944135552662138
+    },
+    {
+      "key": "audio/50fb_058_2620.mp3",
+      "num_pred_words": 7,
+      "num_gt_words": 7,
+      "num_aligned": 7,
+      "overall_mae_ms": 10.071428571428608,
+      "median_ae_ms": 6.49999999999995,
+      "miou": 0.9517307389858679,
+      "median_iou": 0.9775967413441935
+    },
+    {
+      "key": "audio/26m_007_631.mp3",
+      "num_pred_words": 8,
+      "num_gt_words": 8,
+      "num_aligned": 8,
+      "overall_mae_ms": 9.687500000000021,
+      "median_ae_ms": 11.249999999999982,
+      "miou": 0.9497207247349306,
+      "median_iou": 0.951771448280287
+    },
+    {
+      "key": "audio/507_011_2100.mp3",
+      "num_pred_words": 16,
+      "num_gt_words": 16,
+      "num_aligned": 16,
+      "overall_mae_ms": 270.93749999999994,
+      "median_ae_ms": 40.25000000000006,
+      "miou": 0.544360545957637,
+      "median_iou": 0.7331873250942962
+    },
+    {
+      "key": "audio/60m_102_3026.mp3",
+      "num_pred_words": 6,
+      "num_gt_words": 6,
+      "num_aligned": 6,
+      "overall_mae_ms": 16.833333333333314,
+      "median_ae_ms": 10.000000000000009,
+      "miou": 0.8839819242346594,
+      "median_iou": 0.8812316715542524
+    },
+    {
+      "key": "audio/35mb_029_1238.mp3",
+      "num_pred_words": 13,
+      "num_gt_words": 13,
+      "num_aligned": 13,
+      "overall_mae_ms": 15.615384615384624,
+      "median_ae_ms": 11.999999999999567,
+      "miou": 0.9306778350214835,
+      "median_iou": 0.9336099585062242
+    },
+    {
+      "key": "audio/60m_008_2936.mp3",
+      "num_pred_words": 22,
+      "num_gt_words": 22,
+      "num_aligned": 22,
+      "overall_mae_ms": 21.000000000000004,
+      "median_ae_ms": 8.750000000000036,
+      "miou": 0.8311219797363637,
+      "median_iou": 0.9156717024041652
+    },
+    {
+      "key": "audio/60m_050_2977.mp3",
+      "num_pred_words": 20,
+      "num_gt_words": 20,
+      "num_aligned": 20,
+      "overall_mae_ms": 19.65000000000002,
+      "median_ae_ms": 11.00000000000012,
+      "miou": 0.8909781765817526,
+      "median_iou": 0.917052767052768
+    },
+    {
+      "key": "audio/503_053_2084.mp3",
+      "num_pred_words": 11,
+      "num_gt_words": 11,
+      "num_aligned": 11,
+      "overall_mae_ms": 16.318181818181763,
+      "median_ae_ms": 8.499999999999952,
+      "miou": 0.905751749180677,
+      "median_iou": 0.9105263157894742
+    },
+    {
+      "key": "audio/28m_047_758.mp3",
+      "num_pred_words": 55,
+      "num_gt_words": 55,
+      "num_aligned": 55,
+      "overall_mae_ms": 55.65454545454549,
+      "median_ae_ms": 10.500000000000064,
+      "miou": 0.7746157859456909,
+      "median_iou": 0.9043478260869517
+    },
+    {
+      "key": "audio/508_135_2292.mp3",
+      "num_pred_words": 13,
+      "num_gt_words": 13,
+      "num_aligned": 13,
+      "overall_mae_ms": 6.384615384615399,
+      "median_ae_ms": 5.50000000000006,
+      "miou": 0.9227222069390645,
+      "median_iou": 0.9333333333333332
+    },
+    {
+      "key": "audio/44m_091_1557.mp3",
+      "num_pred_words": 21,
+      "num_gt_words": 21,
+      "num_aligned": 21,
+      "overall_mae_ms": 14.976190476190476,
+      "median_ae_ms": 9.999999999999787,
+      "miou": 0.812135861445974,
+      "median_iou": 0.8445945945945946
+    },
+    {
+      "key": "audio/43m_026_1423.mp3",
+      "num_pred_words": 8,
+      "num_gt_words": 8,
+      "num_aligned": 8,
+      "overall_mae_ms": 14.062499999999925,
+      "median_ae_ms": 12.499999999999984,
+      "miou": 0.8689017061040325,
+      "median_iou": 0.87122440401129
+    },
+    {
+      "key": "audio/62m_054_3154.mp3",
+      "num_pred_words": 6,
+      "num_gt_words": 6,
+      "num_aligned": 6,
+      "overall_mae_ms": 15.583333333333318,
+      "median_ae_ms": 15.249999999999986,
+      "miou": 0.7490996140994423,
+      "median_iou": 0.8150115716389649
+    },
+    {
+      "key": "audio/44m_070_1536.mp3",
+      "num_pred_words": 7,
+      "num_gt_words": 7,
+      "num_aligned": 7,
+      "overall_mae_ms": 27.85714285714287,
+      "median_ae_ms": 28.000000000000004,
+      "miou": 0.6801703661264081,
+      "median_iou": 0.79182156133829
+    },
+    {
+      "key": "audio/50fa_069_2398.mp3",
+      "num_pred_words": 17,
+      "num_gt_words": 17,
+      "num_aligned": 17,
+      "overall_mae_ms": 21.588235294117645,
+      "median_ae_ms": 20.000000000000018,
+      "miou": 0.8336285853142575,
+      "median_iou": 0.9104477611940314
+    },
+    {
+      "key": "audio/29mc_008_991.mp3",
+      "num_pred_words": 24,
+      "num_gt_words": 24,
+      "num_aligned": 24,
+      "overall_mae_ms": 238.06250000000009,
+      "median_ae_ms": 16.25000000000032,
+      "miou": 0.7994226677111563,
+      "median_iou": 0.9187707641196
+    },
+    {
+      "key": "audio/508_036_2193.mp3",
+      "num_pred_words": 21,
+      "num_gt_words": 21,
+      "num_aligned": 21,
+      "overall_mae_ms": 21.357142857142858,
+      "median_ae_ms": 15.499999999999847,
+      "miou": 0.8099156783807072,
+      "median_iou": 0.8999999999999987
+    },
+    {
+      "key": "audio/44m_360_1824.mp3",
+      "num_pred_words": 19,
+      "num_gt_words": 19,
+      "num_aligned": 19,
+      "overall_mae_ms": 24.81578947368423,
+      "median_ae_ms": 12.9999999999999,
+      "miou": 0.7310681887868969,
+      "median_iou": 0.8169934640522876
+    },
+    {
+      "key": "audio/54f_023_2660.mp3",
+      "num_pred_words": 18,
+      "num_gt_words": 18,
+      "num_aligned": 18,
+      "overall_mae_ms": 53.722222222222264,
+      "median_ae_ms": 9.500000000000508,
+      "miou": 0.8740662693808685,
+      "median_iou": 0.9342765497967482
+    },
+    {
+      "key": "audio/29ma_006_773.mp3",
+      "num_pred_words": 15,
+      "num_gt_words": 15,
+      "num_aligned": 15,
+      "overall_mae_ms": 11.033333333333362,
+      "median_ae_ms": 9.500000000000064,
+      "miou": 0.8570446781713345,
+      "median_iou": 0.9090909090909091
+    },
+    {
+      "key": "audio/44m_168_1633.mp3",
+      "num_pred_words": 14,
+      "num_gt_words": 14,
+      "num_aligned": 14,
+      "overall_mae_ms": 17.178571428571516,
+      "median_ae_ms": 9.750000000000203,
+      "miou": 0.7695083089321184,
+      "median_iou": 0.8898957298907639
+    },
+    {
+      "key": "audio/50fb_003_2566.mp3",
+      "num_pred_words": 6,
+      "num_gt_words": 6,
+      "num_aligned": 6,
+      "overall_mae_ms": 45.75000000000001,
+      "median_ae_ms": 12.500000000000009,
+      "miou": 0.8658899849439922,
+      "median_iou": 0.9115160176253423
+    },
+    {
+      "key": "audio/24fb_002_95.mp3",
+      "num_pred_words": 35,
+      "num_gt_words": 35,
+      "num_aligned": 35,
+      "overall_mae_ms": 58.928571428571466,
+      "median_ae_ms": 24.500000000000632,
+      "miou": 0.7544989558640222,
+      "median_iou": 0.8677685950413222
+    },
+    {
+      "key": "audio/57m_081_2908.mp3",
+      "num_pred_words": 12,
+      "num_gt_words": 12,
+      "num_aligned": 12,
+      "overall_mae_ms": 22.458333333333275,
+      "median_ae_ms": 9.250000000000009,
+      "miou": 0.8555577264921008,
+      "median_iou": 0.8870811744386882
+    },
+    {
+      "key": "audio/37m_018_1341.mp3",
+      "num_pred_words": 28,
+      "num_gt_words": 28,
+      "num_aligned": 28,
+      "overall_mae_ms": 278.41071428571416,
+      "median_ae_ms": 14.749999999999819,
+      "miou": 0.7062081707650282,
+      "median_iou": 0.90831478136682
+    },
+    {
+      "key": "audio/29ma_053_820.mp3",
+      "num_pred_words": 9,
+      "num_gt_words": 9,
+      "num_aligned": 9,
+      "overall_mae_ms": 18.94444444444443,
+      "median_ae_ms": 8.500000000000174,
+      "miou": 0.9224877261113041,
+      "median_iou": 0.951672862453532
+    },
+    {
+      "key": "audio/50fb_027_2590.mp3",
+      "num_pred_words": 13,
+      "num_gt_words": 13,
+      "num_aligned": 13,
+      "overall_mae_ms": 12.269230769230703,
+      "median_ae_ms": 11.999999999999567,
+      "miou": 0.9391536876640345,
+      "median_iou": 0.9629629629629616
+    },
+    {
+      "key": "audio/46ma_078_1949.mp3",
+      "num_pred_words": 29,
+      "num_gt_words": 29,
+      "num_aligned": 29,
+      "overall_mae_ms": 15.896551724137987,
+      "median_ae_ms": 12.500000000000178,
+      "miou": 0.8523454905803199,
+      "median_iou": 0.9154929577464639
+    },
+    {
+      "key": "audio/44m_229_1693.mp3",
+      "num_pred_words": 57,
+      "num_gt_words": 57,
+      "num_aligned": 57,
+      "overall_mae_ms": 32.807017543859594,
+      "median_ae_ms": 11.00000000000001,
+      "miou": 0.8299809237807841,
+      "median_iou": 0.9090909090909081
+    },
+    {
+      "key": "audio/44m_110_1576.mp3",
+      "num_pred_words": 7,
+      "num_gt_words": 7,
+      "num_aligned": 7,
+      "overall_mae_ms": 23.928571428571413,
+      "median_ae_ms": 19.49999999999996,
+      "miou": 0.8238568320155324,
+      "median_iou": 0.8450704225352095
+    },
+    {
+      "key": "audio/29ma_064_831.mp3",
+      "num_pred_words": 17,
+      "num_gt_words": 17,
+      "num_aligned": 17,
+      "overall_mae_ms": 9.323529411764715,
+      "median_ae_ms": 6.000000000000005,
+      "miou": 0.9257355480669207,
+      "median_iou": 0.9517241379310345
+    },
+    {
+      "key": "audio/44m_020_1486.mp3",
+      "num_pred_words": 8,
+      "num_gt_words": 8,
+      "num_aligned": 8,
+      "overall_mae_ms": 12.25,
+      "median_ae_ms": 8.750000000000036,
+      "miou": 0.908285262115694,
+      "median_iou": 0.9181949806949812
+    },
+    {
+      "key": "audio/50fb_026_2589.mp3",
+      "num_pred_words": 11,
+      "num_gt_words": 11,
+      "num_aligned": 11,
+      "overall_mae_ms": 10.954545454545492,
+      "median_ae_ms": 8.499999999999952,
+      "miou": 0.9571786165988159,
+      "median_iou": 0.9641509433962262
+    },
+    {
+      "key": "audio/35ma_022_1208.mp3",
+      "num_pred_words": 38,
+      "num_gt_words": 38,
+      "num_aligned": 38,
+      "overall_mae_ms": 705.3026315789476,
+      "median_ae_ms": 171.50000000000043,
+      "miou": 0.38890754288169477,
+      "median_iou": 0.3468313140726928
+    },
+    {
+      "key": "audio/29mc_032_1014.mp3",
+      "num_pred_words": 12,
+      "num_gt_words": 12,
+      "num_aligned": 12,
+      "overall_mae_ms": 257.33333333333326,
+      "median_ae_ms": 8.500000000000064,
+      "miou": 0.8227758836868458,
+      "median_iou": 0.9381858247886312
+    },
+    {
+      "key": "audio/35mb_044_1253.mp3",
+      "num_pred_words": 11,
+      "num_gt_words": 11,
+      "num_aligned": 11,
+      "overall_mae_ms": 29.63636363636363,
+      "median_ae_ms": 15.5,
+      "miou": 0.8403457104661392,
+      "median_iou": 0.8805194805194798
+    },
+    {
+      "key": "audio/44m_273_1737.mp3",
+      "num_pred_words": 15,
+      "num_gt_words": 15,
+      "num_aligned": 15,
+      "overall_mae_ms": 53.266666666666744,
+      "median_ae_ms": 8.49999999999973,
+      "miou": 0.8650811155475234,
+      "median_iou": 0.9333333333333326
+    },
+    {
+      "key": "audio/62m_049_3149.mp3",
+      "num_pred_words": 3,
+      "num_gt_words": 3,
+      "num_aligned": 3,
+      "overall_mae_ms": 22.66666666666665,
+      "median_ae_ms": 13.00000000000001,
+      "miou": 0.8752466988789264,
+      "median_iou": 0.91875
+    },
+    {
+      "key": "audio/507_061_2150.mp3",
+      "num_pred_words": 10,
+      "num_gt_words": 10,
+      "num_aligned": 10,
+      "overall_mae_ms": 24.500000000000032,
+      "median_ae_ms": 17.2500000000001,
+      "miou": 0.8364474317554886,
+      "median_iou": 0.909528600172463
+    },
+    {
+      "key": "audio/28m_023_734.mp3",
+      "num_pred_words": 45,
+      "num_gt_words": 45,
+      "num_aligned": 45,
+      "overall_mae_ms": 23.98888888888885,
+      "median_ae_ms": 10.499999999999979,
+      "miou": 0.7452183006071081,
+      "median_iou": 0.8439024390243901
+    },
+    {
+      "key": "audio/508_119_2276.mp3",
+      "num_pred_words": 18,
+      "num_gt_words": 18,
+      "num_aligned": 18,
+      "overall_mae_ms": 6.49999999999991,
+      "median_ae_ms": 4.0000000000000036,
+      "miou": 0.9380441536860903,
+      "median_iou": 0.9589473684210538
+    },
+    {
+      "key": "audio/32m_023_1062.mp3",
+      "num_pred_words": 38,
+      "num_gt_words": 38,
+      "num_aligned": 38,
+      "overall_mae_ms": 114.50000000000021,
+      "median_ae_ms": 7.250000000000867,
+      "miou": 0.8631557576128591,
+      "median_iou": 0.9499999999999911
+    },
+    {
+      "key": "audio/68m_027_3359.mp3",
+      "num_pred_words": 8,
+      "num_gt_words": 8,
+      "num_aligned": 8,
+      "overall_mae_ms": 51.562500000000036,
+      "median_ae_ms": 12.250000000000039,
+      "miou": 0.8153371500259354,
+      "median_iou": 0.8767211015049624
+    },
+    {
+      "key": "audio/62m_005_3105.mp3",
+      "num_pred_words": 8,
+      "num_gt_words": 8,
+      "num_aligned": 8,
+      "overall_mae_ms": 20.437500000000007,
+      "median_ae_ms": 15.50000000000007,
+      "miou": 0.8623986940606974,
+      "median_iou": 0.9143966055730758
+    },
+    {
+      "key": "audio/44m_390_1854.mp3",
+      "num_pred_words": 11,
+      "num_gt_words": 11,
+      "num_aligned": 11,
+      "overall_mae_ms": 11.727272727272807,
+      "median_ae_ms": 10.00000000000012,
+      "miou": 0.8870062407758769,
+      "median_iou": 0.8934707903780071
+    },
+    {
+      "key": "audio/44m_057_1523.mp3",
+      "num_pred_words": 19,
+      "num_gt_words": 19,
+      "num_aligned": 19,
+      "overall_mae_ms": 12.342105263157757,
+      "median_ae_ms": 7.999999999999563,
+      "miou": 0.8690536869549362,
+      "median_iou": 0.9329268292682973
+    },
+    {
+      "key": "audio/68m_096_3428.mp3",
+      "num_pred_words": 10,
+      "num_gt_words": 10,
+      "num_aligned": 10,
+      "overall_mae_ms": 181.59999999999994,
+      "median_ae_ms": 10.499999999999954,
+      "miou": 0.6530171789644732,
+      "median_iou": 0.9004452720207258
+    },
+    {
+      "key": "audio/46ma_059_1930.mp3",
+      "num_pred_words": 20,
+      "num_gt_words": 20,
+      "num_aligned": 20,
+      "overall_mae_ms": 148.0999999999999,
+      "median_ae_ms": 9.750000000000092,
+      "miou": 0.7523716651284607,
+      "median_iou": 0.8983333333333348
+    },
+    {
+      "key": "audio/60m_132_3056.mp3",
+      "num_pred_words": 16,
+      "num_gt_words": 16,
+      "num_aligned": 16,
+      "overall_mae_ms": 17.999999999999968,
+      "median_ae_ms": 10.500000000000064,
+      "miou": 0.8005127428324896,
+      "median_iou": 0.9239110244264881
+    },
+    {
+      "key": "audio/64m_012_3234.mp3",
+      "num_pred_words": 34,
+      "num_gt_words": 34,
+      "num_aligned": 34,
+      "overall_mae_ms": 13.39705882352934,
+      "median_ae_ms": 8.999999999999897,
+      "miou": 0.8759441681612496,
+      "median_iou": 0.923665048543689
+    },
+    {
+      "key": "audio/29mb_009_886.mp3",
+      "num_pred_words": 14,
+      "num_gt_words": 14,
+      "num_aligned": 14,
+      "overall_mae_ms": 34.75000000000001,
+      "median_ae_ms": 23.750000000000014,
+      "miou": 0.7623739866814835,
+      "median_iou": 0.8100257069408758
+    },
+    {
+      "key": "audio/29ma_070_837.mp3",
+      "num_pred_words": 11,
+      "num_gt_words": 11,
+      "num_aligned": 11,
+      "overall_mae_ms": 11.68181818181816,
+      "median_ae_ms": 11.00000000000012,
+      "miou": 0.9175731032675173,
+      "median_iou": 0.9348914858096833
+    },
+    {
+      "key": "audio/60m_011_2939.mp3",
+      "num_pred_words": 24,
+      "num_gt_words": 24,
+      "num_aligned": 24,
+      "overall_mae_ms": 117.08333333333331,
+      "median_ae_ms": 8.749999999999925,
+      "miou": 0.8072998045545976,
+      "median_iou": 0.9374253697069939
+    },
+    {
+      "key": "audio/29ma_008_775.mp3",
+      "num_pred_words": 28,
+      "num_gt_words": 28,
+      "num_aligned": 28,
+      "overall_mae_ms": 40.10714285714285,
+      "median_ae_ms": 4.0000000000000036,
+      "miou": 0.8424922860020185,
+      "median_iou": 0.9498416542473913
+    },
+    {
+      "key": "audio/508_040_2197.mp3",
+      "num_pred_words": 22,
+      "num_gt_words": 22,
+      "num_aligned": 22,
+      "overall_mae_ms": 12.863636363636376,
+      "median_ae_ms": 7.499999999999951,
+      "miou": 0.8859325517688301,
+      "median_iou": 0.9224960254372012
+    },
+    {
+      "key": "audio/508_076_2233.mp3",
+      "num_pred_words": 30,
+      "num_gt_words": 30,
+      "num_aligned": 30,
+      "overall_mae_ms": 12.683333333333321,
+      "median_ae_ms": 10.250000000000092,
+      "miou": 0.8518789168219765,
+      "median_iou": 0.9323260073260063
+    },
+    {
+      "key": "audio/46ma_118_1989.mp3",
+      "num_pred_words": 20,
+      "num_gt_words": 20,
+      "num_aligned": 20,
+      "overall_mae_ms": 18.30000000000002,
+      "median_ae_ms": 14.000000000000004,
+      "miou": 0.8329489798287513,
+      "median_iou": 0.8937346437346435
+    },
+    {
+      "key": "audio/54f_016_2653.mp3",
+      "num_pred_words": 15,
+      "num_gt_words": 15,
+      "num_aligned": 15,
+      "overall_mae_ms": 20.566666666666638,
+      "median_ae_ms": 7.500000000000062,
+      "miou": 0.9012330886038538,
+      "median_iou": 0.9195402298850516
+    },
+    {
+      "key": "audio/24fb_043_136.mp3",
+      "num_pred_words": 10,
+      "num_gt_words": 10,
+      "num_aligned": 10,
+      "overall_mae_ms": 17.349999999999923,
+      "median_ae_ms": 11.249999999999872,
+      "miou": 0.8977111873716292,
+      "median_iou": 0.9159641472868226
+    },
+    {
+      "key": "audio/46mb_034_2024.mp3",
+      "num_pred_words": 19,
+      "num_gt_words": 19,
+      "num_aligned": 19,
+      "overall_mae_ms": 9.684210526315818,
+      "median_ae_ms": 7.500000000000062,
+      "miou": 0.857940635898333,
+      "median_iou": 0.8953488372093021
+    },
+    {
+      "key": "audio/50fb_022_2585.mp3",
+      "num_pred_words": 12,
+      "num_gt_words": 12,
+      "num_aligned": 12,
+      "overall_mae_ms": 96.54166666666666,
+      "median_ae_ms": 18.750000000000043,
+      "miou": 0.7555898503783403,
+      "median_iou": 0.9054498473103139
+    },
+    {
+      "key": "audio/44m_254_1718.mp3",
+      "num_pred_words": 17,
+      "num_gt_words": 17,
+      "num_aligned": 17,
+      "overall_mae_ms": 32.85294117647056,
+      "median_ae_ms": 10.000000000000009,
+      "miou": 0.8116401166711524,
+      "median_iou": 0.8878923766816127
+    },
+    {
+      "key": "audio/24fc_064_201.mp3",
+      "num_pred_words": 16,
+      "num_gt_words": 16,
+      "num_aligned": 16,
+      "overall_mae_ms": 10.84374999999999,
+      "median_ae_ms": 10.750000000000037,
+      "miou": 0.9264236599857372,
+      "median_iou": 0.9408445907594504
+    },
+    {
+      "key": "audio/27ma_032_687.mp3",
+      "num_pred_words": 10,
+      "num_gt_words": 10,
+      "num_aligned": 10,
+      "overall_mae_ms": 60.950000000000024,
+      "median_ae_ms": 18.750000000000043,
+      "miou": 0.7982516792964264,
+      "median_iou": 0.8383495145631068
+    },
+    {
+      "key": "audio/507_041_2130.mp3",
+      "num_pred_words": 24,
+      "num_gt_words": 24,
+      "num_aligned": 24,
+      "overall_mae_ms": 19.89583333333336,
+      "median_ae_ms": 10.499999999999954,
+      "miou": 0.888952249475322,
+      "median_iou": 0.935303450748171
+    },
+    {
+      "key": "audio/24ma_060_321.mp3",
+      "num_pred_words": 8,
+      "num_gt_words": 8,
+      "num_aligned": 8,
+      "overall_mae_ms": 14.000000000000146,
+      "median_ae_ms": 9.500000000000064,
+      "miou": 0.9286333775080693,
+      "median_iou": 0.9451345755693588
+    },
+    {
+      "key": "audio/29ma_024_791.mp3",
+      "num_pred_words": 29,
+      "num_gt_words": 29,
+      "num_aligned": 29,
+      "overall_mae_ms": 10.482758620689728,
+      "median_ae_ms": 7.000000000000117,
+      "miou": 0.9222792078640765,
+      "median_iou": 0.9530332681017596
+    },
+    {
+      "key": "audio/25m_015_487.mp3",
+      "num_pred_words": 27,
+      "num_gt_words": 27,
+      "num_aligned": 27,
+      "overall_mae_ms": 292.14814814814815,
+      "median_ae_ms": 28.500000000000192,
+      "miou": 0.6890586146242789,
+      "median_iou": 0.8555133079847915
+    },
+    {
+      "key": "audio/62f_002_3071.mp3",
+      "num_pred_words": 18,
+      "num_gt_words": 18,
+      "num_aligned": 18,
+      "overall_mae_ms": 24.08333333333334,
+      "median_ae_ms": 5.750000000000255,
+      "miou": 0.9254032851805856,
+      "median_iou": 0.9610453272217985
+    },
+    {
+      "key": "audio/62f_025_3092.mp3",
+      "num_pred_words": 31,
+      "num_gt_words": 31,
+      "num_aligned": 31,
+      "overall_mae_ms": 26.112903225806445,
+      "median_ae_ms": 7.499999999999396,
+      "miou": 0.9158093832760047,
+      "median_iou": 0.9543568464730322
+    },
+    {
+      "key": "audio/24fb_005_98.mp3",
+      "num_pred_words": 3,
+      "num_gt_words": 3,
+      "num_aligned": 3,
+      "overall_mae_ms": 8.833333333333293,
+      "median_ae_ms": 6.999999999999992,
+      "miou": 0.916296237381102,
+      "median_iou": 0.9090909090909094
+    },
+    {
+      "key": "audio/54f_050_2687.mp3",
+      "num_pred_words": 36,
+      "num_gt_words": 36,
+      "num_aligned": 36,
+      "overall_mae_ms": 177.61111111111123,
+      "median_ae_ms": 8.250000000000313,
+      "miou": 0.8048528838928122,
+      "median_iou": 0.9400265957446805
+    },
+    {
+      "key": "audio/44m_076_1542.mp3",
+      "num_pred_words": 9,
+      "num_gt_words": 9,
+      "num_aligned": 9,
+      "overall_mae_ms": 7.111111111111223,
+      "median_ae_ms": 7.500000000000284,
+      "miou": 0.9393176106636495,
+      "median_iou": 0.9595375722543371
+    },
+    {
+      "key": "audio/44m_190_1654.mp3",
+      "num_pred_words": 4,
+      "num_gt_words": 4,
+      "num_aligned": 4,
+      "overall_mae_ms": 112.62499999999999,
+      "median_ae_ms": 11.500000000000004,
+      "miou": 0.7153452617524737,
+      "median_iou": 0.9176096058687151
+    },
+    {
+      "key": "audio/54f_011_2648.mp3",
+      "num_pred_words": 19,
+      "num_gt_words": 19,
+      "num_aligned": 19,
+      "overall_mae_ms": 17.97368421052629,
+      "median_ae_ms": 9.000000000000007,
+      "miou": 0.8775341948046206,
+      "median_iou": 0.9225
+    },
+    {
+      "key": "audio/60m_013_2941.mp3",
+      "num_pred_words": 12,
+      "num_gt_words": 12,
+      "num_aligned": 12,
+      "overall_mae_ms": 45.20833333333318,
+      "median_ae_ms": 6.499999999999756,
+      "miou": 0.8749479827493402,
+      "median_iou": 0.9593930115273792
+    },
+    {
+      "key": "audio/60m_073_3000.mp3",
+      "num_pred_words": 9,
+      "num_gt_words": 9,
+      "num_aligned": 9,
+      "overall_mae_ms": 19.499999999999986,
+      "median_ae_ms": 12.00000000000001,
+      "miou": 0.9333828261297603,
+      "median_iou": 0.9547169811320763
+    },
+    {
+      "key": "audio/43m_034_1431.mp3",
+      "num_pred_words": 7,
+      "num_gt_words": 7,
+      "num_aligned": 7,
+      "overall_mae_ms": 96.78571428571422,
+      "median_ae_ms": 35.49999999999998,
+      "miou": 0.6867743569543884,
+      "median_iou": 0.8551020408163267
+    },
+    {
+      "key": "audio/29mb_062_939.mp3",
+      "num_pred_words": 23,
+      "num_gt_words": 23,
+      "num_aligned": 23,
+      "overall_mae_ms": 22.391304347825947,
+      "median_ae_ms": 12.9999999999999,
+      "miou": 0.8654472935330281,
+      "median_iou": 0.9080459770114941
+    },
+    {
+      "key": "audio/54m_020_2756.mp3",
+      "num_pred_words": 47,
+      "num_gt_words": 47,
+      "num_aligned": 47,
+      "overall_mae_ms": 16.54255319148927,
+      "median_ae_ms": 8.000000000000007,
+      "miou": 0.9185212699943606,
+      "median_iou": 0.9420289855072467
+    },
+    {
+      "key": "audio/24fa_043_43.mp3",
+      "num_pred_words": 12,
+      "num_gt_words": 12,
+      "num_aligned": 12,
+      "overall_mae_ms": 7.916666666666627,
+      "median_ae_ms": 6.500000000000089,
+      "miou": 0.9252864464305305,
+      "median_iou": 0.9460394736842108
+    },
+    {
+      "key": "audio/54f_039_2676.mp3",
+      "num_pred_words": 15,
+      "num_gt_words": 15,
+      "num_aligned": 15,
+      "overall_mae_ms": 9.133333333333441,
+      "median_ae_ms": 8.000000000000007,
+      "miou": 0.9339567043471955,
+      "median_iou": 0.955518945634267
+    },
+    {
+      "key": "audio/64m_041_3263.mp3",
+      "num_pred_words": 20,
+      "num_gt_words": 20,
+      "num_aligned": 20,
+      "overall_mae_ms": 8.7,
+      "median_ae_ms": 6.999999999999895,
+      "miou": 0.932530327586427,
+      "median_iou": 0.939522058823529
+    },
+    {
+      "key": "audio/64m_039_3261.mp3",
+      "num_pred_words": 23,
+      "num_gt_words": 23,
+      "num_aligned": 23,
+      "overall_mae_ms": 16.913043478260846,
+      "median_ae_ms": 14.499999999999957,
+      "miou": 0.8383692942505193,
+      "median_iou": 0.8877284595300258
+    },
+    {
+      "key": "audio/27ma_012_667.mp3",
+      "num_pred_words": 25,
+      "num_gt_words": 25,
+      "num_aligned": 25,
+      "overall_mae_ms": 86.37999999999991,
+      "median_ae_ms": 24.00000000000002,
+      "miou": 0.6791620694325751,
+      "median_iou": 0.8058823529411764
+    },
+    {
+      "key": "audio/32m_042_1081.mp3",
+      "num_pred_words": 17,
+      "num_gt_words": 17,
+      "num_aligned": 17,
+      "overall_mae_ms": 17.64705882352949,
+      "median_ae_ms": 8.500000000000174,
+      "miou": 0.871701675406758,
+      "median_iou": 0.9202898550724629
+    },
+    {
+      "key": "audio/43m_065_1462.mp3",
+      "num_pred_words": 19,
+      "num_gt_words": 19,
+      "num_aligned": 19,
+      "overall_mae_ms": 56.210526315789544,
+      "median_ae_ms": 34.99999999999992,
+      "miou": 0.7412395239762496,
+      "median_iou": 0.824742268041237
+    },
+    {
+      "key": "audio/62f_016_3083.mp3",
+      "num_pred_words": 14,
+      "num_gt_words": 14,
+      "num_aligned": 14,
+      "overall_mae_ms": 131.85714285714275,
+      "median_ae_ms": 9.99999999999962,
+      "miou": 0.8188255879474686,
+      "median_iou": 0.9558929978927728
+    },
+    {
+      "key": "audio/32m_024_1063.mp3",
+      "num_pred_words": 24,
+      "num_gt_words": 24,
+      "num_aligned": 24,
+      "overall_mae_ms": 228.85416666666666,
+      "median_ae_ms": 13.500000000000068,
+      "miou": 0.7997477060451453,
+      "median_iou": 0.9328474676089518
+    },
+    {
+      "key": "audio/54f_089_2726.mp3",
+      "num_pred_words": 5,
+      "num_gt_words": 5,
+      "num_aligned": 5,
+      "overall_mae_ms": 11.300000000000008,
+      "median_ae_ms": 10.000000000000009,
+      "miou": 0.9312086684271975,
+      "median_iou": 0.92
+    },
+    {
+      "key": "audio/57m_099_2926.mp3",
+      "num_pred_words": 52,
+      "num_gt_words": 52,
+      "num_aligned": 52,
+      "overall_mae_ms": 7.009615384615401,
+      "median_ae_ms": 4.999999999999671,
+      "miou": 0.9406313128936297,
+      "median_iou": 0.9534632034632031
+    },
+    {
+      "key": "audio/508_010_2167.mp3",
+      "num_pred_words": 24,
+      "num_gt_words": 24,
+      "num_aligned": 24,
+      "overall_mae_ms": 12.833333333333414,
+      "median_ae_ms": 9.499999999999954,
+      "miou": 0.8773503948982806,
+      "median_iou": 0.9220845341018251
+    },
+    {
+      "key": "audio/24fa_029_29.mp3",
+      "num_pred_words": 14,
+      "num_gt_words": 14,
+      "num_aligned": 14,
+      "overall_mae_ms": 206.92857142857144,
+      "median_ae_ms": 51.000000000000064,
+      "miou": 0.6436165384220143,
+      "median_iou": 0.8416478615946703
+    },
+    {
+      "key": "audio/503_029_2061.mp3",
+      "num_pred_words": 22,
+      "num_gt_words": 22,
+      "num_aligned": 22,
+      "overall_mae_ms": 11.704545454545446,
+      "median_ae_ms": 9.24999999999998,
+      "miou": 0.9477093883028833,
+      "median_iou": 0.9519649740237972
+    },
+    {
+      "key": "audio/44m_049_1515.mp3",
+      "num_pred_words": 4,
+      "num_gt_words": 4,
+      "num_aligned": 4,
+      "overall_mae_ms": 38.374999999999986,
+      "median_ae_ms": 32.75000000000005,
+      "miou": 0.803757702052222,
+      "median_iou": 0.8286331300813009
+    },
+    {
+      "key": "audio/503_008_2041.mp3",
+      "num_pred_words": 5,
+      "num_gt_words": 5,
+      "num_aligned": 5,
+      "overall_mae_ms": 19.199999999999974,
+      "median_ae_ms": 15.500000000000005,
+      "miou": 0.8873225304042129,
+      "median_iou": 0.8896797153024912
+    },
+    {
+      "key": "audio/25m_070_541.mp3",
+      "num_pred_words": 5,
+      "num_gt_words": 5,
+      "num_aligned": 5,
+      "overall_mae_ms": 664.6000000000001,
+      "median_ae_ms": 766.0,
+      "miou": 0.34611293811388943,
+      "median_iou": 0.22665320545179202
+    },
+    {
+      "key": "audio/54f_040_2677.mp3",
+      "num_pred_words": 9,
+      "num_gt_words": 9,
+      "num_aligned": 9,
+      "overall_mae_ms": 9.111111111111102,
+      "median_ae_ms": 10.000000000000002,
+      "miou": 0.9419005528168609,
+      "median_iou": 0.9459459459459459
+    },
+    {
+      "key": "audio/39f_009_1366.mp3",
+      "num_pred_words": 11,
+      "num_gt_words": 11,
+      "num_aligned": 11,
+      "overall_mae_ms": 10.045454545454456,
+      "median_ae_ms": 8.999999999999952,
+      "miou": 0.945815493542283,
+      "median_iou": 0.9591836734693877
+    },
+    {
+      "key": "audio/57m_005_2833.mp3",
+      "num_pred_words": 11,
+      "num_gt_words": 11,
+      "num_aligned": 11,
+      "overall_mae_ms": 6.272727272727268,
+      "median_ae_ms": 6.000000000000005,
+      "miou": 0.9320551819899567,
+      "median_iou": 0.9565217391304356
+    },
+    {
+      "key": "audio/68m_059_3391.mp3",
+      "num_pred_words": 18,
+      "num_gt_words": 18,
+      "num_aligned": 18,
+      "overall_mae_ms": 35.47222222222227,
+      "median_ae_ms": 11.75000000000026,
+      "miou": 0.8492450305151952,
+      "median_iou": 0.917788461538463
+    },
+    {
+      "key": "audio/507_006_2095.mp3",
+      "num_pred_words": 46,
+      "num_gt_words": 46,
+      "num_aligned": 46,
+      "overall_mae_ms": 25.58695652173915,
+      "median_ae_ms": 13.250000000000872,
+      "miou": 0.8452364976693901,
+      "median_iou": 0.9169575522516691
+    },
+    {
+      "key": "audio/25m_078_549.mp3",
+      "num_pred_words": 10,
+      "num_gt_words": 10,
+      "num_aligned": 10,
+      "overall_mae_ms": 294.4499999999999,
+      "median_ae_ms": 48.99999999999993,
+      "miou": 0.6527096749405218,
+      "median_iou": 0.8249291272091213
+    },
+    {
+      "key": "audio/68m_086_3418.mp3",
+      "num_pred_words": 7,
+      "num_gt_words": 7,
+      "num_aligned": 7,
+      "overall_mae_ms": 43.64285714285713,
+      "median_ae_ms": 11.000000000000004,
+      "miou": 0.8605392520603468,
+      "median_iou": 0.9153846153846154
+    },
+    {
+      "key": "audio/44m_111_1577.mp3",
+      "num_pred_words": 7,
+      "num_gt_words": 7,
+      "num_aligned": 7,
+      "overall_mae_ms": 15.357142857142872,
+      "median_ae_ms": 13.00000000000001,
+      "miou": 0.8940891652747897,
+      "median_iou": 0.9226190476190476
+    },
+    {
+      "key": "audio/57m_070_2897.mp3",
+      "num_pred_words": 106,
+      "num_gt_words": 106,
+      "num_aligned": 106,
+      "overall_mae_ms": 8.60849056603769,
+      "median_ae_ms": 5.50000000000006,
+      "miou": 0.913215209395937,
+      "median_iou": 0.9417635658914696
+    },
+    {
+      "key": "audio/50fa_187_2516.mp3",
+      "num_pred_words": 9,
+      "num_gt_words": 9,
+      "num_aligned": 9,
+      "overall_mae_ms": 15.77777777777777,
+      "median_ae_ms": 6.000000000000005,
+      "miou": 0.8071511985656294,
+      "median_iou": 0.9325000000000001
+    },
+    {
+      "key": "audio/29ma_089_856.mp3",
+      "num_pred_words": 9,
+      "num_gt_words": 9,
+      "num_aligned": 9,
+      "overall_mae_ms": 12.88888888888888,
+      "median_ae_ms": 14.499999999999957,
+      "miou": 0.8738448728116541,
+      "median_iou": 0.9350649350649349
+    },
+    {
+      "key": "audio/44m_391_1855.mp3",
+      "num_pred_words": 7,
+      "num_gt_words": 7,
+      "num_aligned": 7,
+      "overall_mae_ms": 7.214285714285709,
+      "median_ae_ms": 4.999999999999893,
+      "miou": 0.933666965416428,
+      "median_iou": 0.9534883720930234
+    },
+    {
+      "key": "audio/62m_053_3153.mp3",
+      "num_pred_words": 13,
+      "num_gt_words": 13,
+      "num_aligned": 13,
+      "overall_mae_ms": 15.884615384615282,
+      "median_ae_ms": 14.000000000000012,
+      "miou": 0.8504639795740572,
+      "median_iou": 0.8900000000000028
+    },
+    {
+      "key": "audio/28m_044_755.mp3",
+      "num_pred_words": 97,
+      "num_gt_words": 97,
+      "num_aligned": 97,
+      "overall_mae_ms": 18.938144329896872,
+      "median_ae_ms": 6.999999999999673,
+      "miou": 0.8302868466953143,
+      "median_iou": 0.9099099099099124
+    },
+    {
+      "key": "audio/39f_025_1382.mp3",
+      "num_pred_words": 9,
+      "num_gt_words": 9,
+      "num_aligned": 9,
+      "overall_mae_ms": 25.611111111111164,
+      "median_ae_ms": 10.000000000000231,
+      "miou": 0.8918939378456273,
+      "median_iou": 0.9423076923076918
+    },
+    {
+      "key": "audio/34m_037_1127.mp3",
+      "num_pred_words": 20,
+      "num_gt_words": 20,
+      "num_aligned": 20,
+      "overall_mae_ms": 15.624999999999956,
+      "median_ae_ms": 13.249999999999984,
+      "miou": 0.8672006075463357,
+      "median_iou": 0.9006769374416415
+    },
+    {
+      "key": "audio/32m_029_1068.mp3",
+      "num_pred_words": 59,
+      "num_gt_words": 59,
+      "num_aligned": 59,
+      "overall_mae_ms": 31.525423728813674,
+      "median_ae_ms": 8.500000000000174,
+      "miou": 0.8689712462004573,
+      "median_iou": 0.931677018633545
+    },
+    {
+      "key": "audio/503_051_2082.mp3",
+      "num_pred_words": 2,
+      "num_gt_words": 2,
+      "num_aligned": 2,
+      "overall_mae_ms": 618.25,
+      "median_ae_ms": 618.25,
+      "miou": 0.06410256410256417,
+      "median_iou": 0.06410256410256417
+    },
+    {
+      "key": "audio/64m_082_3304.mp3",
+      "num_pred_words": 11,
+      "num_gt_words": 11,
+      "num_aligned": 11,
+      "overall_mae_ms": 36.81818181818183,
+      "median_ae_ms": 14.499999999999957,
+      "miou": 0.8070480036292769,
+      "median_iou": 0.9244186046511632
+    },
+    {
+      "key": "audio/54f_096_2733.mp3",
+      "num_pred_words": 13,
+      "num_gt_words": 13,
+      "num_aligned": 13,
+      "overall_mae_ms": 8.615384615384515,
+      "median_ae_ms": 7.500000000000007,
+      "miou": 0.9562899666236018,
+      "median_iou": 0.9666666666666663
+    },
+    {
+      "key": "audio/24fb_018_111.mp3",
+      "num_pred_words": 27,
+      "num_gt_words": 27,
+      "num_aligned": 27,
+      "overall_mae_ms": 30.444444444444407,
+      "median_ae_ms": 17.000000000000128,
+      "miou": 0.8117497652444249,
+      "median_iou": 0.8639308855291578
+    },
+    {
+      "key": "audio/62f_008_3076.mp3",
+      "num_pred_words": 19,
+      "num_gt_words": 19,
+      "num_aligned": 19,
+      "overall_mae_ms": 9.947368421052678,
+      "median_ae_ms": 9.000000000000785,
+      "miou": 0.9438678258830739,
+      "median_iou": 0.9629629629629571
+    },
+    {
+      "key": "audio/68m_005_3337.mp3",
+      "num_pred_words": 10,
+      "num_gt_words": 10,
+      "num_aligned": 10,
+      "overall_mae_ms": 78.49999999999999,
+      "median_ae_ms": 22.249999999999982,
+      "miou": 0.80995885646569,
+      "median_iou": 0.8684301684774053
+    },
+    {
+      "key": "audio/35mb_001_1210.mp3",
+      "num_pred_words": 3,
+      "num_gt_words": 3,
+      "num_aligned": 3,
+      "overall_mae_ms": 15.333333333333325,
+      "median_ae_ms": 16.999999999999904,
+      "miou": 0.9378530270924271,
+      "median_iou": 0.9597156398104267
+    },
+    {
+      "key": "audio/62m_080_3180.mp3",
+      "num_pred_words": 12,
+      "num_gt_words": 12,
+      "num_aligned": 12,
+      "overall_mae_ms": 9.29166666666666,
+      "median_ae_ms": 6.499999999999839,
+      "miou": 0.9276045064302818,
+      "median_iou": 0.9381944444444437
+    },
+    {
+      "key": "audio/35ma_014_1201.mp3",
+      "num_pred_words": 37,
+      "num_gt_words": 37,
+      "num_aligned": 37,
+      "overall_mae_ms": 169.98648648648665,
+      "median_ae_ms": 60.0000000000005,
+      "miou": 0.590780028071508,
+      "median_iou": 0.6826086956521727
+    },
+    {
+      "key": "audio/29ma_057_824.mp3",
+      "num_pred_words": 13,
+      "num_gt_words": 13,
+      "num_aligned": 13,
+      "overall_mae_ms": 16.38461538461538,
+      "median_ae_ms": 5.0000000000001155,
+      "miou": 0.9084921746826813,
+      "median_iou": 0.9641509433962262
+    },
+    {
+      "key": "audio/29ma_047_814.mp3",
+      "num_pred_words": 32,
+      "num_gt_words": 32,
+      "num_aligned": 32,
+      "overall_mae_ms": 12.234374999999954,
+      "median_ae_ms": 8.000000000000007,
+      "miou": 0.9031392085436925,
+      "median_iou": 0.9371582624544361
+    },
+    {
+      "key": "audio/29mb_042_919.mp3",
+      "num_pred_words": 11,
+      "num_gt_words": 11,
+      "num_aligned": 11,
+      "overall_mae_ms": 12.81818181818181,
+      "median_ae_ms": 11.499999999999844,
+      "miou": 0.9143791728176294,
+      "median_iou": 0.9369565217391306
+    },
+    {
+      "key": "audio/29ma_095_862.mp3",
+      "num_pred_words": 21,
+      "num_gt_words": 21,
+      "num_aligned": 21,
+      "overall_mae_ms": 15.333333333333295,
+      "median_ae_ms": 11.00000000000012,
+      "miou": 0.8146716925907315,
+      "median_iou": 0.8589743589743576
+    },
+    {
+      "key": "audio/29mb_074_951.mp3",
+      "num_pred_words": 11,
+      "num_gt_words": 11,
+      "num_aligned": 11,
+      "overall_mae_ms": 41.68181818181814,
+      "median_ae_ms": 14.000000000000012,
+      "miou": 0.7837805072522284,
+      "median_iou": 0.9157509157509157
+    },
+    {
+      "key": "audio/57m_052_2879.mp3",
+      "num_pred_words": 10,
+      "num_gt_words": 10,
+      "num_aligned": 10,
+      "overall_mae_ms": 189.59999999999997,
+      "median_ae_ms": 3.499999999999975,
+      "miou": 0.8554624958676633,
+      "median_iou": 0.9606494976166802
+    },
+    {
+      "key": "audio/24ma_023_284.mp3",
+      "num_pred_words": 14,
+      "num_gt_words": 14,
+      "num_aligned": 14,
+      "overall_mae_ms": 10.035714285714285,
+      "median_ae_ms": 6.000000000000033,
+      "miou": 0.9158699013673256,
+      "median_iou": 0.9442391304347821
+    },
+    {
+      "key": "audio/37m_004_1327.mp3",
+      "num_pred_words": 19,
+      "num_gt_words": 19,
+      "num_aligned": 19,
+      "overall_mae_ms": 177.05263157894734,
+      "median_ae_ms": 11.499999999999844,
+      "miou": 0.8068921890342682,
+      "median_iou": 0.9563318777292585
+    },
+    {
+      "key": "audio/508_023_2180.mp3",
+      "num_pred_words": 26,
+      "num_gt_words": 26,
+      "num_aligned": 26,
+      "overall_mae_ms": 16.94230769230774,
+      "median_ae_ms": 11.249999999999927,
+      "miou": 0.8461441385618294,
+      "median_iou": 0.9029623477297883
+    },
+    {
+      "key": "audio/50fa_002_2333.mp3",
+      "num_pred_words": 13,
+      "num_gt_words": 13,
+      "num_aligned": 13,
+      "overall_mae_ms": 166.73076923076917,
+      "median_ae_ms": 59.500000000000014,
+      "miou": 0.6337232353879797,
+      "median_iou": 0.6917808219178074
+    },
+    {
+      "key": "audio/44m_379_1843.mp3",
+      "num_pred_words": 4,
+      "num_gt_words": 4,
+      "num_aligned": 4,
+      "overall_mae_ms": 15.374999999999993,
+      "median_ae_ms": 9.000000000000007,
+      "miou": 0.8725443544077496,
+      "median_iou": 0.9061986863711
+    },
+    {
+      "key": "audio/508_100_2257.mp3",
+      "num_pred_words": 16,
+      "num_gt_words": 16,
+      "num_aligned": 16,
+      "overall_mae_ms": 13.40624999999998,
+      "median_ae_ms": 8.000000000000062,
+      "miou": 0.8661919390557715,
+      "median_iou": 0.887009803921569
+    },
+    {
+      "key": "audio/29ma_022_789.mp3",
+      "num_pred_words": 14,
+      "num_gt_words": 14,
+      "num_aligned": 14,
+      "overall_mae_ms": 14.607142857142819,
+      "median_ae_ms": 14.500000000000124,
+      "miou": 0.9112427788933807,
+      "median_iou": 0.9447874769888029
+    },
+    {
+      "key": "audio/25m_074_545.mp3",
+      "num_pred_words": 9,
+      "num_gt_words": 9,
+      "num_aligned": 9,
+      "overall_mae_ms": 27.55555555555568,
+      "median_ae_ms": 7.000000000000062,
+      "miou": 0.8887376008317441,
+      "median_iou": 0.9496402877697838
+    },
+    {
+      "key": "audio/507_049_2138.mp3",
+      "num_pred_words": 10,
+      "num_gt_words": 10,
+      "num_aligned": 10,
+      "overall_mae_ms": 86.45000000000016,
+      "median_ae_ms": 11.750000000000032,
+      "miou": 0.8593734532517245,
+      "median_iou": 0.9342479111988617
+    },
+    {
+      "key": "audio/60m_004_2932.mp3",
+      "num_pred_words": 14,
+      "num_gt_words": 14,
+      "num_aligned": 14,
+      "overall_mae_ms": 106.57142857142857,
+      "median_ae_ms": 21.999999999999964,
+      "miou": 0.6977135921761715,
+      "median_iou": 0.9062953995157397
+    },
+    {
+      "key": "audio/29mb_017_894.mp3",
+      "num_pred_words": 11,
+      "num_gt_words": 11,
+      "num_aligned": 11,
+      "overall_mae_ms": 62.499999999999886,
+      "median_ae_ms": 14.999999999999902,
+      "miou": 0.777186307489989,
+      "median_iou": 0.9318181818181822
+    },
+    {
+      "key": "audio/24fb_008_101.mp3",
+      "num_pred_words": 34,
+      "num_gt_words": 34,
+      "num_aligned": 34,
+      "overall_mae_ms": 32.86764705882346,
+      "median_ae_ms": 16.74999999999949,
+      "miou": 0.8183520165577952,
+      "median_iou": 0.8933412806539511
+    },
+    {
+      "key": "audio/29ma_068_835.mp3",
+      "num_pred_words": 26,
+      "num_gt_words": 26,
+      "num_aligned": 26,
+      "overall_mae_ms": 10.576923076922997,
+      "median_ae_ms": 6.750000000000034,
+      "miou": 0.9174362763199498,
+      "median_iou": 0.9412778904665314
+    },
+    {
+      "key": "audio/35ma_002_1189.mp3",
+      "num_pred_words": 32,
+      "num_gt_words": 32,
+      "num_aligned": 32,
+      "overall_mae_ms": 154.95312499999983,
+      "median_ae_ms": 34.750000000000284,
+      "miou": 0.6920150534254749,
+      "median_iou": 0.7767253345177995
+    },
+    {
+      "key": "audio/29ma_078_845.mp3",
+      "num_pred_words": 45,
+      "num_gt_words": 45,
+      "num_aligned": 45,
+      "overall_mae_ms": 17.077777777777793,
+      "median_ae_ms": 9.499999999999176,
+      "miou": 0.8249887044426156,
+      "median_iou": 0.912087912087912
+    },
+    {
+      "key": "audio/50fa_130_2459.mp3",
+      "num_pred_words": 6,
+      "num_gt_words": 6,
+      "num_aligned": 6,
+      "overall_mae_ms": 70.25000000000001,
+      "median_ae_ms": 59.0,
+      "miou": 0.6420027867043124,
+      "median_iou": 0.64569277526262
+    },
+    {
+      "key": "audio/29mb_033_910.mp3",
+      "num_pred_words": 22,
+      "num_gt_words": 22,
+      "num_aligned": 22,
+      "overall_mae_ms": 33.113636363636296,
+      "median_ae_ms": 11.00000000000012,
+      "miou": 0.8504157367415682,
+      "median_iou": 0.9159917638984205
+    },
+    {
+      "key": "audio/44m_073_1539.mp3",
+      "num_pred_words": 13,
+      "num_gt_words": 13,
+      "num_aligned": 13,
+      "overall_mae_ms": 18.769230769230756,
+      "median_ae_ms": 17.49999999999985,
+      "miou": 0.7574206879474109,
+      "median_iou": 0.8503401360544216
+    },
+    {
+      "key": "audio/25m_051_523.mp3",
+      "num_pred_words": 6,
+      "num_gt_words": 6,
+      "num_aligned": 6,
+      "overall_mae_ms": 279.4166666666667,
+      "median_ae_ms": 59.50000000000008,
+      "miou": 0.5720352078375815,
+      "median_iou": 0.7940218925967144
+    },
+    {
+      "key": "audio/44m_147_1613.mp3",
+      "num_pred_words": 15,
+      "num_gt_words": 15,
+      "num_aligned": 15,
+      "overall_mae_ms": 40.00000000000001,
+      "median_ae_ms": 12.00000000000001,
+      "miou": 0.8126028675031018,
+      "median_iou": 0.8949416342412462
+    },
+    {
+      "key": "audio/35ma_010_1197.mp3",
+      "num_pred_words": 54,
+      "num_gt_words": 54,
+      "num_aligned": 54,
+      "overall_mae_ms": 521.4537037037034,
+      "median_ae_ms": 116.99999999999869,
+      "miou": 0.3978667062689446,
+      "median_iou": 0.42050747875751915
+    },
+    {
+      "key": "audio/68m_035_3367.mp3",
+      "num_pred_words": 14,
+      "num_gt_words": 14,
+      "num_aligned": 14,
+      "overall_mae_ms": 98.57142857142854,
+      "median_ae_ms": 13.750000000000012,
+      "miou": 0.8632290934097254,
+      "median_iou": 0.9362757227102154
+    },
+    {
+      "key": "audio/44m_176_1641.mp3",
+      "num_pred_words": 13,
+      "num_gt_words": 13,
+      "num_aligned": 13,
+      "overall_mae_ms": 15.65384615384615,
+      "median_ae_ms": 12.00000000000001,
+      "miou": 0.848929051894154,
+      "median_iou": 0.9136690647482012
+    },
+    {
+      "key": "audio/57m_002_2830.mp3",
+      "num_pred_words": 27,
+      "num_gt_words": 27,
+      "num_aligned": 27,
+      "overall_mae_ms": 8.259259259259306,
+      "median_ae_ms": 7.000000000000117,
+      "miou": 0.9290608502287573,
+      "median_iou": 0.949333333333333
+    },
+    {
+      "key": "audio/24ma_040_301.mp3",
+      "num_pred_words": 15,
+      "num_gt_words": 15,
+      "num_aligned": 15,
+      "overall_mae_ms": 73.69999999999993,
+      "median_ae_ms": 19.500000000000018,
+      "miou": 0.6536369416595472,
+      "median_iou": 0.8943089430894308
+    },
+    {
+      "key": "audio/46mb_007_1997.mp3",
+      "num_pred_words": 11,
+      "num_gt_words": 11,
+      "num_aligned": 11,
+      "overall_mae_ms": 13.818181818181769,
+      "median_ae_ms": 8.000000000000007,
+      "miou": 0.8354929351151223,
+      "median_iou": 0.9035532994923852
+    },
+    {
+      "key": "audio/54m_036_2772.mp3",
+      "num_pred_words": 15,
+      "num_gt_words": 15,
+      "num_aligned": 15,
+      "overall_mae_ms": 16.699999999999996,
+      "median_ae_ms": 7.499999999999951,
+      "miou": 0.8914587158958882,
+      "median_iou": 0.9249999999999973
+    },
+    {
+      "key": "audio/37m_019_1342.mp3",
+      "num_pred_words": 13,
+      "num_gt_words": 13,
+      "num_aligned": 13,
+      "overall_mae_ms": 162.6923076923077,
+      "median_ae_ms": 13.499999999999623,
+      "miou": 0.738883339451182,
+      "median_iou": 0.9341825902335456
+    },
+    {
+      "key": "audio/57m_016_2844.mp3",
+      "num_pred_words": 37,
+      "num_gt_words": 37,
+      "num_aligned": 37,
+      "overall_mae_ms": 14.081081081080862,
+      "median_ae_ms": 8.000000000000007,
+      "miou": 0.9108585518724044,
+      "median_iou": 0.9378881987577625
+    },
+    {
+      "key": "audio/29ma_015_782.mp3",
+      "num_pred_words": 15,
+      "num_gt_words": 15,
+      "num_aligned": 15,
+      "overall_mae_ms": 10.099999999999948,
+      "median_ae_ms": 6.49999999999995,
+      "miou": 0.9519893956094175,
+      "median_iou": 0.9727272727272732
+    },
+    {
+      "key": "audio/44m_299_1763.mp3",
+      "num_pred_words": 13,
+      "num_gt_words": 13,
+      "num_aligned": 13,
+      "overall_mae_ms": 13.846153846153829,
+      "median_ae_ms": 11.999999999999789,
+      "miou": 0.7979353366457282,
+      "median_iou": 0.8947368421052642
+    },
+    {
+      "key": "audio/29mb_054_931.mp3",
+      "num_pred_words": 11,
+      "num_gt_words": 11,
+      "num_aligned": 11,
+      "overall_mae_ms": 21.318181818181834,
+      "median_ae_ms": 19.999999999999574,
+      "miou": 0.8387494156592001,
+      "median_iou": 0.9242144177449177
+    },
+    {
+      "key": "audio/24ma_033_294.mp3",
+      "num_pred_words": 8,
+      "num_gt_words": 8,
+      "num_aligned": 8,
+      "overall_mae_ms": 88.625,
+      "median_ae_ms": 12.50000000000001,
+      "miou": 0.7431058447739087,
+      "median_iou": 0.8788198103266596
+    },
+    {
+      "key": "audio/44m_083_1549.mp3",
+      "num_pred_words": 18,
+      "num_gt_words": 18,
+      "num_aligned": 18,
+      "overall_mae_ms": 16.805555555555532,
+      "median_ae_ms": 8.249999999999869,
+      "miou": 0.8278729359382888,
+      "median_iou": 0.8899999999999988
+    },
+    {
+      "key": "audio/29ma_085_852.mp3",
+      "num_pred_words": 53,
+      "num_gt_words": 53,
+      "num_aligned": 53,
+      "overall_mae_ms": 23.584905660377352,
+      "median_ae_ms": 8.49999999999973,
+      "miou": 0.8346889604237334,
+      "median_iou": 0.9124087591240846
+    },
+    {
+      "key": "audio/29mc_044_1026.mp3",
+      "num_pred_words": 22,
+      "num_gt_words": 22,
+      "num_aligned": 22,
+      "overall_mae_ms": 28.977272727272794,
+      "median_ae_ms": 6.000000000000116,
+      "miou": 0.9058475884232624,
+      "median_iou": 0.951190476190474
+    },
+    {
+      "key": "audio/25m_021_493.mp3",
+      "num_pred_words": 26,
+      "num_gt_words": 26,
+      "num_aligned": 26,
+      "overall_mae_ms": 226.30769230769226,
+      "median_ae_ms": 31.500000000000085,
+      "miou": 0.6148614278994067,
+      "median_iou": 0.785999999999999
+    },
+    {
+      "key": "audio/503_043_2075.mp3",
+      "num_pred_words": 2,
+      "num_gt_words": 2,
+      "num_aligned": 2,
+      "overall_mae_ms": 26.00000000000002,
+      "median_ae_ms": 26.00000000000002,
+      "miou": 0.8759555316048937,
+      "median_iou": 0.8759555316048937
+    },
+    {
+      "key": "audio/46ma_058_1929.mp3",
+      "num_pred_words": 13,
+      "num_gt_words": 13,
+      "num_aligned": 13,
+      "overall_mae_ms": 70.69230769230772,
+      "median_ae_ms": 13.500000000000512,
+      "miou": 0.8324416807907055,
+      "median_iou": 0.914322250639387
+    },
+    {
+      "key": "audio/27ma_035_690.mp3",
+      "num_pred_words": 41,
+      "num_gt_words": 41,
+      "num_aligned": 41,
+      "overall_mae_ms": 55.65853658536593,
+      "median_ae_ms": 13.500000000002288,
+      "miou": 0.7621192432185661,
+      "median_iou": 0.8594594594594609
+    },
+    {
+      "key": "audio/32m_017_1056.mp3",
+      "num_pred_words": 10,
+      "num_gt_words": 10,
+      "num_aligned": 10,
+      "overall_mae_ms": 9.000000000000114,
+      "median_ae_ms": 8.49999999999998,
+      "miou": 0.9324717861275305,
+      "median_iou": 0.9505088325652833
+    },
+    {
+      "key": "audio/68m_074_3406.mp3",
+      "num_pred_words": 11,
+      "num_gt_words": 11,
+      "num_aligned": 11,
+      "overall_mae_ms": 23.318181818181834,
+      "median_ae_ms": 19.49999999999996,
+      "miou": 0.6798442614976973,
+      "median_iou": 0.842105263157895
+    },
+    {
+      "key": "audio/34m_089_1176.mp3",
+      "num_pred_words": 7,
+      "num_gt_words": 7,
+      "num_aligned": 7,
+      "overall_mae_ms": 8.499999999999998,
+      "median_ae_ms": 10.499999999999954,
+      "miou": 0.8687731699729891,
+      "median_iou": 0.8990825688073383
+    },
+    {
+      "key": "audio/54m_085_2821.mp3",
+      "num_pred_words": 33,
+      "num_gt_words": 33,
+      "num_aligned": 33,
+      "overall_mae_ms": 8.863636363636576,
+      "median_ae_ms": 6.999999999999673,
+      "miou": 0.9046060994097366,
+      "median_iou": 0.9519230769230751
+    },
+    {
+      "key": "audio/24fc_060_197.mp3",
+      "num_pred_words": 18,
+      "num_gt_words": 18,
+      "num_aligned": 18,
+      "overall_mae_ms": 103.83333333333329,
+      "median_ae_ms": 11.249999999999927,
+      "miou": 0.8371186810052309,
+      "median_iou": 0.9231389698736674
+    },
+    {
+      "key": "audio/35mb_040_1249.mp3",
+      "num_pred_words": 8,
+      "num_gt_words": 8,
+      "num_aligned": 8,
+      "overall_mae_ms": 12.87499999999999,
+      "median_ae_ms": 11.499999999999954,
+      "miou": 0.870746705740671,
+      "median_iou": 0.9151098901098904
+    },
+    {
+      "key": "audio/44m_353_1817.mp3",
+      "num_pred_words": 13,
+      "num_gt_words": 13,
+      "num_aligned": 13,
+      "overall_mae_ms": 24.269230769230774,
+      "median_ae_ms": 16.5,
+      "miou": 0.6250290197347543,
+      "median_iou": 0.7534246575342461
+    },
+    {
+      "key": "audio/54m_064_2800.mp3",
+      "num_pred_words": 10,
+      "num_gt_words": 10,
+      "num_aligned": 10,
+      "overall_mae_ms": 8.199999999999907,
+      "median_ae_ms": 6.499999999999839,
+      "miou": 0.9120042489816221,
+      "median_iou": 0.9172655565293605
+    },
+    {
+      "key": "audio/60m_129_3053.mp3",
+      "num_pred_words": 14,
+      "num_gt_words": 14,
+      "num_aligned": 14,
+      "overall_mae_ms": 29.785714285714256,
+      "median_ae_ms": 9.000000000000119,
+      "miou": 0.8448404650074643,
+      "median_iou": 0.906944444444443
+    },
+    {
+      "key": "audio/46mb_008_1998.mp3",
+      "num_pred_words": 20,
+      "num_gt_words": 20,
+      "num_aligned": 20,
+      "overall_mae_ms": 29.69999999999987,
+      "median_ae_ms": 6.249999999999867,
+      "miou": 0.8096052165863611,
+      "median_iou": 0.9459284232365163
+    },
+    {
+      "key": "audio/50fb_048_2610.mp3",
+      "num_pred_words": 9,
+      "num_gt_words": 9,
+      "num_aligned": 9,
+      "overall_mae_ms": 90.6111111111111,
+      "median_ae_ms": 12.9999999999999,
+      "miou": 0.7937247095377784,
+      "median_iou": 0.9508474576271186
+    },
+    {
+      "key": "audio/35mb_010_1219.mp3",
+      "num_pred_words": 7,
+      "num_gt_words": 7,
+      "num_aligned": 7,
+      "overall_mae_ms": 292.28571428571433,
+      "median_ae_ms": 29.999999999999996,
+      "miou": 0.48266438209466705,
+      "median_iou": 0.6551724137931035
+    },
+    {
+      "key": "audio/54f_014_2651.mp3",
+      "num_pred_words": 14,
+      "num_gt_words": 14,
+      "num_aligned": 14,
+      "overall_mae_ms": 56.14285714285711,
+      "median_ae_ms": 9.499999999999842,
+      "miou": 0.818986148262016,
+      "median_iou": 0.9578334028423859
+    },
+    {
+      "key": "audio/29mc_019_1002.mp3",
+      "num_pred_words": 25,
+      "num_gt_words": 25,
+      "num_aligned": 25,
+      "overall_mae_ms": 209.15999999999994,
+      "median_ae_ms": 13.500000000000068,
+      "miou": 0.7532655853816105,
+      "median_iou": 0.9081632653061235
+    },
+    {
+      "key": "audio/57m_015_2843.mp3",
+      "num_pred_words": 13,
+      "num_gt_words": 13,
+      "num_aligned": 13,
+      "overall_mae_ms": 5.153846153846197,
+      "median_ae_ms": 4.5000000000001705,
+      "miou": 0.948224750696432,
+      "median_iou": 0.9574468085106382
+    },
+    {
+      "key": "audio/35mb_045_1254.mp3",
+      "num_pred_words": 13,
+      "num_gt_words": 13,
+      "num_aligned": 13,
+      "overall_mae_ms": 11.8461538461538,
+      "median_ae_ms": 8.499999999999952,
+      "miou": 0.8856499785829997,
+      "median_iou": 0.8905472636815931
+    },
+    {
+      "key": "audio/24fb_032_125.mp3",
+      "num_pred_words": 17,
+      "num_gt_words": 17,
+      "num_aligned": 17,
+      "overall_mae_ms": 34.79411764705886,
+      "median_ae_ms": 18.49999999999996,
+      "miou": 0.7286053358992456,
+      "median_iou": 0.8416666666666658
+    },
+    {
+      "key": "audio/507_033_2122.mp3",
+      "num_pred_words": 26,
+      "num_gt_words": 26,
+      "num_aligned": 26,
+      "overall_mae_ms": 89.5961538461538,
+      "median_ae_ms": 21.999999999999986,
+      "miou": 0.7748961847047242,
+      "median_iou": 0.8924937578027472
+    },
+    {
+      "key": "audio/43m_058_1455.mp3",
+      "num_pred_words": 4,
+      "num_gt_words": 4,
+      "num_aligned": 4,
+      "overall_mae_ms": 37.625000000000036,
+      "median_ae_ms": 34.50000000000003,
+      "miou": 0.5990025088163592,
+      "median_iou": 0.7243686539963549
+    },
+    {
+      "key": "audio/29mb_032_909.mp3",
+      "num_pred_words": 16,
+      "num_gt_words": 16,
+      "num_aligned": 16,
+      "overall_mae_ms": 106.37499999999997,
+      "median_ae_ms": 3.5000000000000586,
+      "miou": 0.8354889154829119,
+      "median_iou": 0.9629846093902201
+    },
+    {
+      "key": "audio/507_013_2102.mp3",
+      "num_pred_words": 39,
+      "num_gt_words": 39,
+      "num_aligned": 39,
+      "overall_mae_ms": 48.51282051282048,
+      "median_ae_ms": 10.49999999999951,
+      "miou": 0.870604532222463,
+      "median_iou": 0.9352750809061501
+    },
+    {
+      "key": "audio/44m_177_1642.mp3",
+      "num_pred_words": 9,
+      "num_gt_words": 9,
+      "num_aligned": 9,
+      "overall_mae_ms": 16.333333333333353,
+      "median_ae_ms": 10.000000000000009,
+      "miou": 0.7737687041790502,
+      "median_iou": 0.7647058823529409
+    },
+    {
+      "key": "audio/34m_042_1132.mp3",
+      "num_pred_words": 7,
+      "num_gt_words": 7,
+      "num_aligned": 7,
+      "overall_mae_ms": 155.85714285714283,
+      "median_ae_ms": 23.000000000000004,
+      "miou": 0.7117906138361486,
+      "median_iou": 0.877005347593583
+    },
+    {
+      "key": "audio/57m_074_2901.mp3",
+      "num_pred_words": 23,
+      "num_gt_words": 23,
+      "num_aligned": 23,
+      "overall_mae_ms": 5.173913043478302,
+      "median_ae_ms": 5.000000000000004,
+      "miou": 0.9447609634320101,
+      "median_iou": 0.9498432601880877
+    },
+    {
+      "key": "audio/62m_022_3122.mp3",
+      "num_pred_words": 12,
+      "num_gt_words": 12,
+      "num_aligned": 12,
+      "overall_mae_ms": 22.87500000000001,
+      "median_ae_ms": 12.499999999999956,
+      "miou": 0.8899962851092501,
+      "median_iou": 0.9231681264687037
+    },
+    {
+      "key": "audio/28m_045_756.mp3",
+      "num_pred_words": 52,
+      "num_gt_words": 52,
+      "num_aligned": 52,
+      "overall_mae_ms": 27.490384615384578,
+      "median_ae_ms": 8.999999999999675,
+      "miou": 0.8003588826897616,
+      "median_iou": 0.9222381448671184
+    },
+    {
+      "key": "audio/62m_121_3221.mp3",
+      "num_pred_words": 7,
+      "num_gt_words": 7,
+      "num_aligned": 7,
+      "overall_mae_ms": 183.35714285714286,
+      "median_ae_ms": 52.99999999999999,
+      "miou": 0.6267979915134193,
+      "median_iou": 0.7925373134328361
+    },
+    {
+      "key": "audio/57m_092_2919.mp3",
+      "num_pred_words": 10,
+      "num_gt_words": 10,
+      "num_aligned": 10,
+      "overall_mae_ms": 5.75000000000002,
+      "median_ae_ms": 4.000000000000087,
+      "miou": 0.9258493399413592,
+      "median_iou": 0.9501444159178425
+    },
+    {
+      "key": "audio/54f_029_2666.mp3",
+      "num_pred_words": 3,
+      "num_gt_words": 3,
+      "num_aligned": 3,
+      "overall_mae_ms": 12.499999999999968,
+      "median_ae_ms": 6.999999999999895,
+      "miou": 0.9263182215083782,
+      "median_iou": 0.9641025641025647
+    },
+    {
+      "key": "audio/29mb_014_891.mp3",
+      "num_pred_words": 21,
+      "num_gt_words": 21,
+      "num_aligned": 21,
+      "overall_mae_ms": 18.047619047619072,
+      "median_ae_ms": 8.500000000000174,
+      "miou": 0.8580349937224021,
+      "median_iou": 0.9333333333333323
+    },
+    {
+      "key": "audio/32m_039_1078.mp3",
+      "num_pred_words": 20,
+      "num_gt_words": 20,
+      "num_aligned": 20,
+      "overall_mae_ms": 67.32500000000009,
+      "median_ae_ms": 6.499999999999978,
+      "miou": 0.8460026831311194,
+      "median_iou": 0.9581311878357104
+    },
+    {
+      "key": "audio/507_023_2112.mp3",
+      "num_pred_words": 21,
+      "num_gt_words": 21,
+      "num_aligned": 21,
+      "overall_mae_ms": 25.523809523809547,
+      "median_ae_ms": 10.500000000000176,
+      "miou": 0.8181018628294863,
+      "median_iou": 0.9291338582677173
+    },
+    {
+      "key": "audio/29mc_011_994.mp3",
+      "num_pred_words": 28,
+      "num_gt_words": 28,
+      "num_aligned": 28,
+      "overall_mae_ms": 17.678571428571306,
+      "median_ae_ms": 14.24999999999943,
+      "miou": 0.8656180734813421,
+      "median_iou": 0.910668931489121
+    },
+    {
+      "key": "audio/50fa_226_2555.mp3",
+      "num_pred_words": 15,
+      "num_gt_words": 15,
+      "num_aligned": 15,
+      "overall_mae_ms": 36.133333333333354,
+      "median_ae_ms": 19.49999999999985,
+      "miou": 0.7861554686022524,
+      "median_iou": 0.85
+    },
+    {
+      "key": "audio/54f_060_2697.mp3",
+      "num_pred_words": 14,
+      "num_gt_words": 14,
+      "num_aligned": 14,
+      "overall_mae_ms": 16.821428571428527,
+      "median_ae_ms": 4.9999999999999485,
+      "miou": 0.9156440770306965,
+      "median_iou": 0.9608530528775932
+    },
+    {
+      "key": "audio/50fb_006_2569.mp3",
+      "num_pred_words": 15,
+      "num_gt_words": 15,
+      "num_aligned": 15,
+      "overall_mae_ms": 41.53333333333339,
+      "median_ae_ms": 8.500000000000174,
+      "miou": 0.8711408052554362,
+      "median_iou": 0.9539748953974873
+    },
+    {
+      "key": "audio/508_082_2239.mp3",
+      "num_pred_words": 9,
+      "num_gt_words": 9,
+      "num_aligned": 9,
+      "overall_mae_ms": 10.666666666666682,
+      "median_ae_ms": 8.000000000000007,
+      "miou": 0.9116420461424737,
+      "median_iou": 0.9279279279279279
+    },
+    {
+      "key": "audio/24mb_079_407.mp3",
+      "num_pred_words": 4,
+      "num_gt_words": 4,
+      "num_aligned": 4,
+      "overall_mae_ms": 35.75000000000004,
+      "median_ae_ms": 12.000000000000062,
+      "miou": 0.8276869090349479,
+      "median_iou": 0.9007836990595606
+    },
+    {
+      "key": "audio/24fc_032_169.mp3",
+      "num_pred_words": 5,
+      "num_gt_words": 5,
+      "num_aligned": 5,
+      "overall_mae_ms": 15.199999999999982,
+      "median_ae_ms": 11.000000000000007,
+      "miou": 0.8739488549463683,
+      "median_iou": 0.9051724137931035
+    },
+    {
+      "key": "audio/44m_362_1826.mp3",
+      "num_pred_words": 10,
+      "num_gt_words": 10,
+      "num_aligned": 10,
+      "overall_mae_ms": 14.900000000000043,
+      "median_ae_ms": 13.000000000000039,
+      "miou": 0.8353721056589076,
+      "median_iou": 0.8955158829938812
+    },
+    {
+      "key": "audio/25m_019_491.mp3",
+      "num_pred_words": 19,
+      "num_gt_words": 19,
+      "num_aligned": 19,
+      "overall_mae_ms": 51.42105263157897,
+      "median_ae_ms": 13.000000000000789,
+      "miou": 0.8352737685166955,
+      "median_iou": 0.9251700680272101
+    },
+    {
+      "key": "audio/27ma_025_680.mp3",
+      "num_pred_words": 19,
+      "num_gt_words": 19,
+      "num_aligned": 19,
+      "overall_mae_ms": 109.63157894736842,
+      "median_ae_ms": 50.999999999999716,
+      "miou": 0.6521003508794316,
+      "median_iou": 0.796969696969697
+    },
+    {
+      "key": "audio/27ma_003_658.mp3",
+      "num_pred_words": 22,
+      "num_gt_words": 22,
+      "num_aligned": 22,
+      "overall_mae_ms": 43.04545454545466,
+      "median_ae_ms": 13.00000000000001,
+      "miou": 0.8194648700803391,
+      "median_iou": 0.9092128801431137
+    },
+    {
+      "key": "audio/24fa_037_37.mp3",
+      "num_pred_words": 8,
+      "num_gt_words": 8,
+      "num_aligned": 8,
+      "overall_mae_ms": 94.06250000000001,
+      "median_ae_ms": 14.00000000000004,
+      "miou": 0.79594723353138,
+      "median_iou": 0.8964285714285714
+    },
+    {
+      "key": "audio/29mb_067_944.mp3",
+      "num_pred_words": 28,
+      "num_gt_words": 28,
+      "num_aligned": 28,
+      "overall_mae_ms": 19.035714285714235,
+      "median_ae_ms": 12.000000000000233,
+      "miou": 0.8750667905990553,
+      "median_iou": 0.9174784829282123
+    },
+    {
+      "key": "audio/32m_025_1064.mp3",
+      "num_pred_words": 18,
+      "num_gt_words": 18,
+      "num_aligned": 18,
+      "overall_mae_ms": 12.13888888888892,
+      "median_ae_ms": 9.250000000000425,
+      "miou": 0.9248789589621565,
+      "median_iou": 0.9226293103448256
+    },
+    {
+      "key": "audio/43m_044_1441.mp3",
+      "num_pred_words": 14,
+      "num_gt_words": 14,
+      "num_aligned": 14,
+      "overall_mae_ms": 72.92857142857146,
+      "median_ae_ms": 10.249999999999982,
+      "miou": 0.8218507145862403,
+      "median_iou": 0.9495357979257284
+    },
+    {
+      "key": "audio/44m_406_1870.mp3",
+      "num_pred_words": 9,
+      "num_gt_words": 9,
+      "num_aligned": 9,
+      "overall_mae_ms": 15.222222222222209,
+      "median_ae_ms": 8.499999999999952,
+      "miou": 0.8885892492709203,
+      "median_iou": 0.9137055837563457
+    },
+    {
+      "key": "audio/50fb_016_2579.mp3",
+      "num_pred_words": 11,
+      "num_gt_words": 11,
+      "num_aligned": 11,
+      "overall_mae_ms": 23.77272727272731,
+      "median_ae_ms": 12.9999999999999,
+      "miou": 0.885077257772005,
+      "median_iou": 0.9388646288209607
+    },
+    {
+      "key": "audio/25m_022_494.mp3",
+      "num_pred_words": 7,
+      "num_gt_words": 7,
+      "num_aligned": 7,
+      "overall_mae_ms": 385.21428571428567,
+      "median_ae_ms": 16.500000000000014,
+      "miou": 0.6578978740074047,
+      "median_iou": 0.8879310344827595
+    },
+    {
+      "key": "audio/44m_242_1706.mp3",
+      "num_pred_words": 21,
+      "num_gt_words": 21,
+      "num_aligned": 21,
+      "overall_mae_ms": 7.071428571428567,
+      "median_ae_ms": 5.499999999999949,
+      "miou": 0.9150822260605035,
+      "median_iou": 0.9624999999999986
+    },
+    {
+      "key": "audio/50fa_047_2376.mp3",
+      "num_pred_words": 8,
+      "num_gt_words": 8,
+      "num_aligned": 8,
+      "overall_mae_ms": 58.312499999999986,
+      "median_ae_ms": 20.749999999999975,
+      "miou": 0.7684661728057314,
+      "median_iou": 0.8646207351828296
+    },
+    {
+      "key": "audio/64m_101_3323.mp3",
+      "num_pred_words": 41,
+      "num_gt_words": 41,
+      "num_aligned": 41,
+      "overall_mae_ms": 15.536585365853671,
+      "median_ae_ms": 10.500000000000398,
+      "miou": 0.8801772272613062,
+      "median_iou": 0.9153846153846207
+    },
+    {
+      "key": "audio/35mb_035_1244.mp3",
+      "num_pred_words": 14,
+      "num_gt_words": 14,
+      "num_aligned": 14,
+      "overall_mae_ms": 20.321428571428548,
+      "median_ae_ms": 14.499999999999957,
+      "miou": 0.830838158903701,
+      "median_iou": 0.9102443173032324
+    },
+    {
+      "key": "audio/50fb_020_2583.mp3",
+      "num_pred_words": 31,
+      "num_gt_words": 31,
+      "num_aligned": 31,
+      "overall_mae_ms": 87.16129032258061,
+      "median_ae_ms": 10.999999999999233,
+      "miou": 0.7533385590198288,
+      "median_iou": 0.9375
+    },
+    {
+      "key": "audio/24fc_019_156.mp3",
+      "num_pred_words": 8,
+      "num_gt_words": 8,
+      "num_aligned": 8,
+      "overall_mae_ms": 16.18749999999995,
+      "median_ae_ms": 12.249999999999927,
+      "miou": 0.8752717407887516,
+      "median_iou": 0.8930555555555573
+    },
+    {
+      "key": "audio/43m_039_1436.mp3",
+      "num_pred_words": 44,
+      "num_gt_words": 44,
+      "num_aligned": 44,
+      "overall_mae_ms": 71.61363636363636,
+      "median_ae_ms": 9.249999999999925,
+      "miou": 0.8164299719084703,
+      "median_iou": 0.8971544715447212
+    },
+    {
+      "key": "audio/24ma_010_271.mp3",
+      "num_pred_words": 30,
+      "num_gt_words": 30,
+      "num_aligned": 30,
+      "overall_mae_ms": 23.016666666666495,
+      "median_ae_ms": 11.500000000000288,
+      "miou": 0.8142022744775403,
+      "median_iou": 0.9186507936507944
+    },
+    {
+      "key": "audio/26f_045_607.mp3",
+      "num_pred_words": 9,
+      "num_gt_words": 9,
+      "num_aligned": 9,
+      "overall_mae_ms": 66.8888888888889,
+      "median_ae_ms": 7.500000000000007,
+      "miou": 0.829280360613156,
+      "median_iou": 0.918918918918919
+    },
+    {
+      "key": "audio/62m_010_3110.mp3",
+      "num_pred_words": 7,
+      "num_gt_words": 7,
+      "num_aligned": 7,
+      "overall_mae_ms": 27.571428571428587,
+      "median_ae_ms": 23.99999999999991,
+      "miou": 0.8926543470848884,
+      "median_iou": 0.909814323607427
+    },
+    {
+      "key": "audio/57m_049_2876.mp3",
+      "num_pred_words": 8,
+      "num_gt_words": 8,
+      "num_aligned": 8,
+      "overall_mae_ms": 12.812500000000085,
+      "median_ae_ms": 7.500000000000062,
+      "miou": 0.936251516324998,
+      "median_iou": 0.9628048780487805
+    },
+    {
+      "key": "audio/60m_074_3001.mp3",
+      "num_pred_words": 22,
+      "num_gt_words": 22,
+      "num_aligned": 22,
+      "overall_mae_ms": 13.590909090909086,
+      "median_ae_ms": 6.49999999999995,
+      "miou": 0.9027918803022412,
+      "median_iou": 0.9426767676767669
+    },
+    {
+      "key": "audio/54m_022_2758.mp3",
+      "num_pred_words": 28,
+      "num_gt_words": 28,
+      "num_aligned": 28,
+      "overall_mae_ms": 229.5178571428572,
+      "median_ae_ms": 6.249999999999978,
+      "miou": 0.8769206395527493,
+      "median_iou": 0.9481900452488701
+    },
+    {
+      "key": "audio/35mb_033_1242.mp3",
+      "num_pred_words": 10,
+      "num_gt_words": 10,
+      "num_aligned": 10,
+      "overall_mae_ms": 12.450000000000028,
+      "median_ae_ms": 9.750000000000036,
+      "miou": 0.8928099261826347,
+      "median_iou": 0.8890350877192981
+    },
+    {
+      "key": "audio/44m_405_1869.mp3",
+      "num_pred_words": 12,
+      "num_gt_words": 12,
+      "num_aligned": 12,
+      "overall_mae_ms": 9.041666666666679,
+      "median_ae_ms": 4.9999999999999485,
+      "miou": 0.9015123506579029,
+      "median_iou": 0.9298747276688439
+    },
+    {
+      "key": "audio/503_037_2069.mp3",
+      "num_pred_words": 37,
+      "num_gt_words": 37,
+      "num_aligned": 37,
+      "overall_mae_ms": 23.851351351351347,
+      "median_ae_ms": 8.500000000000174,
+      "miou": 0.9099953157474148,
+      "median_iou": 0.9472422062350122
+    },
+    {
+      "key": "audio/29ma_051_818.mp3",
+      "num_pred_words": 39,
+      "num_gt_words": 39,
+      "num_aligned": 39,
+      "overall_mae_ms": 9.21794871794874,
+      "median_ae_ms": 6.49999999999995,
+      "miou": 0.9112957431493601,
+      "median_iou": 0.9291338582677142
+    },
+    {
+      "key": "audio/25m_027_499.mp3",
+      "num_pred_words": 15,
+      "num_gt_words": 15,
+      "num_aligned": 15,
+      "overall_mae_ms": 190.59999999999982,
+      "median_ae_ms": 24.999999999999467,
+      "miou": 0.7920416022254635,
+      "median_iou": 0.8611111111111138
+    },
+    {
+      "key": "audio/68m_001_3333.mp3",
+      "num_pred_words": 8,
+      "num_gt_words": 8,
+      "num_aligned": 8,
+      "overall_mae_ms": 63.06249999999999,
+      "median_ae_ms": 10.500000000000009,
+      "miou": 0.8265294932092978,
+      "median_iou": 0.9213046325094123
+    },
+    {
+      "key": "audio/44m_309_1773.mp3",
+      "num_pred_words": 17,
+      "num_gt_words": 17,
+      "num_aligned": 17,
+      "overall_mae_ms": 25.058823529411775,
+      "median_ae_ms": 15.500000000000014,
+      "miou": 0.7205644474541577,
+      "median_iou": 0.8598130841121481
+    },
+    {
+      "key": "audio/44m_217_1681.mp3",
+      "num_pred_words": 9,
+      "num_gt_words": 9,
+      "num_aligned": 9,
+      "overall_mae_ms": 187.49999999999997,
+      "median_ae_ms": 52.999999999999716,
+      "miou": 0.560287325262907,
+      "median_iou": 0.6430976430976447
+    },
+    {
+      "key": "audio/50fb_046_2608.mp3",
+      "num_pred_words": 38,
+      "num_gt_words": 38,
+      "num_aligned": 38,
+      "overall_mae_ms": 180.8421052631579,
+      "median_ae_ms": 19.000000000001016,
+      "miou": 0.711789073627189,
+      "median_iou": 0.9068011497792856
+    },
+    {
+      "key": "audio/27ma_017_672.mp3",
+      "num_pred_words": 15,
+      "num_gt_words": 15,
+      "num_aligned": 15,
+      "overall_mae_ms": 36.900000000000034,
+      "median_ae_ms": 19.50000000000007,
+      "miou": 0.817827572962769,
+      "median_iou": 0.8628571428571425
+    },
+    {
+      "key": "audio/62m_072_3172.mp3",
+      "num_pred_words": 8,
+      "num_gt_words": 8,
+      "num_aligned": 8,
+      "overall_mae_ms": 22.312500000000018,
+      "median_ae_ms": 17.750000000000043,
+      "miou": 0.8273948197914522,
+      "median_iou": 0.8655162109666814
+    },
+    {
+      "key": "audio/24fa_069_69.mp3",
+      "num_pred_words": 4,
+      "num_gt_words": 4,
+      "num_aligned": 4,
+      "overall_mae_ms": 11.000000000000066,
+      "median_ae_ms": 10.750000000000037,
+      "miou": 0.860329226019547,
+      "median_iou": 0.879312298192941
+    },
+    {
+      "key": "audio/32m_032_1071.mp3",
+      "num_pred_words": 13,
+      "num_gt_words": 13,
+      "num_aligned": 13,
+      "overall_mae_ms": 10.346153846153834,
+      "median_ae_ms": 7.999999999999785,
+      "miou": 0.923211840931448,
+      "median_iou": 0.9429657794676806
+    },
+    {
+      "key": "audio/54m_069_2805.mp3",
+      "num_pred_words": 16,
+      "num_gt_words": 16,
+      "num_aligned": 16,
+      "overall_mae_ms": 23.21874999999997,
+      "median_ae_ms": 8.250000000000036,
+      "miou": 0.8732052816134974,
+      "median_iou": 0.9444092827004235
+    },
+    {
+      "key": "audio/25m_088_559.mp3",
+      "num_pred_words": 11,
+      "num_gt_words": 11,
+      "num_aligned": 11,
+      "overall_mae_ms": 127.54545454545452,
+      "median_ae_ms": 14.000000000000234,
+      "miou": 0.8152398632465716,
+      "median_iou": 0.9148936170212775
+    },
+    {
+      "key": "audio/43m_054_1451.mp3",
+      "num_pred_words": 31,
+      "num_gt_words": 31,
+      "num_aligned": 31,
+      "overall_mae_ms": 16.91935483870973,
+      "median_ae_ms": 9.000000000000007,
+      "miou": 0.8869283591143872,
+      "median_iou": 0.9160305343511375
+    },
+    {
+      "key": "audio/43m_005_1402.mp3",
+      "num_pred_words": 17,
+      "num_gt_words": 17,
+      "num_aligned": 17,
+      "overall_mae_ms": 96.6176470588236,
+      "median_ae_ms": 9.000000000000007,
+      "miou": 0.7061223941395957,
+      "median_iou": 0.9149999999999999
+    },
+    {
+      "key": "audio/29mc_005_988.mp3",
+      "num_pred_words": 9,
+      "num_gt_words": 9,
+      "num_aligned": 9,
+      "overall_mae_ms": 9.444444444444391,
+      "median_ae_ms": 10.999999999999899,
+      "miou": 0.932365961661473,
+      "median_iou": 0.9476190476190481
+    },
+    {
+      "key": "audio/50fb_068_2630.mp3",
+      "num_pred_words": 15,
+      "num_gt_words": 15,
+      "num_aligned": 15,
+      "overall_mae_ms": 35.70000000000005,
+      "median_ae_ms": 23.499999999999854,
+      "miou": 0.7944309242942811,
+      "median_iou": 0.8503937007874006
+    },
+    {
+      "key": "audio/46ma_093_1964.mp3",
+      "num_pred_words": 14,
+      "num_gt_words": 14,
+      "num_aligned": 14,
+      "overall_mae_ms": 8.714285714285685,
+      "median_ae_ms": 6.749999999999923,
+      "miou": 0.9175865098870162,
+      "median_iou": 0.9300813008130084
+    },
+    {
+      "key": "audio/25m_076_547.mp3",
+      "num_pred_words": 14,
+      "num_gt_words": 14,
+      "num_aligned": 14,
+      "overall_mae_ms": 358.57142857142867,
+      "median_ae_ms": 14.250000000000005,
+      "miou": 0.6292664381532959,
+      "median_iou": 0.823975044563279
+    },
+    {
+      "key": "audio/37m_026_1349.mp3",
+      "num_pred_words": 18,
+      "num_gt_words": 18,
+      "num_aligned": 18,
+      "overall_mae_ms": 540.7499999999998,
+      "median_ae_ms": 71.99999999999984,
+      "miou": 0.5287858642455041,
+      "median_iou": 0.682441282746161
+    },
+    {
+      "key": "audio/24fc_096_233.mp3",
+      "num_pred_words": 9,
+      "num_gt_words": 9,
+      "num_aligned": 9,
+      "overall_mae_ms": 49.49999999999997,
+      "median_ae_ms": 12.499999999999844,
+      "miou": 0.8058603094108858,
+      "median_iou": 0.872448979591835
+    },
+    {
+      "key": "audio/508_073_2230.mp3",
+      "num_pred_words": 15,
+      "num_gt_words": 15,
+      "num_aligned": 15,
+      "overall_mae_ms": 8.46666666666667,
+      "median_ae_ms": 7.500000000000284,
+      "miou": 0.9344809464764772,
+      "median_iou": 0.9406332453825859
+    },
+    {
+      "key": "audio/28m_052_763.mp3",
+      "num_pred_words": 78,
+      "num_gt_words": 78,
+      "num_aligned": 78,
+      "overall_mae_ms": 12.653846153846109,
+      "median_ae_ms": 9.750000000000147,
+      "miou": 0.8575420448336155,
+      "median_iou": 0.8944444444444455
+    },
+    {
+      "key": "audio/508_020_2177.mp3",
+      "num_pred_words": 25,
+      "num_gt_words": 25,
+      "num_aligned": 25,
+      "overall_mae_ms": 11.860000000000047,
+      "median_ae_ms": 9.499999999999954,
+      "miou": 0.8921590218742207,
+      "median_iou": 0.9199999999999979
+    },
+    {
+      "key": "audio/57m_073_2900.mp3",
+      "num_pred_words": 46,
+      "num_gt_words": 46,
+      "num_aligned": 46,
+      "overall_mae_ms": 5.945652173912954,
+      "median_ae_ms": 4.0000000000000036,
+      "miou": 0.9145509872736729,
+      "median_iou": 0.9621356903965614
+    },
+    {
+      "key": "audio/54m_024_2760.mp3",
+      "num_pred_words": 9,
+      "num_gt_words": 9,
+      "num_aligned": 9,
+      "overall_mae_ms": 141.44444444444443,
+      "median_ae_ms": 15.5,
+      "miou": 0.7877238565304683,
+      "median_iou": 0.9339933993399354
+    },
+    {
+      "key": "audio/46mb_033_2023.mp3",
+      "num_pred_words": 7,
+      "num_gt_words": 7,
+      "num_aligned": 7,
+      "overall_mae_ms": 19.785714285714313,
+      "median_ae_ms": 11.999999999999789,
+      "miou": 0.8430870082622127,
+      "median_iou": 0.846153846153848
+    },
+    {
+      "key": "audio/35ma_005_1192.mp3",
+      "num_pred_words": 17,
+      "num_gt_words": 17,
+      "num_aligned": 17,
+      "overall_mae_ms": 32.26470588235307,
+      "median_ae_ms": 19.500000000000295,
+      "miou": 0.8328344397903285,
+      "median_iou": 0.8913043478260856
+    },
+    {
+      "key": "audio/26f_020_582.mp3",
+      "num_pred_words": 5,
+      "num_gt_words": 5,
+      "num_aligned": 5,
+      "overall_mae_ms": 39.500000000000014,
+      "median_ae_ms": 21.500000000000004,
+      "miou": 0.8188585818929992,
+      "median_iou": 0.9348484848484849
+    },
+    {
+      "key": "audio/507_055_2144.mp3",
+      "num_pred_words": 8,
+      "num_gt_words": 8,
+      "num_aligned": 8,
+      "overall_mae_ms": 26.37499999999994,
+      "median_ae_ms": 12.499999999999734,
+      "miou": 0.8760678017030312,
+      "median_iou": 0.9548039883245322
+    },
+    {
+      "key": "audio/26f_036_598.mp3",
+      "num_pred_words": 13,
+      "num_gt_words": 13,
+      "num_aligned": 13,
+      "overall_mae_ms": 90.53846153846148,
+      "median_ae_ms": 18.499999999999517,
+      "miou": 0.846597758099982,
+      "median_iou": 0.9317406143344724
+    },
+    {
+      "key": "audio/37m_002_1325.mp3",
+      "num_pred_words": 43,
+      "num_gt_words": 43,
+      "num_aligned": 43,
+      "overall_mae_ms": 390.59302325581416,
+      "median_ae_ms": 13.999999999999346,
+      "miou": 0.7694652585825738,
+      "median_iou": 0.9047619047619063
+    },
+    {
+      "key": "audio/24ma_059_320.mp3",
+      "num_pred_words": 2,
+      "num_gt_words": 2,
+      "num_aligned": 2,
+      "overall_mae_ms": 21.500000000000064,
+      "median_ae_ms": 21.500000000000064,
+      "miou": 0.8808012127761764,
+      "median_iou": 0.8808012127761764
+    },
+    {
+      "key": "audio/62m_001_3101.mp3",
+      "num_pred_words": 14,
+      "num_gt_words": 14,
+      "num_aligned": 14,
+      "overall_mae_ms": 10.607142857142867,
+      "median_ae_ms": 9.24999999999998,
+      "miou": 0.8893736676138684,
+      "median_iou": 0.8967607973421927
+    },
+    {
+      "key": "audio/46mb_004_1994.mp3",
+      "num_pred_words": 19,
+      "num_gt_words": 19,
+      "num_aligned": 19,
+      "overall_mae_ms": 22.710526315789508,
+      "median_ae_ms": 12.000000000000455,
+      "miou": 0.7900208175327903,
+      "median_iou": 0.9187499999999992
+    },
+    {
+      "key": "audio/46ma_014_1886.mp3",
+      "num_pred_words": 20,
+      "num_gt_words": 20,
+      "num_aligned": 20,
+      "overall_mae_ms": 12.475000000000126,
+      "median_ae_ms": 7.000000000000228,
+      "miou": 0.8622500669462461,
+      "median_iou": 0.9363312126470024
+    },
+    {
+      "key": "audio/44m_149_1615.mp3",
+      "num_pred_words": 14,
+      "num_gt_words": 14,
+      "num_aligned": 14,
+      "overall_mae_ms": 24.999999999999986,
+      "median_ae_ms": 18.749999999999932,
+      "miou": 0.8159307418338011,
+      "median_iou": 0.8962555610479493
+    },
+    {
+      "key": "audio/27ma_015_670.mp3",
+      "num_pred_words": 21,
+      "num_gt_words": 21,
+      "num_aligned": 21,
+      "overall_mae_ms": 479.00000000000006,
+      "median_ae_ms": 54.00000000000005,
+      "miou": 0.4979257381272029,
+      "median_iou": 0.5281690140845039
+    },
+    {
+      "key": "audio/34m_047_1136.mp3",
+      "num_pred_words": 11,
+      "num_gt_words": 11,
+      "num_aligned": 11,
+      "overall_mae_ms": 8.090909090909083,
+      "median_ae_ms": 7.500000000000062,
+      "miou": 0.9198297700440226,
+      "median_iou": 0.9319999999999999
+    },
+    {
+      "key": "audio/44m_068_1534.mp3",
+      "num_pred_words": 22,
+      "num_gt_words": 22,
+      "num_aligned": 22,
+      "overall_mae_ms": 20.704545454545467,
+      "median_ae_ms": 8.500000000000174,
+      "miou": 0.7505055459968965,
+      "median_iou": 0.8827380952380939
+    },
+    {
+      "key": "audio/25m_014_486.mp3",
+      "num_pred_words": 23,
+      "num_gt_words": 23,
+      "num_aligned": 23,
+      "overall_mae_ms": 126.73913043478261,
+      "median_ae_ms": 13.500000000000512,
+      "miou": 0.8356341038642681,
+      "median_iou": 0.9310344827586217
+    },
+    {
+      "key": "audio/29mb_088_965.mp3",
+      "num_pred_words": 13,
+      "num_gt_words": 13,
+      "num_aligned": 13,
+      "overall_mae_ms": 18.692307692307722,
+      "median_ae_ms": 13.999999999999984,
+      "miou": 0.8375906427389748,
+      "median_iou": 0.8793103448275863
+    },
+    {
+      "key": "audio/25m_073_544.mp3",
+      "num_pred_words": 3,
+      "num_gt_words": 3,
+      "num_aligned": 3,
+      "overall_mae_ms": 11.66666666666665,
+      "median_ae_ms": 12.9999999999999,
+      "miou": 0.9357266274752788,
+      "median_iou": 0.928260869565217
+    },
+    {
+      "key": "audio/508_132_2289.mp3",
+      "num_pred_words": 32,
+      "num_gt_words": 32,
+      "num_aligned": 32,
+      "overall_mae_ms": 19.34375000000007,
+      "median_ae_ms": 13.749999999999929,
+      "miou": 0.7939039656704083,
+      "median_iou": 0.8591874422899277
+    },
+    {
+      "key": "audio/29ma_079_846.mp3",
+      "num_pred_words": 32,
+      "num_gt_words": 32,
+      "num_aligned": 32,
+      "overall_mae_ms": 9.906249999999911,
+      "median_ae_ms": 6.999999999999451,
+      "miou": 0.9137255310414372,
+      "median_iou": 0.9460845758015586
+    },
+    {
+      "key": "audio/26m_029_653.mp3",
+      "num_pred_words": 16,
+      "num_gt_words": 16,
+      "num_aligned": 16,
+      "overall_mae_ms": 34.84375000000004,
+      "median_ae_ms": 11.249999999999982,
+      "miou": 0.7982884355959121,
+      "median_iou": 0.867774086378736
+    },
+    {
+      "key": "audio/43m_064_1461.mp3",
+      "num_pred_words": 30,
+      "num_gt_words": 30,
+      "num_aligned": 30,
+      "overall_mae_ms": 16.083333333333293,
+      "median_ae_ms": 8.25000000000009,
+      "miou": 0.8804976490324213,
+      "median_iou": 0.9389823496966367
+    },
+    {
+      "key": "audio/32m_011_1050.mp3",
+      "num_pred_words": 9,
+      "num_gt_words": 9,
+      "num_aligned": 9,
+      "overall_mae_ms": 50.72222222222225,
+      "median_ae_ms": 20.000000000000018,
+      "miou": 0.8029243971815593,
+      "median_iou": 0.894736842105263
+    },
+    {
+      "key": "audio/24fa_048_48.mp3",
+      "num_pred_words": 15,
+      "num_gt_words": 15,
+      "num_aligned": 15,
+      "overall_mae_ms": 60.83333333333344,
+      "median_ae_ms": 12.50000000000001,
+      "miou": 0.8454821586048007,
+      "median_iou": 0.9384164222873903
+    },
+    {
+      "key": "audio/43m_030_1427.mp3",
+      "num_pred_words": 12,
+      "num_gt_words": 12,
+      "num_aligned": 12,
+      "overall_mae_ms": 26.124999999999982,
+      "median_ae_ms": 11.00000000000001,
+      "miou": 0.8632682727937323,
+      "median_iou": 0.93861852433281
+    },
+    {
+      "key": "audio/25m_041_513.mp3",
+      "num_pred_words": 11,
+      "num_gt_words": 11,
+      "num_aligned": 11,
+      "overall_mae_ms": 151.90909090909085,
+      "median_ae_ms": 26.499999999999858,
+      "miou": 0.6809077939857002,
+      "median_iou": 0.7623318385650235
+    },
+    {
+      "key": "audio/54f_025_2662.mp3",
+      "num_pred_words": 36,
+      "num_gt_words": 36,
+      "num_aligned": 36,
+      "overall_mae_ms": 185.91666666666666,
+      "median_ae_ms": 10.999999999999677,
+      "miou": 0.753221385009978,
+      "median_iou": 0.9275761589403988
+    },
+    {
+      "key": "audio/28m_014_725.mp3",
+      "num_pred_words": 15,
+      "num_gt_words": 15,
+      "num_aligned": 15,
+      "overall_mae_ms": 17.833333333333417,
+      "median_ae_ms": 14.50000000000018,
+      "miou": 0.8555509037265818,
+      "median_iou": 0.8622047244094483
+    },
+    {
+      "key": "audio/54m_091_2827.mp3",
+      "num_pred_words": 59,
+      "num_gt_words": 59,
+      "num_aligned": 59,
+      "overall_mae_ms": 14.398305084745783,
+      "median_ae_ms": 7.499999999999951,
+      "miou": 0.8973880571927765,
+      "median_iou": 0.933852140077823
+    },
+    {
+      "key": "audio/62m_084_3184.mp3",
+      "num_pred_words": 9,
+      "num_gt_words": 9,
+      "num_aligned": 9,
+      "overall_mae_ms": 27.27777777777772,
+      "median_ae_ms": 20.000000000000018,
+      "miou": 0.7416681738490786,
+      "median_iou": 0.8496732026143836
+    },
+    {
+      "key": "audio/46mb_038_2028.mp3",
+      "num_pred_words": 27,
+      "num_gt_words": 27,
+      "num_aligned": 27,
+      "overall_mae_ms": 15.888888888888925,
+      "median_ae_ms": 14.000000000000234,
+      "miou": 0.838317589827682,
+      "median_iou": 0.8801089918256118
+    },
+    {
+      "key": "audio/508_058_2215.mp3",
+      "num_pred_words": 13,
+      "num_gt_words": 13,
+      "num_aligned": 13,
+      "overall_mae_ms": 14.423076923076874,
+      "median_ae_ms": 9.49999999999962,
+      "miou": 0.8956694688256868,
+      "median_iou": 0.9186046511627906
+    },
+    {
+      "key": "audio/28m_034_745.mp3",
+      "num_pred_words": 2,
+      "num_gt_words": 2,
+      "num_aligned": 2,
+      "overall_mae_ms": 13.500000000000009,
+      "median_ae_ms": 13.500000000000009,
+      "miou": 0.9205593348450491,
+      "median_iou": 0.9205593348450491
+    },
+    {
+      "key": "audio/43m_029_1426.mp3",
+      "num_pred_words": 4,
+      "num_gt_words": 4,
+      "num_aligned": 4,
+      "overall_mae_ms": 89.62500000000001,
+      "median_ae_ms": 37.00000000000001,
+      "miou": 0.5477133763159139,
+      "median_iou": 0.5174274255156608
+    },
+    {
+      "key": "audio/507_019_2108.mp3",
+      "num_pred_words": 34,
+      "num_gt_words": 34,
+      "num_aligned": 34,
+      "overall_mae_ms": 26.573529411764746,
+      "median_ae_ms": 10.249999999999538,
+      "miou": 0.8818977349539132,
+      "median_iou": 0.944834989571832
+    },
+    {
+      "key": "audio/46ma_016_1888.mp3",
+      "num_pred_words": 11,
+      "num_gt_words": 11,
+      "num_aligned": 11,
+      "overall_mae_ms": 7.954545454545424,
+      "median_ae_ms": 5.000000000000004,
+      "miou": 0.9180914538789211,
+      "median_iou": 0.9397590361445796
+    },
+    {
+      "key": "audio/50fb_023_2586.mp3",
+      "num_pred_words": 11,
+      "num_gt_words": 11,
+      "num_aligned": 11,
+      "overall_mae_ms": 45.04545454545456,
+      "median_ae_ms": 11.499999999999844,
+      "miou": 0.8340000263480274,
+      "median_iou": 0.9456824512534823
+    },
+    {
+      "key": "audio/54m_046_2782.mp3",
+      "num_pred_words": 20,
+      "num_gt_words": 20,
+      "num_aligned": 20,
+      "overall_mae_ms": 8.024999999999954,
+      "median_ae_ms": 6.499999999999839,
+      "miou": 0.936010591098424,
+      "median_iou": 0.9348195329087055
+    },
+    {
+      "key": "audio/35mb_110_1319.mp3",
+      "num_pred_words": 20,
+      "num_gt_words": 20,
+      "num_aligned": 20,
+      "overall_mae_ms": 24.275000000000095,
+      "median_ae_ms": 9.000000000000119,
+      "miou": 0.8867208053313146,
+      "median_iou": 0.9357153881771874
+    },
+    {
+      "key": "audio/508_065_2222.mp3",
+      "num_pred_words": 13,
+      "num_gt_words": 13,
+      "num_aligned": 13,
+      "overall_mae_ms": 8.038461538461512,
+      "median_ae_ms": 6.999999999999895,
+      "miou": 0.9227049185914334,
+      "median_iou": 0.9374999999999977
+    }
+  ]
+}
